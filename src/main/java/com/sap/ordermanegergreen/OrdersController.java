@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 
 public class OrdersController {
-
     @GetMapping
     public String getOrders(){
+        
     return "YAY!!!";
     }
 }
