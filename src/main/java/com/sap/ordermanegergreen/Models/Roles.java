@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-enum Available_Roles{Admin, employee, customer};
+enum Available_Roles{ADMIN, EMPLOYEE, CUSTOMER};
 //@Document לשנות שם לטבלה
 @Data
 @NoArgsConstructor
@@ -20,6 +20,6 @@ public class Roles {
     private Available_Roles Name;
     private String Desc;
     @DBRef
-    private List<AuditData> Audit_Data;
+    private AuditData Audit_Data;
 
 }

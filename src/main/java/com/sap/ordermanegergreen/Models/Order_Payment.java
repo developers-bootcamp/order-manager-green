@@ -7,16 +7,16 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.util.List;
 
-enum Payment_Types{Credit,debit};
+enum Payment_Types{CREDIT,DEBIT};
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order_Payment {
-   private long Order_Id;
-    private long User;
+   private Orders Order_Id;
+    private User User;
     private int Amount;
     private long Invoice_number;
     private Payment_Types Payment_Type;
     @DBRef
-    private List<AuditData> Audit_Data;
+    private AuditData Audit_Data;
 }

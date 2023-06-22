@@ -1,4 +1,4 @@
-package com.sap.ordermanegergreen;
+package com.sap.ordermanegergreen.Controllers;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -16,7 +16,7 @@ public class Product_Category {
     @Id private long Id;
     private String Name;
     private String Desc;
-    private long Company_Id;
+    private Company Company_Id;
     @DBRef
     private List<AuditData> Audit_Data;
 }
