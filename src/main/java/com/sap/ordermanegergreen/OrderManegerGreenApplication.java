@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 @SpringBootApplication
 //@EnableMongoRepositories("com.sap.ordermanegergreen.Models")
+@EnableMongoRepositories
 public class OrderManegerGreenApplication {
 
 	public static void main(String[] args) {
