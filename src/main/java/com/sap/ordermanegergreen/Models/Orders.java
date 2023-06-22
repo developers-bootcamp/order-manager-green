@@ -16,19 +16,17 @@ import java.util.List;
 //@ToString
 public class Orders {
  @Id private long Id;
-   private long Employee_Id ;
-    private long Customer_Id;
-    private int Total_amount;
+   private User Employee_Id ;
+    private User Customer_Id;
+    private double Total_amount;
    @DBRef
     private List<Order_Items> Order_Items_List;
     private long Order_Status_Id;
-    private long Company_Id;
+    private Company Company_Id;
     private String CreditCardNumber;
     private String  ExpiryOn;
     private String Cvc;
-    private boolean NotificationFlag;
+    private Boolean NotificationFlag;
    @DBRef
-    private List<AuditData> Audit_Data;
-
-
+    private AuditData Audit_Data;
 }

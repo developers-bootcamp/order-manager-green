@@ -18,9 +18,9 @@ public class User {
   private String FullName;
   private String Password;
   @DBRef
-  private List<Address> Addresses;
-  private long RoleId;
-  private long CompanyId;
+  private Address Addresses;
+  private Roles RoleId;
+  private Company CompanyId;
   @DBRef
-  private List<AuditData> Audit_Data;
+  private AuditData Audit_Data;
 }
