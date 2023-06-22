@@ -17,7 +17,6 @@ public class OrderManegerGreenApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(OrderManegerGreenApplication.class, args);
 	}
-
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
 		return args -> {
