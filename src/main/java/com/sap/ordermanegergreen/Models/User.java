@@ -14,7 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @Document(collection = "Users")
 public class User {
-  @Id private long Id;
+  @Id
+  private long Id;
   private String FullName;
   private String Password;
   @DBRef
