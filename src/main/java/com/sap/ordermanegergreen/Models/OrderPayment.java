@@ -5,18 +5,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
-import java.util.List;
-
-enum Payment_Types{CREDIT,DEBIT};
+;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order_Payment {
-   private Orders Order_Id;
-    private User User;
+public class OrderPayment {
+
+   private Orders OrderId;
+
+   private User User;
+
     private int Amount;
-    private long Invoice_number;
-    private Payment_Types Payment_Type;
+
+    private long InvoiceNumber;
+
+    private PaymentTypes PaymentType;
     @DBRef
-    private AuditData Audit_Data;
+    private AuditData AuditData;
 }

@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Address {
     private String Telephone;
-    private String Address_d;
+    private String Address;
     private String Email;
 }
