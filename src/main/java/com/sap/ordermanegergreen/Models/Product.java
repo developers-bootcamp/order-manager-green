@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-enum Discount_Types {PERCENTAGE,FIXED_AMOUNT} ;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,8 +28,4 @@ public class Product {
     private Company Company_Id;
     @DBRef
     private AuditData Audit_Data;
-
-
-
-
 }
