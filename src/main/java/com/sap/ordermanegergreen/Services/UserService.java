@@ -19,4 +19,8 @@ public class UserService implements IUserService{
         return (User)p;
     }
 
+    public void saveUser(User user) {
+        UserRepository.save(user);
+    }
+
 }

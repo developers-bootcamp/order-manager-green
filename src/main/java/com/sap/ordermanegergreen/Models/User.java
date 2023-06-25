@@ -15,8 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 @Document(collection = "Users")
 public class User {
-  
-  @Id private String Id;
+
+  @Id
+  private String Id;
   private String FullName;
   private String Password;
   @DBRef
@@ -24,5 +25,5 @@ public class User {
   private Roles RoleId;
   private Company CompanyId;
   @DBRef
-  private AuditData AuditData;
+  private AuditData Audit_Data;
 }

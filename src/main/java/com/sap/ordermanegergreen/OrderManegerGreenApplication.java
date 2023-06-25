@@ -5,17 +5,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import java.util.Arrays;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+//@EnableMongoRepositories("com.sap.ordermanegergreen.Models")
 @SpringBootApplication
 @EnableMongoRepositories
 public class OrderManegerGreenApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(OrderManegerGreenApplication.class, args);
 	}
-
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
 		return args -> {
