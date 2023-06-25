@@ -9,14 +9,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-enum Available_Roles{ADMIN, EMPLOYEE, CUSTOMER};
+;
 //@Document לשנות שם לטבלה
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "Roles")
 public class Roles {
-    @Id private long Id;
+    @Id private String Id;
     private Available_Roles Name;
     private String Desc;
     @DBRef

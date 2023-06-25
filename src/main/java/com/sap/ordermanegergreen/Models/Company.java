@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Document(collection = "Company")
 public class Company {
-    @Id private long id;
+    @Id private String id;
    private String Name;
     private String Currency;
     @DBRef

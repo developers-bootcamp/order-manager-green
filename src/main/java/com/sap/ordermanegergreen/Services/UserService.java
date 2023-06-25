@@ -1,8 +1,24 @@
 package com.sap.ordermanegergreen.Services;
 
 import com.sap.ordermanegergreen.Models.User;
+import com.sap.ordermanegergreen.Repositorys.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public interface UserService {
+import java.util.Optional;
 
-    User getUser();
+@Service
+public class UserService implements IUserService{
+
+    UserRepository UserRepository;
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.UserRepository = userRepository;
+    }
+    @Override
+    public User getUser(String id) {
+        Object p = UserRepository.findById(id);
+        return (User)p;
+    }
+
 }

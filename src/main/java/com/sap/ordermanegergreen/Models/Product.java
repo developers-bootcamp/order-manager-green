@@ -10,14 +10,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-enum Discount_Types {PERCENTAGE,FIXED_AMOUNT} ;
+;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 //@Collation
 @Document(collection = "Product")
 public class Product {
-    @Id private long Id;
+    @Id private String Id;
     private String Name;
     private String Desc;
     private  double Price;

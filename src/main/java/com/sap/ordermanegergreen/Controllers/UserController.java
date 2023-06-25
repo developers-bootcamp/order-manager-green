@@ -1,17 +1,19 @@
 package com.sap.ordermanegergreen.Controllers;
 
 import com.sap.ordermanegergreen.Models.User;
-import com.sap.ordermanegergreen.Services.UserService;
+import com.sap.ordermanegergreen.Services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 @Controller
 @RestController("/user")
 public class UserController {
-    @Autowired
-   private UserService userService;
+   private IUserService UserService;
+   @Autowired
+   public UserController(IUserService UserService){
+       this.UserService=UserService;
+   }
 
     @GetMapping("/")
     //@ResponseBody
@@ -21,8 +23,8 @@ public class UserController {
 
     @GetMapping("/get")
     //@ResponseBody
-    public User indexty(String id) {
-        return userService.getUser();
+    public User GettingUser(String id) {
+        return UserService.getUser(id);
     }
 
 }

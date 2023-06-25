@@ -13,10 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @Document(collection = "Product_Category")
 public class Product_Category {
-    @Id private long Id;
+    @Id private String Id;
     private String Name;
     private String Desc;
     private Company Company_Id;
     @DBRef
-    private List<AuditData> Audit_Data;
+    private AuditData Audit_Data;
 }
