@@ -10,6 +10,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuditData {
-  private Date Create_Date;
-  private Date Update_Date;
+  private Date CreateDate;
+  private Date UpdateDate;
 }

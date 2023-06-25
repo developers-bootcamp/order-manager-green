@@ -24,5 +24,5 @@ public class User {
   private Roles RoleId;
   private Company CompanyId;
   @DBRef
-  private AuditData Audit_Data;
+  private AuditData AuditData;
 }

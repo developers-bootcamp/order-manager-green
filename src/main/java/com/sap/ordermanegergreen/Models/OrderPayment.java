@@ -5,21 +5,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
-import java.util.List;;
+;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order_Payment {
+public class OrderPayment {
 
-   private Orders Order_Id;
+   private Orders OrderId;
 
    private User User;
 
     private int Amount;
 
-    private long Invoice_number;
+    private long InvoiceNumber;
 
-    private Payment_Types Payment_Type;
+    private PaymentTypes PaymentType;
     @DBRef
-    private AuditData Audit_Data;
+    private AuditData AuditData;
 }

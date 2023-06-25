@@ -7,8 +7,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
-
 ;
 //@Document לשנות שם לטבלה
 @Data
@@ -17,9 +15,9 @@ import java.util.List;
 @Document(collection = "Roles")
 public class Roles {
     @Id private String Id;
-    private Available_Roles Name;
+    private AvailableRoles Name;
     private String Desc;
     @DBRef
-    private AuditData Audit_Data;
+    private AuditData AuditData;
 
 }

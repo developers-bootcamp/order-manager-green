@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.annotation.Collation;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
 
 ;
 @Data
@@ -22,13 +19,13 @@ public class Product {
     private String Desc;
     private  double Price;
     private int Discount;
-    private Discount_Types Discount_Type;
-    private Product_Category Category_id;
+    private DiscountTypes DiscountType;
+    private ProductCategory CategoryId;
     private int Inventory;
     //amuont in stock
-    private Company Company_Id;
+    private Company CompanyId;
     @DBRef
-    private AuditData Audit_Data;
+    private AuditData AuditData;
 
 
 

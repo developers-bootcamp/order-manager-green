@@ -18,5 +18,5 @@ public class Company {
    private String Name;
     private String Currency;
     @DBRef
-    private AuditData Audit_Data;
+    private AuditData AuditData;
 }

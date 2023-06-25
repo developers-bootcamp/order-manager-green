@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 @Controller
-@RestController("/user")
+@RestController("/User")
 public class UserController {
    private IUserService UserService;
    @Autowired
@@ -15,7 +15,7 @@ public class UserController {
        this.UserService=UserService;
    }
 
-    @GetMapping("/")
+    @GetMapping("/check")
     //@ResponseBody
     public String index( String id) {
         return "Greetings from Spring Boot!";
