@@ -11,18 +11,38 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.Date;
 
-@Service
-public class UserService implements IUserService{
+import java.util.List;
 
-    UserRepository UserRepository;
+@Service
+public class UserService implements IUserService {
+
+    UserRepository userRepository;
+
     @Autowired
     public UserService(UserRepository userRepository) {
-        this.UserRepository = userRepository;
+        this.userRepository = userRepository;
     }
-    @Override
-    public User getUser(String id) {
-        Object p = UserRepository.findById(id);
-        return (User)p;
+
+    public List<User> getAll() {
+        return userRepository.findAll();
+    }
+
+    public User getById(String id) {
+        return userRepository.findById(id).get();
+    }
+
+    public void add(User u) {
+        userRepository.save(u);
+    }
+
+    public User put(User user, String id) {
+        userRepository.deleteById(id);
+        userRepository.save(user);
+        return user;
+    }
+
+    public void deletebyId(String id) {
+        userRepository.deleteById(id);
     }
 
     public boolean isEmailExists(String email){
