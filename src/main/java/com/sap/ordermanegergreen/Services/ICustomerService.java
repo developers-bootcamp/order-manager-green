@@ -4,7 +4,7 @@ import com.sap.ordermanegergreen.Models.User;
 
 import java.util.List;
 
-public interface IUserService {
+public interface ICustomerService {
     List<User> getAll();
     User getById(String id);
     void add(User u);
