@@ -9,5 +9,5 @@ public interface IUserService {
     User getById(String id);
     void add(User u);
     User put(User user, String id);
-    void deletebyId(String id);
+    void deletebyId(String id);   
 }
