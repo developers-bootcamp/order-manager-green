@@ -45,7 +45,6 @@ public class UserService implements IUserService{
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Invalid credentials" );
         }
-
         return user;
     }
 
