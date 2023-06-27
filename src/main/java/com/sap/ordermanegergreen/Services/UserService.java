@@ -1,16 +1,16 @@
 package com.sap.ordermanegergreen.Services;
 
 import com.sap.ordermanegergreen.Models.User;
-import com.sap.ordermanegergreen.Repositories.UserRepository;
+import com.sap.ordermanegergreen.Repositories.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService implements IUserService{
 
-    UserRepository UserRepository;
+    IUserRepository UserRepository;
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(IUserRepository userRepository) {
         this.UserRepository = userRepository;
     }
     @Override

@@ -19,13 +19,14 @@ public class ProductService implements IProductService
     }
 
     @Override
-    public void addProduct(ProductDto productDto) {
-       if(ProductRepository.findAll().stream().filter(product->product.getName()==productDto.getName()).toArray().length>0)
+    public void addProduct(Product product) {
+        try{
+
+       if(ProductRepository.findAll().stream().filter(Dataproduct->Dataproduct.getName()==product.getName()).toArray().length>0)
            throw new ResponseStatusException(HttpStatus.CONFLICT,"product name already exist");
-        Product p=new Product();
-
-
-        ProductRepository.save()
+        ProductRepository.save(product);}
+        catch (Exception ex){
+        }
 
     }
 }

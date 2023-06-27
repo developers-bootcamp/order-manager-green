@@ -1,15 +1,15 @@
 package com.sap.ordermanegergreen.Services;
 
 import com.sap.ordermanegergreen.Models.ProductCategory;
-import com.sap.ordermanegergreen.Repositories.ProductCategoryRepository;
+import com.sap.ordermanegergreen.Repositories.IProductCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProductCategoryService implements IProductCategoryService{
-    ProductCategoryRepository ProductCategoryRepository;
+    IProductCategoryRepository ProductCategoryRepository;
     @Autowired
-    public ProductCategoryService(ProductCategoryRepository ProductCategoryRepository) {
+    public ProductCategoryService(IProductCategoryRepository ProductCategoryRepository) {
         this.ProductCategoryRepository = ProductCategoryRepository;
     }
     @Override
