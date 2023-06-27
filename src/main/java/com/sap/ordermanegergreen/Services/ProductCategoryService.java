@@ -1,8 +1,7 @@
 package com.sap.ordermanegergreen.Services;
 
 import com.sap.ordermanegergreen.Models.ProductCategory;
-import com.sap.ordermanegergreen.Models.User;
-import com.sap.ordermanegergreen.Repositorys.ProductCategoryRepository;
+import com.sap.ordermanegergreen.Repositories.ProductCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

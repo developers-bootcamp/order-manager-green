@@ -1,4 +1,4 @@
-package com.sap.ordermanegergreen.Repositorys;
+package com.sap.ordermanegergreen.Repositories;
 
 import com.sap.ordermanegergreen.Models.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
