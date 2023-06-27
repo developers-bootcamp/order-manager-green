@@ -1,7 +1,7 @@
 package com.sap.ordermanegergreen.Controllers;
 
 import com.sap.ordermanegergreen.Models.User;
-import com.sap.ordermanegergreen.Services.IUserService;
+import com.sap.ordermanegergreen.Services.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -9,38 +9,38 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RestController("/User")
-public class UserController {
+@RestController("/Customer")
+public class CustomerController {
     @Autowired
-    private IUserService userService;
+    private ICustomerService customerService;
 
-    public UserController(IUserService userService) {
-        this.userService = userService;
+    public CustomerController(ICustomerService customerService) {
+        this.customerService = customerService;
     }
 
     @GetMapping
     public List<User> getAll() {
-        return userService.getAll();
+        return customerService.getAll();
     }
 
     @GetMapping
     @RequestMapping("/{id}")
     public User getById(@PathVariable String id) {
-        return userService.getById(id);
+        return customerService.getById(id);
     }
 
     @PostMapping
     public void add(@RequestBody User p) {
-        userService.add(p);
+        customerService.add(p);
     }
 
     @PutMapping("{id}")
-    public User put(@RequestBody User pupil, @PathVariable String id) {
-        return userService.put(pupil, id);
+    public User put(@RequestBody User user, @PathVariable String id) {
+        return customerService.put(user, id);
     }
 
     @DeleteMapping("{id}")
     public void deleteById(@PathVariable String id) {
-        userService.deletebyId(id);
+        customerService.deletebyId(id);
     }
 }
