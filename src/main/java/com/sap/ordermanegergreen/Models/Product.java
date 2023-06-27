@@ -26,8 +26,4 @@ public class Product {
     private Company CompanyId;
     @DBRef
     private AuditData AuditData;
-
-
-
-
 }
