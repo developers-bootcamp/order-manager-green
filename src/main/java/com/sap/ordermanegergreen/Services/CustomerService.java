@@ -2,23 +2,23 @@ package com.sap.ordermanegergreen.Services;
 
 import com.sap.ordermanegergreen.Models.AvailableRoles;
 import com.sap.ordermanegergreen.Models.User;
-import com.sap.ordermanegergreen.Repositorys.CustomerRepository;
+import com.sap.ordermanegergreen.Repositories.ICustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CustomerService implements ICustomerService {
-    CustomerRepository customerRepository;
+public class CustomerService  {
+    ICustomerRepository customerRepository;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(ICustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
     public List<User> getAll() {
-        return customerRepository.findAll().stream().filter(u->u.getRole().equals(AvailableRoles.CUSTOMER)).toList();
+        return customerRepository.findAll().stream().filter(u->u.getRoleId().equals(AvailableRoles.CUSTOMER)).toList();
     }
 
     public User getById(String id) {

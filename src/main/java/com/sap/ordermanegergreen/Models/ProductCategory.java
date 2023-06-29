@@ -12,12 +12,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection = "ProductCategory")
 public class ProductCategory {
-    @Id private String Id;
+    @Id
+    private String Id;
     private String Name;
     private String Desc;
-    private Company CompanyId;
     @DBRef
+    private Company CompanyId;
     private AuditData AuditData;
 
-    public ProductCategory(String id) {Id=id;}
+//    public ProductCategory(String id) {Id=id;}
 }

@@ -1,9 +1,10 @@
-package com.sap.ordermanegergreen.Repositorys;
+package com.sap.ordermanegergreen.Repositories;
+
 
 import com.sap.ordermanegergreen.Models.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public interface CustomerRepository extends MongoRepository<User, String> {
+public interface ICustomerRepository extends MongoRepository<User, String> {
 }

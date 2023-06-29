@@ -6,4 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface IProductCategoryRepository extends MongoRepository<ProductCategory, String> {
+    boolean existsByName(String categoryName);
+
 }

@@ -1,45 +1,55 @@
 package com.sap.ordermanegergreen.Controllers;
 
+import com.sap.ordermanegergreen.DTO.TokenDTO;
 import com.sap.ordermanegergreen.Models.Company;
-import com.sap.ordermanegergreen.Services.ICompanyService;
+import com.sap.ordermanegergreen.Services.CompanyService;
+import com.sap.ordermanegergreen.Utils.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RestController("/Company")
+@RestController
+@RequestMapping("/company")
 public class CompanyController {
+    private CompanyService companyService;
+    private JwtToken jwtToken;
     @Autowired
-    private ICompanyService companyService;
-
-    public CompanyController(ICompanyService companyService) {
+    public CompanyController(CompanyService companyService,JwtToken jwtToken) {
+        this.jwtToken=jwtToken;
         this.companyService = companyService;
     }
-
     @GetMapping
+    @RequestMapping("/getToken/{token}")
+    public TokenDTO getToken(@PathVariable String token) {
+        return jwtToken.decodeToken(token);
+    }
+    @GetMapping
+    @RequestMapping("/getAll")
     public List<Company> getAll() {
         return companyService.getAll();
     }
 
     @GetMapping
-    @RequestMapping("/{id}")
+    @RequestMapping("/getById/{id}")
     public Company getById(@PathVariable String id) {
         return companyService.getById(id);
     }
 
     @PostMapping
-    public void add(@RequestBody Company p) {
-        companyService.add(p);
+    @RequestMapping("/add")
+    public void add(@RequestBody Company company) {
+        companyService.add(company);
     }
 
-    @PutMapping("{id}")
-    public Company put(@RequestBody Company company, @PathVariable String id) {
-        return companyService.put(company, id);
+    @PutMapping
+    @RequestMapping("/editById/{id}")
+    public Company editById(@RequestBody Company company, @PathVariable String id) {
+        return companyService.editById(company, id);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping
+    @RequestMapping("/deleteById/{id}")
     public void deleteById(@PathVariable String id) {
         companyService.deletebyId(id);
     }

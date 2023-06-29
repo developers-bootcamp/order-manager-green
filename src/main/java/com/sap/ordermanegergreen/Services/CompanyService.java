@@ -1,19 +1,18 @@
 package com.sap.ordermanegergreen.Services;
 
 import com.sap.ordermanegergreen.Models.Company;
-import com.sap.ordermanegergreen.Repositorys.CompanyRepository;
+import com.sap.ordermanegergreen.Repositories.ICompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CompanyService implements ICompanyService {
-
-    CompanyRepository companyRepository;
+public class CompanyService  {
+    ICompanyRepository companyRepository;
 
     @Autowired
-    public CompanyService(CompanyRepository companyRepository) {
+    public CompanyService(ICompanyRepository companyRepository) {
         this.companyRepository = companyRepository;
     }
 
@@ -25,17 +24,17 @@ public class CompanyService implements ICompanyService {
         return companyRepository.findById(id).get();
     }
 
-    public void add(Company c) {
-        companyRepository.save(c);
+    public void add(Company company) {
+        companyRepository.save(company);
     }
 
-    public Company put(Company company, String id) {
+    public Company editById(Company company, String id) {
         companyRepository.deleteById(id);
         companyRepository.save(company);
         return company;
     }
 
-    public void deletebyId(String id) {
-        companyRepository.deleteById(id);
+    public void deletebyId(String companyId) {
+        companyRepository.deleteById(companyId);
     }
 }

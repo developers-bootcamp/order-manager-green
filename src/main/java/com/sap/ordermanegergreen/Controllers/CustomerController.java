@@ -1,45 +1,47 @@
 package com.sap.ordermanegergreen.Controllers;
 
 import com.sap.ordermanegergreen.Models.User;
-import com.sap.ordermanegergreen.Services.ICustomerService;
+import com.sap.ordermanegergreen.Services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RestController("/Customer")
+@RestController
+@RequestMapping("/customer")
 public class CustomerController {
+    private CustomerService customerService;
     @Autowired
-    private ICustomerService customerService;
-
-    public CustomerController(ICustomerService customerService) {
+    public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
 
     @GetMapping
+    @RequestMapping("/getAll")
     public List<User> getAll() {
         return customerService.getAll();
     }
 
     @GetMapping
-    @RequestMapping("/{id}")
+    @RequestMapping("/getById/{id}")
     public User getById(@PathVariable String id) {
         return customerService.getById(id);
     }
 
     @PostMapping
+    @RequestMapping("/add")
     public void add(@RequestBody User p) {
         customerService.add(p);
     }
 
-    @PutMapping("{id}")
-    public User put(@RequestBody User user, @PathVariable String id) {
+    @PutMapping
+    @RequestMapping("/editById/{id}")
+    public User editById(@RequestBody User user, @PathVariable String id) {
         return customerService.put(user, id);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping
+    @RequestMapping("/deleteById/{id}")
     public void deleteById(@PathVariable String id) {
         customerService.deletebyId(id);
     }

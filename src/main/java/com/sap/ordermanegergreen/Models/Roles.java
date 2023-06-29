@@ -14,10 +14,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection = "Roles")
 public class Roles {
-    @Id private String Id;
+    @Id
+    private String Id;
     private AvailableRoles Name;
     private String Desc;
-    @DBRef
     private AuditData AuditData;
 
 }

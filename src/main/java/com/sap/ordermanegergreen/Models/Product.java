@@ -22,7 +22,7 @@ public class Product {
     private DiscountTypes DiscountType;
     private ProductCategory CategoryId;
     private int Inventory;
-    private Company CompanyId;
     @DBRef
+    private Company CompanyId;
     private AuditData AuditData;
 }
