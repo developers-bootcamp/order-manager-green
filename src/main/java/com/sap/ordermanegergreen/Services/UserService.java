@@ -1,7 +1,7 @@
 package com.sap.ordermanegergreen.Services;
 
 import com.sap.ordermanegergreen.Models.*;
-import com.sap.ordermanegergreen.Repositorys.UserRepository;
+import com.sap.ordermanegergreen.Repositories.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +14,12 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class UserService implements IUserService {
+public class UserService  {
 
-    UserRepository userRepository;
+    IUserRepository userRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(IUserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -27,22 +27,22 @@ public class UserService implements IUserService {
         return userRepository.findAll();
     }
 
-    public User getById(String id) {
-        return userRepository.findById(id).get();
+    public User getById(String userId) {
+        return userRepository.findById(userId).get();
     }
 
-    public void add(User u) {
-        userRepository.save(u);
+    public void add(User user) {
+        userRepository.save(user);
     }
 
-    public User put(User user, String id) {
-        userRepository.deleteById(id);
+    public User editById(User user, String userId) {
+        userRepository.deleteById(userId);
         userRepository.save(user);
         return user;
     }
 
-    public void deletebyId(String id) {
-        userRepository.deleteById(id);
+    public void deletebyId(String userId) {
+        userRepository.deleteById(userId);
     }
 
     public boolean isEmailExists(String email){
@@ -51,9 +51,8 @@ public class UserService implements IUserService {
         return true;
     }
 
-    @Override
-    public User getUserByEmailAndPassword(String email, String password) {
-        if (Boolean.FALSE.equals(isEmailExists(email))) {
+    public User getUserByEmailAndPassword(String userEmail, String userPassword) {
+        if (Boolean.FALSE.equals(isEmailExists(userEmail))) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found. Please sign up" );
         }
         //TODO: replace mockData with real call - userRepository.getUserByEmailAnsPassword

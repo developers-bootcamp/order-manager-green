@@ -19,14 +19,13 @@ public class Orders {
    private User EmployeeId ;
     private User CustomerId;
     private double TotalAmount;
-   @DBRef
     private List<OrderItems> OrderItemsList;
     private String OrderStatusId;
+    @DBRef
     private Company CompanyId;
     private String CreditCardNumber;
     private String  ExpiryOn;
     private String Cvc;
     private Boolean NotificationFlag;
-   @DBRef
     private AuditData AuditData;
 }

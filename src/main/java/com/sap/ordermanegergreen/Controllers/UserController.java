@@ -1,46 +1,48 @@
 package com.sap.ordermanegergreen.Controllers;
 
 import com.sap.ordermanegergreen.Models.User;
-import com.sap.ordermanegergreen.Services.IUserService;
+import com.sap.ordermanegergreen.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RestController("/User")
+@RestController
+@RequestMapping("/user")
 public class UserController {
+    private UserService userService;
     @Autowired
-    private IUserService userService;
-
-    public UserController(IUserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping
+    @RequestMapping("/getAll")
     public List<User> getAll() {
         return userService.getAll();
     }
 
     @GetMapping
-    @RequestMapping("/{id}")
-    public User getById(@PathVariable String id) {
-        return userService.getById(id);
+    @RequestMapping("/getById/{userId}")
+    public User getById(@PathVariable String userId) {
+        return userService.getById(userId);
     }
 
     @PostMapping
-    public void add(@RequestBody User p) {
-        userService.add(p);
+    @RequestMapping("/add")
+    public void add(@RequestBody User user) {
+        userService.add(user);
     }
 
-    @PutMapping("{id}")
-    public User put(@RequestBody User pupil, @PathVariable String id) {
-        return userService.put(pupil, id);
+    @PutMapping
+    @RequestMapping(("/editById/{userId}"))
+    public User editById(@RequestBody User user, @PathVariable String userId) {
+        return userService.editById(user, userId);
     }
 
-    @DeleteMapping("{id}")
-    public void deleteById(@PathVariable String id) {
-        userService.deletebyId(id);
+    @DeleteMapping
+    @RequestMapping(("/deleteById/{userId}"))
+    public void deleteById(@PathVariable String userId) {
+        userService.deletebyId(userId);
     }
 }

@@ -16,18 +16,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Product {
     @Id private String Id;
     private String Name;
-    private String Desc;
+    private String Description;
     private  double Price;
     private int Discount;
     private DiscountTypes DiscountType;
     private ProductCategory CategoryId;
     private int Inventory;
-    //amuont in stock
-    private Company CompanyId;
     @DBRef
+    private Company CompanyId;
     private AuditData AuditData;
-
-
-
-
 }

@@ -17,6 +17,5 @@ public class Company {
     @Id private String id;
    private String Name;
     private String Currency;
-    @DBRef
     private AuditData AuditData;
 }

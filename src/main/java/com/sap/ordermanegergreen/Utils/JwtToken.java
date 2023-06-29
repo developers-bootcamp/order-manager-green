@@ -1,4 +1,6 @@
 package com.sap.ordermanegergreen.Utils;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.sap.ordermanegergreen.DTO.TokenDTO;
 import com.sap.ordermanegergreen.Models.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -16,12 +18,21 @@ public class JwtToken {
         Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET.getBytes());
         Date now = new Date();
         String accessToken = JWT.create()
-                .withSubject(user.getId())
-                .withSubject(user.getCompanyId().getId())
-                .withSubject(user.getRoleId().getId())
+                .withClaim("roleId",user.getRoleId().getId())
+                .withClaim("id",user.getId())
+                .withClaim("companyId",user.getCompanyId().getId())
                 .withExpiresAt(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
-                .withIssuer("nameManager")
                 .sign(algorithm);
         return accessToken;
+    }
+    public TokenDTO decodeToken(String token) {
+        Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET.getBytes());
+        DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
+        TokenDTO decodedToken = new TokenDTO();
+        decodedToken.setUserId(jwt.getClaim("id").asString());
+        decodedToken.setCompanyId(jwt.getClaim("companyId").asString());
+        decodedToken.setRoleId(jwt.getClaim("roleId").asString());
+        decodedToken.setExpirationDate(jwt.getExpiresAt());
+        return decodedToken;
     }
 }

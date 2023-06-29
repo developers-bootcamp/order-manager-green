@@ -15,10 +15,10 @@ public class User {
     private String Id;
     private String FullName;
     private String Password;
+    private Address AddressId;
     @DBRef
-    private Address Addresses;
-    private Roles Role;
-    private Company Company;
+    private Roles RoleId;
     @DBRef
+    private Company CompanyId;
     private AuditData AuditData;
 }

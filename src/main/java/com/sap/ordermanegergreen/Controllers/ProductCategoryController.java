@@ -1,19 +1,44 @@
 package com.sap.ordermanegergreen.Controllers;
-import com.sap.ordermanegergreen.Services.IProductCategoryService;
+import com.sap.ordermanegergreen.Models.ProductCategory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import com.sap.ordermanegergreen.Services.ProductCategoryService;
+
+import java.util.List;
+
 @Controller
-@RestController("/ProductCategory")
+@RestController
+@RequestMapping("/ProductCategory")
 public class ProductCategoryController {
-    IProductCategoryService ProductCategoryService;
+    ProductCategoryService ProductCategoryService;
     @Autowired
-    public ProductCategoryController(IProductCategoryService ProductCategoryService){
+    public ProductCategoryController(ProductCategoryService ProductCategoryService){
         this.ProductCategoryService=ProductCategoryService;
     }
-    @GetMapping("/Create")
-    public void createProductCategory(String id){
-        ProductCategoryService.saveProductCategory(id);
+
+    @GetMapping
+    @RequestMapping("/getAll")
+    public ResponseEntity<List<ProductCategory>> getAll() {
+        return ProductCategoryService.getAllCategories();
+    }
+    @PostMapping
+    @RequestMapping("/add")
+    public ResponseEntity<String> add(@RequestBody ProductCategory productCategory){
+        System.out.println("💕💕 in createProductCategory");
+        return ProductCategoryService.saveProductCategory(productCategory);
+
+    }
+    @DeleteMapping
+    @RequestMapping("")
+    public ResponseEntity<String> deleteById(@PathVariable("id") String id){
+        return  ProductCategoryService.deleteProductCategory(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> editProductCategory(@PathVariable("id") String id, @RequestBody ProductCategory productCategory){
+        return ProductCategoryService.editProductCategory(id,productCategory);
     }
 }
+
