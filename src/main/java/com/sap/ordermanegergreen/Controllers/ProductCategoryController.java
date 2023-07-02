@@ -1,4 +1,6 @@
 package com.sap.ordermanegergreen.Controllers;
+import com.sap.ordermanegergreen.DTO.ProductCategoryDTO;
+import com.sap.ordermanegergreen.DTO.ProductCategoryMapper;
 import com.sap.ordermanegergreen.Models.ProductCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,26 +14,30 @@ import java.util.List;
 @RestController
 @RequestMapping("/ProductCategory")
 public class ProductCategoryController {
-    ProductCategoryService ProductCategoryService;
+    private final ProductCategoryService ProductCategoryService;
+    private final ProductCategoryMapper productCategoryMapper;
+
     @Autowired
-    public ProductCategoryController(ProductCategoryService ProductCategoryService){
-        this.ProductCategoryService=ProductCategoryService;
+    public ProductCategoryController(ProductCategoryService productCategoryService, ProductCategoryMapper productCategoryMapper) {
+        this.ProductCategoryService = productCategoryService;
+        this.productCategoryMapper = productCategoryMapper;
     }
 
-    @GetMapping
-    @RequestMapping("/getAll")
-    public ResponseEntity<List<ProductCategory>> getAll() {
+
+
+    @GetMapping("/")
+    public ResponseEntity<List<ProductCategoryDTO>> getAll() {
         return ProductCategoryService.getAllCategories();
     }
-    @PostMapping
-    @RequestMapping("/add")
+
+    @PostMapping("/")
     public ResponseEntity<String> add(@RequestBody ProductCategory productCategory){
         System.out.println("💕💕 in createProductCategory");
         return ProductCategoryService.saveProductCategory(productCategory);
 
     }
-    @DeleteMapping
-    @RequestMapping("")
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable("id") String id){
         return  ProductCategoryService.deleteProductCategory(id);
     }

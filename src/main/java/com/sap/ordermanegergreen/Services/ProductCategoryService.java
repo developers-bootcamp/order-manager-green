@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import com.sap.ordermanegergreen.DTO.ProductCategoryMapper;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -18,9 +19,12 @@ import java.util.Optional;
 @Service
 public class ProductCategoryService {
     IProductCategoryRepository ProductCategoryRepository;
+    private final ProductCategoryMapper productCategoryMapper;
     @Autowired
-    public ProductCategoryService(IProductCategoryRepository ProductCategoryRepository) {
+    public ProductCategoryService(IProductCategoryRepository ProductCategoryRepository,ProductCategoryMapper productCategoryMapper) {
         this.ProductCategoryRepository = ProductCategoryRepository;
+
+        this.productCategoryMapper = productCategoryMapper;
     }
 
     public ResponseEntity<String> saveProductCategory(ProductCategory productCategory) {
@@ -34,10 +38,13 @@ public class ProductCategoryService {
 
     }
 
-    public ResponseEntity<List<ProductCategory>> getAllCategories() {
+    public ResponseEntity<List<ProductCategoryDTO>> getAllCategories() {
         try {
-            List<ProductCategory> categories = ProductCategoryRepository.findAll();
-            return ResponseEntity.ok(categories);
+            List<ProductCategory> productCategories = ProductCategoryRepository.findAll();
+            List<ProductCategoryDTO> productCategoryDTOs = productCategoryMapper.toDtoList(productCategories);
+            return ResponseEntity.ok(productCategoryDTOs);
+
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
