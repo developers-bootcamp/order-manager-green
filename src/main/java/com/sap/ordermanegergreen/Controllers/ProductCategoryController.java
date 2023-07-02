@@ -32,7 +32,6 @@ public class ProductCategoryController {
 
     @PostMapping("/")
     public ResponseEntity<String> add(@RequestBody ProductCategory productCategory){
-        System.out.println("💕💕 in createProductCategory");
         return ProductCategoryService.saveProductCategory(productCategory);
 
     }

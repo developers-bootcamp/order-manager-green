@@ -44,7 +44,6 @@ public class ProductCategoryService {
             List<ProductCategoryDTO> productCategoryDTOs = productCategoryMapper.toDtoList(productCategories);
             return ResponseEntity.ok(productCategoryDTOs);
 
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
