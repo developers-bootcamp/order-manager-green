@@ -7,7 +7,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuditData {
+public class AuditDate {
   
   private Date createDate;
   
