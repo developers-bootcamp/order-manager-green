@@ -9,6 +9,7 @@ import com.sap.ordermanegergreen.service.ProductCategoryService;
 
 import java.util.List;
 
+@CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/productCategory")
 public class ProductCategoryController {
