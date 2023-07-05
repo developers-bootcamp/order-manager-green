@@ -1,8 +1,8 @@
 package com.sap.ordermanegergreen.model;
 
 import lombok.Data;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.util.Date;
 
