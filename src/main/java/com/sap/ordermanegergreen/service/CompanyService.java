@@ -29,7 +29,7 @@ public class CompanyService  {
         companyRepository.save(company);
     }
 
-    public Company put(Company company, String id) {
+    public Company put(String id, Company company) {
         companyRepository.deleteById(id);
         companyRepository.save(company);
         return company;
