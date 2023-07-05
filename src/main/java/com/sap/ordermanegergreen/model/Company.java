@@ -12,9 +12,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection ="Company")
 public class Company {
+    
     @Id 
     private String id;
+    
     private String name;
+    
     private String currency;
+    
     private AuditDate auditDate;
+    
 }
