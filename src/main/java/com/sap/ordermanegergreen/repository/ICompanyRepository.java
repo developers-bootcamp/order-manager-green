@@ -7,4 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 @Component
 public interface ICompanyRepository extends MongoRepository<Company, String> {
+    boolean existsByName(String name);
 }
