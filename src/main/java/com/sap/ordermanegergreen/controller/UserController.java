@@ -3,46 +3,52 @@ package com.sap.ordermanegergreen.controller;
 import com.sap.ordermanegergreen.model.User;
 import com.sap.ordermanegergreen.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
     private UserService userService;
+
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+    @PostMapping
+    @RequestMapping("/signUp")
+    public ResponseEntity<String> signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName, @RequestParam("email") String email, @RequestParam("password") String password) {
+        return userService.signUp(fullName, companyName, email, password);
+    }
+
     @GetMapping
-    @RequestMapping("/getAll")
     public List<User> getAll() {
         return userService.getAll();
     }
 
-    @GetMapping
-    @RequestMapping("/getById/{userId}")
-    public User getById(@PathVariable String userId) {
-        return userService.getById(userId);
+    @GetMapping("/{id}")
+    public User getById(@PathVariable String id) {
+        return userService.getById(id);
     }
 
     @PostMapping
-    @RequestMapping("/add")
     public void add(@RequestBody User user) {
         userService.add(user);
     }
 
-    @PutMapping
-    @RequestMapping(("/editById/{userId}"))
-    public User editById(@RequestBody User user, @PathVariable String userId) {
-        return userService.editById(user, userId);
+    @PutMapping("/{id}")
+    public User editById(@PathVariable String id, @RequestBody User user) {
+        return userService.put(id, user);
     }
 
-    @DeleteMapping
-    @RequestMapping(("/deleteById/{userId}"))
-    public void deleteById(@PathVariable String userId) {
-        userService.deletebyId(userId);
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable String id) {
+        userService.deletebyId(id);
     }
+
 }
