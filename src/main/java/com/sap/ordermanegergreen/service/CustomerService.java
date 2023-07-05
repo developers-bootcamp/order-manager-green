@@ -30,7 +30,7 @@ public class CustomerService  {
 //        customerRepository.save(u);
 //    }
 //
-//    public User put(User user, String id) {
+//    public User put(String id, User user) {
 //        customerRepository.deleteById(id);
 //        customerRepository.save(user);
 //        return user;
