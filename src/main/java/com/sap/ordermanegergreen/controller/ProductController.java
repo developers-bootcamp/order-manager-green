@@ -11,6 +11,8 @@
 //import com.sap.ordermanegergreen.Services.ProductService;
 //
 //import java.util.List;
+//
+//@CrossOrigin("http://localhost:3000")
 //@RestController
 //@RequestMapping ("/product")
 //public class ProductController {
