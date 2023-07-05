@@ -1,18 +1,20 @@
 package com.sap.ordermanegergreen.service;
 
-import com.sap.ordermanegergreen.model.ProductCategory;
-import com.sap.ordermanegergreen.repository.IProductCategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
+import com.sap.ordermanegergreen.model.ProductCategory;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.sap.ordermanegergreen.repository.IProductCategoryRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProductCategoryService {
+    
     IProductCategoryRepository productCategoryRepository;
+    
     @Autowired
     public ProductCategoryService(IProductCategoryRepository productCategoryRepository) {
         this.productCategoryRepository = productCategoryRepository;
@@ -23,10 +25,8 @@ public class ProductCategoryService {
         if(doesCategoryExist(categoryName)==true){
             return new ResponseEntity<>("Category name already exists", HttpStatus.CONFLICT);
         }
-
         productCategoryRepository.save(productCategory);
         return ResponseEntity.ok("success: true");
-
     }
 
     public ResponseEntity<List<ProductCategory>> getAllCategories() {
@@ -36,7 +36,6 @@ public class ProductCategoryService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 
     public ResponseEntity<String> deleteProductCategory(String id) {
@@ -51,8 +50,8 @@ public class ProductCategoryService {
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
     public boolean doesCategoryExist(String categoryName) {
-        // Check if the category name exists in the database
         return productCategoryRepository.existsByName(categoryName);
     }
 
@@ -70,7 +69,7 @@ public class ProductCategoryService {
             return ResponseEntity.ok("success: true");
         }catch(Exception e){
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
     }
+    
 }
