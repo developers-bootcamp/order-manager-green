@@ -1,14 +1,13 @@
 package com.sap.ordermanegergreen.service;
 
 import com.sap.ordermanegergreen.model.*;
-import com.sap.ordermanegergreen.repository.IUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import com.sap.ordermanegergreen.repository.IUserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
-
 import java.util.List;
 
 @Service
@@ -33,7 +32,7 @@ public class UserService  {
         userRepository.save(user);
     }
 
-    public User editById(User user, String userId) {
+    public User put(String userId, User user) {
         userRepository.deleteById(userId);
         userRepository.save(user);
         return user;
