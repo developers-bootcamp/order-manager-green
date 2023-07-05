@@ -1,15 +1,16 @@
 package com.sap.ordermanegergreen.service;
 
-import com.sap.ordermanegergreen.model.AvailableRoles;
 import com.sap.ordermanegergreen.model.User;
-import com.sap.ordermanegergreen.repository.ICustomerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.sap.ordermanegergreen.model.AvailableRoles;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.sap.ordermanegergreen.repository.ICustomerRepository;
 
 import java.util.List;
 
 @Service
 public class CustomerService  {
+    
     ICustomerRepository customerRepository;
 
     @Autowired
