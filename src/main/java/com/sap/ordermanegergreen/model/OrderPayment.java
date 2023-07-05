@@ -1,20 +1,19 @@
 package com.sap.ordermanegergreen.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
-;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderPayment {
 
     @DBRef
-   private String orderId;
+    private String orderId;
     @DBRef
-   private String user;
+    private String userId;
 
     private int amount;
 
@@ -23,4 +22,5 @@ public class OrderPayment {
     private PaymentTypes paymentType;
 
     private AuditDate auditDate;
+    
 }
