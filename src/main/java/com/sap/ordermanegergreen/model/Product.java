@@ -25,7 +25,8 @@ public class Product {
     private int discount;
     
     private DiscountTypes discountType;
-    
+        
+    @DBRef
     private String categoryId;
     
     private int inventory;
