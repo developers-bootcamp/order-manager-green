@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @Service
-public class CompanyService  {
-    
+public class CompanyService {
+
     ICompanyRepository companyRepository;
 
     @Autowired
@@ -38,5 +38,9 @@ public class CompanyService  {
     public void deletebyId(String companyId) {
         companyRepository.deleteById(companyId);
     }
-    
+
+    public boolean existsByName(String name) {
+      return companyRepository.existsByName(name);
+    }
+
 }
