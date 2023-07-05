@@ -8,10 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItems {
-    private Product ProductId;
-    private double Amount;
-    //כמה עולה ביחד
-    private double Quantity ;
-    //  (כמות)
+    private Product productId;
+    private double amount;
+    private double quantity ;
 
 }

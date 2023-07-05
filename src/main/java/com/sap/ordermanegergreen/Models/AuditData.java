@@ -10,6 +10,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuditData {
-  private Date CreateDate;
-  private Date UpdateDate;
+  private Date createDate;
+  private Date updateDate;
+  public AuditData(Date createDate){
+    this.createDate=createDate;
+  }
 }

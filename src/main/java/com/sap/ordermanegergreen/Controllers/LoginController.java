@@ -24,7 +24,7 @@ public class LoginController {
         this.jwtToken = jwtToken;
     }
     @PostMapping
-    @RequestMapping("/logIn/{email}/{password}")
+    @RequestMapping("/{email}/{password}")
     public ResponseEntity<String> logIn(@PathVariable("email") String email,
                                         @PathVariable("password") String password) {
         try {

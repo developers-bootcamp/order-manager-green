@@ -23,25 +23,24 @@ public class UserController {
     }
 
     @GetMapping
-    @RequestMapping("/getById/{userId}")
+    @RequestMapping("/{userId}")
     public User getById(@PathVariable String userId) {
         return userService.getById(userId);
     }
 
     @PostMapping
-    @RequestMapping("/add")
     public void add(@RequestBody User user) {
         userService.add(user);
     }
 
     @PutMapping
-    @RequestMapping(("/editById/{userId}"))
+    @RequestMapping(("/{userId}"))
     public User editById(@RequestBody User user, @PathVariable String userId) {
         return userService.editById(user, userId);
     }
 
     @DeleteMapping
-    @RequestMapping(("/deleteById/{userId}"))
+    @RequestMapping(("/{userId}"))
     public void deleteById(@PathVariable String userId) {
         userService.deletebyId(userId);
     }

@@ -24,14 +24,12 @@ public class ProductCategoryController {
         return ProductCategoryService.getAllCategories();
     }
     @PostMapping
-    @RequestMapping("/add")
     public ResponseEntity<String> add(@RequestBody ProductCategory productCategory){
         System.out.println("💕💕 in createProductCategory");
         return ProductCategoryService.saveProductCategory(productCategory);
 
     }
-    @DeleteMapping
-    @RequestMapping("")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable("id") String id){
         return  ProductCategoryService.deleteProductCategory(id);
     }

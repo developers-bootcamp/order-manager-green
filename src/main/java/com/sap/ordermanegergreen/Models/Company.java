@@ -15,7 +15,14 @@ import java.util.List;
 @Document(collection = "Company")
 public class Company {
     @Id private String id;
-   private String Name;
-    private String Currency;
-    private AuditData AuditData;
+    private String name;
+    private String currency;
+    private AuditData auditData;
+    public Company(Company company){
+        this.id=company.id;
+        this.name=company.name;
+        this.currency=company.currency;
+        this.auditData=company.auditData;
+
+    }
 }

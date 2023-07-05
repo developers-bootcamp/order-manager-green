@@ -4,6 +4,8 @@ import com.sap.ordermanegergreen.DTO.TokenDTO;
 import com.sap.ordermanegergreen.Models.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.sap.ordermanegergreen.Repositories.IProductCategoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -35,4 +37,5 @@ public class JwtToken {
         decodedToken.setExpirationDate(jwt.getExpiresAt());
         return decodedToken;
     }
+
 }

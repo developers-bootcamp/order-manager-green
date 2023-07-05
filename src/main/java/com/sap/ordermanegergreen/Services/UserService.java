@@ -4,11 +4,9 @@ import com.sap.ordermanegergreen.Models.*;
 import com.sap.ordermanegergreen.Repositories.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 import java.util.List;
@@ -58,7 +56,7 @@ public class UserService  {
         //TODO: replace mockData with real call - userRepository.getUserByEmailAnsPassword
         User user = new User("1","Chani","111"
                 ,new Address("3527453746","Rabi Akiva","aaa@nnn.com")
-                ,new Roles("4444", AvailableRoles.ADMIN,"roleDesc",new AuditData())
+                ,new Role("4444", AvailableRoles.ADMIN,"roleDesc",new AuditData())
                 ,new Company("3333","comp", "ILS", new AuditData())
                 ,new AuditData(new Date(), new Date()));
         if (user == null) {

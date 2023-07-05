@@ -11,15 +11,15 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 @AllArgsConstructor
 public class OrderPayment {
 
-   private Orders OrderId;
+   private Order orderId;
 
-   private User User;
+   private User user;
 
-    private int Amount;
+    private int amount;
 
-    private long InvoiceNumber;
+    private long invoiceNumber;
 
-    private PaymentTypes PaymentType;
+    private PaymentTypes paymentType;
     @DBRef
-    private AuditData AuditData;
+    private AuditData auditData;
 }
