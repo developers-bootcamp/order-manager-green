@@ -1,14 +1,15 @@
 package com.sap.ordermanegergreen.service;
 
+import org.springframework.stereotype.Service;
 import com.sap.ordermanegergreen.model.Company;
 import com.sap.ordermanegergreen.repository.ICompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class CompanyService  {
+    
     ICompanyRepository companyRepository;
 
     @Autowired
@@ -37,4 +38,5 @@ public class CompanyService  {
     public void deletebyId(String companyId) {
         companyRepository.deleteById(companyId);
     }
+    
 }
