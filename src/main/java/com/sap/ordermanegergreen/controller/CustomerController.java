@@ -2,7 +2,6 @@ package com.sap.ordermanegergreen.controller;
 
 import com.sap.ordermanegergreen.dto.TokenDTO;
 import com.sap.ordermanegergreen.model.AvailableRoles;
-import com.sap.ordermanegergreen.model.Company;
 import com.sap.ordermanegergreen.model.User;
 import com.sap.ordermanegergreen.service.CustomerService;
 import com.sap.ordermanegergreen.util.JwtToken;

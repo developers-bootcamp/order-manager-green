@@ -22,22 +22,22 @@ public class CustomerService  {
         return customerRepository.findAll().stream().filter(u->u.getRoleId().equals(AvailableRoles.CUSTOMER)).toList();
     }
 
-//    public User getById(String id) {
-//        return customerRepository.findById(id).get();
-//    }
-//
-//    public void add(User u) {
-//        customerRepository.save(u);
-//    }
-//
-//    public User put(String id, User user) {
-//        customerRepository.deleteById(id);
-//        customerRepository.save(user);
-//        return user;
-//    }
-//
-//    public void deletebyId(String id) {
-//        customerRepository.deleteById(id);
-//    }
+    public User getById(String id) {
+        return customerRepository.findById(id).get();
+    }
+
+    public void add(User u) {
+        customerRepository.save(u);
+    }
+
+    public User put(String id, User user) {
+        customerRepository.deleteById(id);
+        customerRepository.save(user);
+        return user;
+    }
+
+    public void deletebyId(String id) {
+        customerRepository.deleteById(id);
+    }
 
 }
