@@ -1,7 +1,7 @@
 package com.sap.ordermanegergreen.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -10,6 +10,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuditDate {
+  
   private Date createDate;
+  
   private Date updateDate;
+  
 }
