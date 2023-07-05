@@ -14,42 +14,40 @@ import java.util.List;
 public class CompanyController {
     private CompanyService companyService;
     private JwtToken jwtToken;
+    
     @Autowired
     public CompanyController(CompanyService companyService,JwtToken jwtToken) {
         this.jwtToken=jwtToken;
         this.companyService = companyService;
     }
+    
     @GetMapping
     @RequestMapping("/getToken/{token}")
     public TokenDTO getToken(@PathVariable String token) {
         return jwtToken.decodeToken(token);
     }
+    
     @GetMapping
-    @RequestMapping("/getAll")
     public List<Company> getAll() {
         return companyService.getAll();
     }
 
-    @GetMapping
-    @RequestMapping("/getById/{id}")
+    @GetMapping("/{id}")
     public Company getById(@PathVariable String id) {
         return companyService.getById(id);
     }
 
     @PostMapping
-    @RequestMapping("/add")
     public void add(@RequestBody Company company) {
         companyService.add(company);
     }
 
-    @PutMapping
-    @RequestMapping("/editById/{id}")
+    @PutMapping("/{id}")
     public Company editById(@RequestBody Company company, @PathVariable String id) {
         return companyService.editById(company, id);
     }
 
-    @DeleteMapping
-    @RequestMapping("/deleteById/{id}")
+    @DeleteMapping("/{id}")
     public void deleteById(@PathVariable String id) {
         companyService.deletebyId(id);
     }
