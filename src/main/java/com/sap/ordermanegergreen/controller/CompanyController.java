@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/company")
 public class CompanyController {
+    
     private CompanyService companyService;
     private JwtToken jwtToken;
     
