@@ -12,22 +12,22 @@ import java.util.List;
 @RestController
 @RequestMapping("/company")
 public class CompanyController {
-    
+
     private CompanyService companyService;
     private JwtToken jwtToken;
-    
+
     @Autowired
-    public CompanyController(CompanyService companyService,JwtToken jwtToken) {
-        this.jwtToken=jwtToken;
+    public CompanyController(CompanyService companyService, JwtToken jwtToken) {
+        this.jwtToken = jwtToken;
         this.companyService = companyService;
     }
-    
+
     @GetMapping
     @RequestMapping("/getToken/{token}")
     public TokenDTO getToken(@PathVariable String token) {
         return jwtToken.decodeToken(token);
     }
-    
+
     @GetMapping
     public List<Company> getAll() {
         return companyService.getAll();
@@ -45,7 +45,7 @@ public class CompanyController {
 
     @PutMapping("/{id}")
     public Company editById(@RequestBody Company company, @PathVariable String id) {
-        return companyService.editById(company, id);
+        return companyService.put(id, company);
     }
 
     @DeleteMapping("/{id}")
