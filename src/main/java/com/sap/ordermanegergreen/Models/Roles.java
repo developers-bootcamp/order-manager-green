@@ -15,9 +15,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "Roles")
 public class Roles {
     @Id
-    private String Id;
-    private AvailableRoles Name;
-    private String Desc;
-    private AuditData AuditData;
+    private String id;
+
+    public AvailableRoles getName() {
+        return name;
+    }
+
+    private AvailableRoles name;
+    private String desc;
+    private AuditData auditData;
 
 }

@@ -12,13 +12,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User {
 
     @Id
-    private String Id;
-    private String FullName;
-    private String Password;
-    private Address AddressId;
+    private String id;
+    private String fullName;
+    private String password;
+    private Address addressId;
     @DBRef
-    private Roles RoleId;
+    private Roles roleId;
     @DBRef
-    private Company CompanyId;
-    private AuditData AuditData;
+    private Company companyId;
+    private AuditData auditData;
 }

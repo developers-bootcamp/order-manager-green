@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 public interface ProductCategoryMapper {
 
 
+
     ProductCategoryDTO toDto(ProductCategory productCategory);
     ProductCategory fromDto(ProductCategoryDTO productCategoryDTO);
+
 
     default List<ProductCategory> fromDtoList(List<ProductCategoryDTO> productCategoryDTOs) {
         return productCategoryDTOs.stream()
