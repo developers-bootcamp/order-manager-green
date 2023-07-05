@@ -1,7 +1,7 @@
 package com.sap.ordermanegergreen.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -13,5 +13,4 @@ public class OrderItems {
     //כמה עולה ביחד
     private double quantity ;
     //  (כמות)
-
 }
