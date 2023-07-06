@@ -48,7 +48,7 @@ public class ProductCategoryService {
 //                throw objectNotFoundExeption;
 //            }
         if(!isUnauthorized(token))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new UnauthorizedExeption();
         String categoryName = productCategory.getName();
         if(doesCategoryExist(categoryName)==true){
             throw new ObjectAlreadyExistsExeption("Category name already exists");
@@ -67,8 +67,8 @@ public ResponseEntity<List<ProductCategoryDTO>> getAllCategories(String token) {
     public ResponseEntity<String> deleteProductCategory(String token, String id) {
 
         if(!isUnauthorized(token))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            if (ProductCategoryRepository.findById(id).isEmpty()) {
+            throw new UnauthorizedExeption();
+        if (ProductCategoryRepository.findById(id).isEmpty()) {
                 throw new ObjectNotFoundExeption("Category not found");
             }
             ProductCategoryRepository.deleteById(id);
@@ -79,8 +79,8 @@ public ResponseEntity<List<ProductCategoryDTO>> getAllCategories(String token) {
 
     public ResponseEntity<String> editProductCategory(String id, ProductCategory productCategory,String token) {
            if(!isUnauthorized(token))
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            Optional<ProductCategory> oldProductCategory=ProductCategoryRepository.findById(id);
+               throw new UnauthorizedExeption();
+        Optional<ProductCategory> oldProductCategory=ProductCategoryRepository.findById(id);
             if(oldProductCategory.isEmpty()){
                 throw new ObjectNotFoundExeption("Category does not exist");
             }
