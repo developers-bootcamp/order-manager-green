@@ -52,7 +52,7 @@ public class CustomerController {
 
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable String id) {
-        customerService.deletebyId(id);
+        customerService.deleteById(id);
     }
 
 }

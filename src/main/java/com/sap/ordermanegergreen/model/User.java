@@ -10,22 +10,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection = "Users")
 public class User {
-    
+
     @Id
     private String id;
-    
+
     private String fullName;
-    
+
     private String password;
-    
+
     private Address address;
-    
+  
     @DBRef
-    private String roleId;
-    
+    private Roles roleId;
+
     @DBRef
-    private String companyId;
-    
-    private AuditDate auditData;
-    
+    private Company companyId;
+
+    private AuditDate auditDate;
+
 }

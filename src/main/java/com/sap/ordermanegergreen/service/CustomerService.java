@@ -36,7 +36,7 @@ public class CustomerService  {
         return user;
     }
 
-    public void deletebyId(String id) {
+    public void deleteById(String id) {
         customerRepository.deleteById(id);
     }
 
