@@ -1,13 +1,11 @@
 package com.sap.ordermanegergreen.service;
 
-import com.sap.ordermanegergreen.exception.NotValidException;
-import com.sap.ordermanegergreen.exception.ObjectAlreadyExistsException;
 import com.sap.ordermanegergreen.model.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.sap.ordermanegergreen.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.server.ResponseStatusException;
+import com.sap.ordermanegergreen.exception.NotValidException;
+import com.sap.ordermanegergreen.exception.ObjectAlreadyExistsException;
 
 import java.util.Date;
 import java.util.List;
@@ -15,16 +13,15 @@ import java.util.List;
 @Service
 public class UserService {
 
-    @Autowired
     private CompanyService companyService;
-
-    @Autowired
     private RolesService rolesService;
     IUserRepository userRepository;
 
     @Autowired
-    public UserService(IUserRepository userRepository) {
+    public UserService(IUserRepository userRepository, CompanyService companyService, RolesService rolesService) {
         this.userRepository = userRepository;
+        this.companyService = companyService;
+        this.rolesService = rolesService;
     }
 
     public User signUp(String fullName, String companyName, String email, String password) throws Exception {
