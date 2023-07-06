@@ -3,6 +3,7 @@ package com.sap.ordermanegergreen.controller;
 import com.sap.ordermanegergreen.model.User;
 import com.sap.ordermanegergreen.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,20 @@ public class UserController {
     @PostMapping
     @RequestMapping("/signUp")
     public ResponseEntity<String> signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName, @RequestParam("email") String email, @RequestParam("password") String password) {
-        return userService.signUp(fullName, companyName, email, password);
+        try {
+            User user = userService.signUp(fullName, companyName, email, password);
+            return ResponseEntity.ok(user.getFullName());
+
+        }
+//        catch (Exception e) {
+//            return new ResponseEntity<>("Unexpected error Please try again later", HttpStatusCode.valueOf(500));
+//        }
+//        catch (Exception e) {
+//            return new ResponseEntity<>("Unexpected error Please try again later", HttpStatusCode.valueOf(500));
+//        }
+        catch (Exception e) {
+            return new ResponseEntity<>("Unexpected error Please try again later", HttpStatusCode.valueOf(500));
+        }
     }
 
     @GetMapping
