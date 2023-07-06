@@ -18,9 +18,9 @@ public class JwtToken {
         Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET.getBytes());
         Date now = new Date();
         String accessToken = JWT.create()
-                .withClaim("roleId",user.getRoleId())
+                .withClaim("roleId",user.getRoleId().getId())
                 .withClaim("id",user.getId())
-                .withClaim("companyId",user.getCompanyId())
+                .withClaim("companyId",user.getCompanyId().getId())
                 .withExpiresAt(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
                 .sign(algorithm);
         return accessToken;

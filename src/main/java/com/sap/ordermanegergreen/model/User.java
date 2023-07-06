@@ -21,11 +21,11 @@ public class User {
     private Address address;
 
     @DBRef
-    private String roleId;
+    private Roles roleId;
 
     @DBRef
-    private String companyId;
+    private Company companyId;
 
-    private AuditDate auditData;
+    private AuditDate auditDate;
 
 }
