@@ -18,7 +18,7 @@ public class User {
     
     private String password;
     
-    private Address addressId;
+    private Address address;
     
     @DBRef
     private String roleId;
