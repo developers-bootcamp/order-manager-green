@@ -19,7 +19,7 @@ public class User {
     private String password;
 
     private Address address;
-
+  
     @DBRef
     private Roles roleId;
 
