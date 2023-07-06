@@ -1,10 +1,10 @@
 package com.sap.ordermanegergreen.service;
 
-import com.sap.ordermanegergreen.model.AvailableRoles;
+import org.springframework.stereotype.Service;
 import com.sap.ordermanegergreen.model.Roles;
+import com.sap.ordermanegergreen.model.AvailableRoles;
 import com.sap.ordermanegergreen.repository.IRolesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
