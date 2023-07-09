@@ -15,17 +15,17 @@ import java.util.List;
 @AllArgsConstructor
 //@ToString
 public class Orders {
- @Id private String Id;
-   private User EmployeeId ;
-    private User CustomerId;
-    private double TotalAmount;
-    private List<OrderItems> OrderItemsList;
-    private String OrderStatusId;
+ @Id private String id;
+   private User employeeId ;
+    private User customerId;
+    private double totalAmount;
+    private List<OrderItems> orderItemsList;
+    private String orderStatusId;
     @DBRef
-    private Company CompanyId;
-    private String CreditCardNumber;
-    private String  ExpiryOn;
-    private String Cvc;
-    private Boolean NotificationFlag;
-    private AuditData AuditData;
+    private Company companyId;
+    private String creditCardNumber;
+    private String  expiryOn;
+    private String cvc;
+    private Boolean notificationFlag;
+    private AuditData auditData;
 }

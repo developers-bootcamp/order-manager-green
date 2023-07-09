@@ -18,6 +18,7 @@ public class CustomerService  {
     }
 
     public List<User> getAll() {
+
         return customerRepository.findAll().stream().filter(u->u.getRoleId().equals(AvailableRoles.CUSTOMER)).toList();
     }
 
