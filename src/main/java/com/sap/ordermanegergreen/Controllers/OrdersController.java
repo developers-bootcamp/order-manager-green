@@ -2,6 +2,7 @@ package com.sap.ordermanegergreen.Controllers;
 
 import com.sap.ordermanegergreen.DTO.TokenDTO;
 import com.sap.ordermanegergreen.Models.Orders;
+import com.sap.ordermanegergreen.Models.Product;
 import com.sap.ordermanegergreen.Services.OrderService;
 import com.sap.ordermanegergreen.Utils.JwtToken;
 import com.sap.ordermanegergreen.exception.ObjectNotExist;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
@@ -46,7 +49,7 @@ public class OrdersController {
     @RequestMapping("/create")
     public ResponseEntity<String> createOrder(@RequestHeader("token") String token, @RequestBody Orders order) {
         TokenDTO tokenDto = jwtToken.decodeToken(token);
-        if (tokenDto.getCompanyId() != order.getCompanyId().getId())
+        if (!tokenDto.getCompanyId() .equals(order.getCompanyId().getId()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         try {
@@ -73,6 +76,19 @@ public class OrdersController {
 
         }
         return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
+    @PostMapping
+    @RequestMapping("/calculate")
+    public ResponseEntity< Map<String, HashMap<Double,Integer>> >calculate(Map<String,Integer> orderItems){
+        try{
+        return ResponseEntity.ok( this.orderService.calculate(orderItems));
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+        }
+
 
     }
 }
