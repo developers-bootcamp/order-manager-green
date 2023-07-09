@@ -1,48 +1,85 @@
 package com.sap.ordermanegergreen.Controllers;
 
+import com.sap.ordermanegergreen.Exception.NoPremissionException;
+import com.sap.ordermanegergreen.Exception.ObjectExistException;
 import com.sap.ordermanegergreen.Models.User;
 import com.sap.ordermanegergreen.Services.UserService;
+import com.sap.ordermanegergreen.Utils.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
     private UserService userService;
+    private JwtToken jwtToken;
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtToken jwtToken) {
         this.userService = userService;
-    }
-
-    @GetMapping
-    @RequestMapping("/getAll")
-    public List<User> getAll() {
-        return userService.getAll();
-    }
-
-    @GetMapping
-    @RequestMapping("/getById/{userId}")
-    public User getById(@PathVariable String userId) {
-        return userService.getById(userId);
+        this.jwtToken = jwtToken;
     }
 
     @PostMapping
-    @RequestMapping("/add")
-    public void add(@RequestBody User user) {
-        userService.add(user);
+    public ResponseEntity<String>add(@RequestHeader("Authorization") String token, @RequestBody User user) {
+        try {
+            userService.add(token,user);
+        } catch (ObjectExistException ex) {
+            return new ResponseEntity(ex,HttpStatus.CONFLICT);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @DeleteMapping
+    @RequestMapping("/{userId}")
+    public ResponseEntity<String> deleteById(@RequestHeader("Authorization") String token, @PathVariable String userId) {
+        try {
+            userService.deleteById(token, userId);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
+        } catch (NoPremissionException ex){
+           return new ResponseEntity(ex, HttpStatus.FORBIDDEN);
+        }catch (Exception ex) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping
-    @RequestMapping(("/editById/{userId}"))
-    public User editById(@RequestBody User user, @PathVariable String userId) {
-        return userService.editById(user, userId);
+    public ResponseEntity<String> editById(@RequestHeader("Authorization") String token, @RequestBody User user) {
+        try {
+            userService.editById(token, user);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
+        }catch (NoPremissionException ex){
+            return new ResponseEntity(ex, HttpStatus.FORBIDDEN);}
+        catch (Exception ex) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping
-    @RequestMapping(("/deleteById/{userId}"))
-    public void deleteById(@PathVariable String userId) {
-        userService.deletebyId(userId);
+    @GetMapping
+    @RequestMapping("/{email}/{password}")
+    public ResponseEntity<String> logIn(@PathVariable("email") String email, @PathVariable("password") String password) {
+        try {
+            User user = userService.getUserByEmailAndPassword(email, password);
+            System.out.println(user);
+            String token = jwtToken.generateToken(user);
+            return ResponseEntity.ok(token);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(ex.getMessage(), ex.getStatusCode());
+        } catch (Exception ex) {
+            return new ResponseEntity<>("Unexpected error, " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

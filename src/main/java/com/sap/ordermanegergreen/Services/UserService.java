@@ -1,71 +1,91 @@
 package com.sap.ordermanegergreen.Services;
 
+import com.sap.ordermanegergreen.DTO.TokenDTO;
+import com.sap.ordermanegergreen.Exception.NoPremissionException;
+import com.sap.ordermanegergreen.Exception.ObjectExistException;
 import com.sap.ordermanegergreen.Models.*;
+import com.sap.ordermanegergreen.Repositories.ICompanyRepository;
+import com.sap.ordermanegergreen.Repositories.IRoleRepository;
 import com.sap.ordermanegergreen.Repositories.IUserRepository;
+import com.sap.ordermanegergreen.Utils.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 import java.util.List;
 
 @Service
-public class UserService  {
+public class UserService {
 
     IUserRepository userRepository;
+    IRoleRepository roleRepository;
+    ICompanyRepository companyRepository;
 
     @Autowired
-    public UserService(IUserRepository userRepository) {
+    public UserService(IUserRepository userRepository, IRoleRepository roleRepository, ICompanyRepository companyRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.companyRepository = companyRepository;
     }
 
-    public List<User> getAll() {
-        return userRepository.findAll();
+
+    public void add(String token, User user) {
+        if (userRepository.existsByFullName(user.getFullName())) {
+            throw new ObjectExistException("user name already exist");
+        }
+        TokenDTO tokenDTO = JwtToken.decodeToken(token);
+        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() != AvailableRoles.CUSTOMER) {
+            user.setAuditData(new AuditData(new Date(), new Date()));
+            userRepository.save(user);
+        }
     }
 
-    public User getById(String userId) {
-        return userRepository.findById(userId).get();
+
+    public void deleteById(String token, String userId) {
+        TokenDTO tokenDTO = JwtToken.decodeToken(token);
+        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() != AvailableRoles.CUSTOMER || companyRepository.findById(tokenDTO.getCompanyId()).orElse(new Company()).getId().equals(userRepository.findById(userId).orElse(new User()).getCompanyId().getId())) {
+            if (userRepository.findById(userId).isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
+            }
+            userRepository.deleteById(userId);
+        }
+        throw new NoPremissionException("You don't have permission to delete the user");
+
     }
 
-    public void add(User user) {
-        userRepository.save(user);
+    public void editById(String token, User user) {
+        TokenDTO tokenDTO = JwtToken.decodeToken(token);
+        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() != AvailableRoles.CUSTOMER || companyRepository.findById(tokenDTO.getCompanyId()).orElse(new Company()).getId().equals(userRepository.findById(user.getId()).orElse(new User()).getCompanyId().getId())) {
+            if (userRepository.findById(user.getId()).isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
+            }
+            userRepository.deleteById(user.getId());
+            userRepository.save(user);
+        }
+        throw new NoPremissionException("You don't have permission to delete the user");
+
     }
 
-    public User editById(User user, String userId) {
-        userRepository.deleteById(userId);
-        userRepository.save(user);
-        return user;
-    }
 
-    public void deletebyId(String userId) {
-        userRepository.deleteById(userId);
-    }
-
-    public boolean isEmailExists(String email){
-        //TODO: replace mockData with real call - check if email exists in the db
-        // userRepository.isUserExists (by email)
-        return true;
+    public User isEmailExists(String email) {
+        return userRepository.findByAddress_Email(email);
     }
 
     public User getUserByEmailAndPassword(String userEmail, String userPassword) {
-        if (Boolean.FALSE.equals(isEmailExists(userEmail))) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found. Please sign up" );
-        }
-        //TODO: replace mockData with real call - userRepository.getUserByEmailAnsPassword
-        User user = new User("1","Chani","111"
-                ,new Address("3527453746","Rabi Akiva","aaa@nnn.com")
-                ,new Roles("4444", AvailableRoles.ADMIN,"roleDesc",new AuditData())
-                ,new Company("3333","comp", "ILS", new AuditData())
-                ,new AuditData(new Date(), new Date()));
+        User user = isEmailExists(userEmail);
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Invalid credentials" );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found. Please sign up");
+        } else {
+            if (!user.getPassword().equals(userPassword))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+            return user;
+
         }
 
-        return user;
-    }
 
+
+    }
 }
