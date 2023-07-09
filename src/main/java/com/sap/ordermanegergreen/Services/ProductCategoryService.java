@@ -8,6 +8,7 @@ import com.sap.ordermanegergreen.Exeption.InternalServerException;
 import com.sap.ordermanegergreen.Exeption.ObjectAlreadyExistsExeption;
 import com.sap.ordermanegergreen.Exeption.ObjectNotFoundExeption;
 import com.sap.ordermanegergreen.Exeption.UnauthorizedExeption;
+import com.sap.ordermanegergreen.Models.AvailableRoles;
 import com.sap.ordermanegergreen.Models.ProductCategory;
 import com.sap.ordermanegergreen.Models.Roles;
 import com.sap.ordermanegergreen.Models.User;
@@ -32,25 +33,25 @@ public class ProductCategoryService {
     JwtToken jwtToken;
     private final ProductCategoryMapper productCategoryMapper;
     private final IRolesRepository rolesRepository;
+
     @Autowired
-    public ProductCategoryService(IProductCategoryRepository ProductCategoryRepository,ProductCategoryMapper productCategoryMapper,JwtToken jwtToken,IRolesRepository rolesRepository) {
+    public ProductCategoryService(IProductCategoryRepository ProductCategoryRepository, ProductCategoryMapper productCategoryMapper, JwtToken jwtToken, IRolesRepository rolesRepository) {
         this.ProductCategoryRepository = ProductCategoryRepository;
         this.productCategoryMapper = productCategoryMapper;
-        this.jwtToken=jwtToken;
-        this.rolesRepository=rolesRepository;
+        this.jwtToken = jwtToken;
+        this.rolesRepository = rolesRepository;
     }
-
-    public ResponseEntity<String> saveProductCategory(String token,ProductCategory productCategory) {
+    public ResponseEntity<String> saveProductCategory(String token, ProductCategory productCategory) {
 //            try {
 //                if(isUnauthorized(token))
 //                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 //            }catch (ObjectNotFoundExeption objectNotFoundExeption){
 //                throw objectNotFoundExeption;
 //            }
-        if(!isUnauthorized(token))
+        if (!isUnauthorized(token))
             throw new UnauthorizedExeption();
         String categoryName = productCategory.getName();
-        if(doesCategoryExist(categoryName)==true){
+        if (doesCategoryExist(categoryName) == true) {
             throw new ObjectAlreadyExistsExeption("Category name already exists");
         }
         ProductCategoryRepository.save(productCategory);
@@ -58,50 +59,49 @@ public class ProductCategoryService {
 
     }
 
-public ResponseEntity<List<ProductCategoryDTO>> getAllCategories(String token) {
-        String companyId=  jwtToken.decodeToken(token).getCompanyId();
+    public ResponseEntity<List<ProductCategoryDTO>> getAllCategories(String token) {
+        String companyId = jwtToken.decodeToken(token).getCompanyId();
         List<ProductCategory> productCategories = ProductCategoryRepository.findAllByCompanyId(companyId);
         List<ProductCategoryDTO> productCategoryDTOs = productCategoryMapper.toDtoList(productCategories);
         return ResponseEntity.ok(productCategoryDTOs);
-}
+    }
+
     public ResponseEntity<String> deleteProductCategory(String token, String id) {
 
-        if(!isUnauthorized(token))
+        if (!isUnauthorized(token))
             throw new UnauthorizedExeption();
         if (ProductCategoryRepository.findById(id).isEmpty()) {
-                throw new ObjectNotFoundExeption("Category not found");
-            }
-            ProductCategoryRepository.deleteById(id);
-            return new ResponseEntity<>("{\"success\": true}", HttpStatus.OK);
-
+            throw new ObjectNotFoundExeption("Category not found");
         }
+        ProductCategoryRepository.deleteById(id);
+        return new ResponseEntity<>("{\"success\": true}", HttpStatus.OK);
 
-
-    public ResponseEntity<String> editProductCategory(String id, ProductCategory productCategory,String token) {
-           if(!isUnauthorized(token))
-               throw new UnauthorizedExeption();
-        Optional<ProductCategory> oldProductCategory=ProductCategoryRepository.findById(id);
-            if(oldProductCategory.isEmpty()){
-                throw new ObjectNotFoundExeption("Category does not exist");
-            }
-            if(productCategory.getName()==null)
-                productCategory.setName(oldProductCategory.get().getName());
-            if(productCategory.getDesc()==null)
-                productCategory.setDesc(oldProductCategory.get().getDesc());
-            ProductCategoryRepository.save(productCategory);
-            return ResponseEntity.ok("success: true");
     }
+
+
+    public ResponseEntity<String> editProductCategory(String id, ProductCategory productCategory, String token) {
+        if (!isUnauthorized(token))
+            throw new UnauthorizedExeption();
+        Optional<ProductCategory> oldProductCategory = ProductCategoryRepository.findById(id);
+        if (oldProductCategory.isEmpty()) {
+            throw new ObjectNotFoundExeption("Category does not exist");
+        }
+        ProductCategoryRepository.save(productCategory);
+        return ResponseEntity.ok("success: true");
+    }
+
     public boolean doesCategoryExist(String categoryName) {
         return ProductCategoryRepository.existsByName(categoryName);
     }
-    public boolean isUnauthorized(String token){
+
+    public boolean isUnauthorized(String token) {
         String roleId = jwtToken.decodeToken(token).getRoleId();
         Optional<Roles> roleOptional = rolesRepository.findById(roleId);
         if (!roleOptional.isPresent())
             throw new ObjectNotFoundExeption("Role not found");
-        String roleIdName = String.valueOf(roleOptional.get().getName());
-        if (roleIdName != "ADMIN" && roleIdName != "EMPLOYEE")
+        AvailableRoles roleName = roleOptional.get().getName();
+        if (roleName != AvailableRoles.ADMIN && roleName != AvailableRoles.ADMIN.EMPLOYEE)
             return false;
         return true;
+        }
     }
-}

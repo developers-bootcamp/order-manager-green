@@ -17,7 +17,7 @@ import java.util.List;
 
 @Controller
 @RestController
-@RequestMapping("/ProductCategory")
+@RequestMapping("/productCategory")
 public class ProductCategoryController {
     private final ProductCategoryService ProductCategoryService;
     private final ProductCategoryMapper productCategoryMapper;
