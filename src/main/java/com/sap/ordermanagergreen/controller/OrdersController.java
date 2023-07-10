@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/orders")
 public class OrdersController {
+    
     @GetMapping
-    @RequestMapping("/getOrders")
-    public String getOrders(){
-        
+    public String getOrders(){    
     return "YAY!!!";
     }
+    
 }
