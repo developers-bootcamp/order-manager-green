@@ -17,6 +17,6 @@ public class Company {
     
     private String currency;
     
-    private AuditDate auditDate;
+    private AuditData auditData;
     
 }

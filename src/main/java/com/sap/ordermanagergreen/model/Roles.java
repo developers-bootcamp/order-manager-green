@@ -17,6 +17,6 @@ public class Roles {
     
     private String desc;
     
-    private AuditDate auditData;
+    private AuditData auditData;
     
 }
