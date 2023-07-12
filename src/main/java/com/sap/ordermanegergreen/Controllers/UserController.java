@@ -19,8 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private UserService userService;
-    private JwtToken jwtToken;
+
+    private final UserService userService;
+    private final JwtToken jwtToken;
 
     @Autowired
     public UserController(UserService userService, JwtToken jwtToken) {
@@ -29,11 +30,11 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String>add(@RequestHeader("Authorization") String token, @RequestBody User user) {
+    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody User user) {
         try {
             userService.add(token,user);
         } catch (ObjectExistException ex) {
-            return new ResponseEntity(ex,HttpStatus.CONFLICT);
+            return new ResponseEntity<>(ex.getMessage(),HttpStatus.CONFLICT);
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -47,7 +48,7 @@ public class UserController {
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
         } catch (NoPremissionException ex){
-           return new ResponseEntity(ex, HttpStatus.FORBIDDEN);
+           return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
         }catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -61,7 +62,7 @@ public class UserController {
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
         }catch (NoPremissionException ex){
-            return new ResponseEntity(ex, HttpStatus.FORBIDDEN);}
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);}
         catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
