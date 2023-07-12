@@ -1,6 +1,7 @@
 package com.sap.ordermanegergreen.Services;
 
 import com.sap.ordermanegergreen.Models.DiscountTypes;
+import com.sap.ordermanegergreen.Models.OrderItems;
 import com.sap.ordermanegergreen.Models.Orders;
 import com.sap.ordermanegergreen.Models.Product;
 import com.sap.ordermanegergreen.Repositories.IOrderRepository;
@@ -42,30 +43,28 @@ public class OrderService {
         return newOrdr.getId();
     }
 
-    public void updateOrder(Orders order) throws ObjectNotExist {
+    public void updateOrder(String id,Orders order) throws ObjectNotExist {
 
-        if (orderRepository2.findById(order.getId()).isEmpty())
+        if (orderRepository2.findById(id).isEmpty())
             throw new ObjectNotExist();
         orderRepository2.save(order);
 
     }
 
-    public Map<String, HashMap<Double, Integer>> calculate(Map<String, Integer> orderItems) {
+    public Map<String, HashMap<Double, Integer>> calculate(Orders order) {
         HashMap<String, HashMap<Double, Integer>> calculatedOrder = new HashMap<String, HashMap<Double, Integer>>();
         double totalAmount = 0;
-        for (String key : orderItems.keySet()) {
-            Integer value = orderItems.get(key);
-            // Perform operations with key and value
+
+        for (OrderItems oi: order.getOrderItemsList())
+        {
+            Product p= oi.getProductId();
             HashMap<Double, Integer> o = new HashMap<Double, Integer>();
-            Product p = productRepository.findById(key).get();
             if (p.getDiscountType() == DiscountTypes.FIXED_AMOUNT)
-                o.put(p.getPrice() * value - p.getDiscount(), p.getDiscount());
+                o.put(p.getPrice() * p.getDiscount() - p.getDiscount(), p.getDiscount());
             else
-                o.put((p.getPrice() * value )/100*(100-p.getDiscount()), p.getDiscount());
-
-            calculatedOrder.put(key, o);
-            totalAmount += p.getPrice() * value;
-
+                o.put((p.getPrice() * p.getDiscount() )/100*(100-p.getDiscount()), p.getDiscount());
+            calculatedOrder.put(p.getId(),o);
+            totalAmount+=o.get(p.getId());
         }
         HashMap<Double, Integer> o = new HashMap<Double, Integer>();
         o.put(totalAmount, null);

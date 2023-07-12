@@ -48,9 +48,15 @@ public class OrdersController {
     @PostMapping
     @RequestMapping("/create")
     public ResponseEntity<String> createOrder(@RequestHeader("token") String token, @RequestBody Orders order) {
-        TokenDTO tokenDto = jwtToken.decodeToken(token);
-        if (!tokenDto.getCompanyId() .equals(order.getCompanyId().getId()))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+       // System.out.println("in create order");
+//        try{
+//        TokenDTO tokenDto = jwtToken.decodeToken(token);
+//        if (!tokenDto.getCompanyId() .equals(order.getCompanyId().getId()))
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();}
+//        catch (Exception e){
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//
+//        }
 
         try {
             return ResponseEntity.ok(this.orderService.createOrder(order));
@@ -61,13 +67,13 @@ public class OrdersController {
     }
 
     @PutMapping
-    @RequestMapping("/update")
-    public ResponseEntity updateOrder(@RequestHeader("token") String token, @RequestBody Orders order) throws ObjectNotExist {
+    @RequestMapping("/update/{id}")
+    public ResponseEntity updateOrder(@RequestHeader("token") String token, @PathVariable  String id,@RequestBody Orders order) throws ObjectNotExist {
         TokenDTO tokenDto = jwtToken.decodeToken(token);
         if (tokenDto.getCompanyId() != order.getCompanyId().getId())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         try {
-            this.orderService.updateOrder(order);
+            this.orderService.updateOrder(id,order);
         } catch (ObjectNotExist e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
@@ -80,9 +86,9 @@ public class OrdersController {
     }
     @PostMapping
     @RequestMapping("/calculate")
-    public ResponseEntity< Map<String, HashMap<Double,Integer>> >calculate(Map<String,Integer> orderItems){
+    public ResponseEntity< Map<String, HashMap<Double,Integer>> >calculate(Orders order){
         try{
-        return ResponseEntity.ok( this.orderService.calculate(orderItems));
+        return ResponseEntity.ok( this.orderService.calculate(order));
         }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
