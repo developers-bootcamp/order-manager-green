@@ -46,29 +46,25 @@ public class UserService {
 
     public void deleteById(String token, String userId) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
-        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() != AvailableRoles.CUSTOMER || companyRepository.findById(tokenDTO.getCompanyId()).orElse(new Company()).getId().equals(userRepository.findById(userId).orElse(new User()).getCompanyId().getId())) {
-            if (userRepository.findById(userId).isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
+        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() == AvailableRoles.CUSTOMER ||!( companyRepository.findById(tokenDTO.getCompanyId()).orElse(new Company()).getId().equals(userRepository.findById(userId).orElse(new User()).getCompanyId().getId()))) {
+            throw new NoPremissionException("You don't have permission to delete the user");
+        }
+        if (userRepository.findById(userId).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
             }
             userRepository.deleteById(userId);
         }
-        throw new NoPremissionException("You don't have permission to delete the user");
-
-    }
 
     public void editById(String token, User user) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
-        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() != AvailableRoles.CUSTOMER || companyRepository.findById(tokenDTO.getCompanyId()).orElse(new Company()).getId().equals(userRepository.findById(user.getId()).orElse(new User()).getCompanyId().getId())) {
-            if (userRepository.findById(user.getId()).isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
-            }
-            userRepository.deleteById(user.getId());
+        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() == AvailableRoles.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId()).orElse(new Company()).getId().equals(userRepository.findById(user.getId()).orElse(new User()).getCompanyId().getId())) ) {
+            throw new NoPremissionException("You don't have permission to delete the user");
+        }
+        if (userRepository.findById(user.getId()).isEmpty()) {
+             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
+        }
             userRepository.save(user);
         }
-        throw new NoPremissionException("You don't have permission to delete the user");
-
-    }
-
 
     public User isEmailExists(String email) {
         return userRepository.findByAddress_Email(email);
