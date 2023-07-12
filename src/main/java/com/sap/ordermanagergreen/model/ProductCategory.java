@@ -21,6 +21,6 @@ public class ProductCategory {
     @DBRef
     private String companyId;
     
-    private AuditDate auditDate;
+    private AuditData auditData;
     
 }

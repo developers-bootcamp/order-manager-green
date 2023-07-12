@@ -44,20 +44,20 @@ public class UserService {
             user.setAddress(address);
             user.getAddress().setEmail(email);
             user.setRoleId(rolesService.getByName(AvailableRoles.ADMIN));
-            AuditDate auditDate = new AuditDate();
-            auditDate.setCreateDate(new Date());
-            auditDate.setUpdateDate(new Date());
-            user.setAuditDate(auditDate);
+            AuditData auditData = new AuditData();
+            auditData.setCreateDate(new Date());
+            auditData.setUpdateDate(new Date());
+            user.setAuditData(auditData);
             if (companyService.existsByName(companyName)) {
                 throw new ObjectAlreadyExistsException("company");
             }
             Company company = new Company();
             company.setName(companyName);
             companyService.add(company);
-            AuditDate auditDate1 = new AuditDate();
-            auditDate1.setCreateDate(new Date());
-            auditDate1.setUpdateDate(new Date());
-            company.setAuditDate(auditDate1);
+            AuditData auditData1 = new AuditData();
+            auditData1.setCreateDate(new Date());
+            auditData1.setUpdateDate(new Date());
+            company.setAuditData(auditData1);
             user.setCompanyId(company);
             userRepository.insert(user);
             return user;

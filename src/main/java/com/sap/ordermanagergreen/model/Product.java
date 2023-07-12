@@ -32,6 +32,6 @@ public class Product {
     @DBRef
     private String companyId;
     
-    private AuditDate auditData;
+    private AuditData auditData;
     
 }

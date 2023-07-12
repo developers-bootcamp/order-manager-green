@@ -26,6 +26,6 @@ public class User {
     @DBRef
     private Company companyId;
 
-    private AuditDate auditDate;
+    private AuditData auditData;
 
 }

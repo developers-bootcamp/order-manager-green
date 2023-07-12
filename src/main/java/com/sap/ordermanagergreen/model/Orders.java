@@ -39,6 +39,6 @@ public class Orders {
  
     private Boolean notificationFlag;
  
-    private AuditDate auditDate;
+    private AuditData auditData;
  
 }

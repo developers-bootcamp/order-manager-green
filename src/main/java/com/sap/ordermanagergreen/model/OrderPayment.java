@@ -20,6 +20,6 @@ public class OrderPayment {
 
     private PaymentTypes paymentType;
 
-    private AuditDate auditDate;
+    private AuditData auditData;
     
 }
