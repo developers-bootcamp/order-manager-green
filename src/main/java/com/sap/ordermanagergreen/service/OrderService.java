@@ -1,19 +1,13 @@
-package com.sap.ordermanegergreen.Services;
+package com.sap.ordermanagergreen.service;
 
-import com.sap.ordermanegergreen.Models.DiscountTypes;
-import com.sap.ordermanegergreen.Models.OrderItems;
-import com.sap.ordermanegergreen.Models.Orders;
-import com.sap.ordermanegergreen.Models.Product;
-import com.sap.ordermanegergreen.Repositories.IOrderRepository;
-import com.sap.ordermanegergreen.Repositories.IOrderRepository2;
-import com.sap.ordermanegergreen.Repositories.IProductRepository;
-import com.sap.ordermanegergreen.exception.ObjectNotExist;
+import com.sap.ordermanagergreen.model.*;
+import com.sap.ordermanagergreen.repository.IOrderRepository;
+import com.sap.ordermanagergreen.repository.IProductRepository;
+
+import com.sap.ordermanagergreen.exception.ObjectNotExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -21,33 +15,32 @@ import java.util.*;
 @Service
 public class OrderService {
     private IOrderRepository orderRepository;
-    private IOrderRepository2 orderRepository2;
     private IProductRepository productRepository;
 
     @Autowired
-    public OrderService(IOrderRepository orderRepository, IOrderRepository2 orderRepository2, IProductRepository productRepository) {
+    public OrderService(IOrderRepository orderRepository, IProductRepository productRepository) {
         this.orderRepository = orderRepository;
-        this.orderRepository2 = orderRepository2;
+
         this.productRepository = productRepository;
     }
 
-    public List<Orders> getOrders(Integer pageNo, Integer pageSize, String companyId, int employeeId, String orderStatus) {
+    public List<Orders> getOrders(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
 
         Pageable paging = PageRequest.of(pageNo, pageSize);
-        return orderRepository.findByOrderStatusId(paging, companyId, orderStatus);
+        return orderRepository.findByOrderStatusAndCompanyId(paging, orderStatus, companyId);
 
     }
 
     public String createOrder(Orders order) {
-        Orders newOrdr = this.orderRepository2.insert(order);
+        Orders newOrdr = this.orderRepository.insert(order);
         return newOrdr.getId();
     }
 
-    public void updateOrder(String id,Orders order) throws ObjectNotExist {
+    public void updateOrder(String id, Orders order) throws ObjectNotExist {
 
-        if (orderRepository2.findById(id).isEmpty())
+        if (orderRepository.findById(id).isEmpty())
             throw new ObjectNotExist();
-        orderRepository2.save(order);
+        orderRepository.save(order);
 
     }
 
@@ -55,19 +48,23 @@ public class OrderService {
         HashMap<String, HashMap<Double, Integer>> calculatedOrder = new HashMap<String, HashMap<Double, Integer>>();
         double totalAmount = 0;
 
-        for (OrderItems oi: order.getOrderItemsList())
-        {
-            Product p= oi.getProductId();
+        for (int i = 0; i < order.getOrderItemsList().stream().count(); i++) {
+            OrderItems oi = order.getOrderItemsList().get(i);
+            Product p = oi.getProductId();
             HashMap<Double, Integer> o = new HashMap<Double, Integer>();
-            if (p.getDiscountType() == DiscountTypes.FIXED_AMOUNT)
-                o.put(p.getPrice() * p.getDiscount() - p.getDiscount(), p.getDiscount());
-            else
-                o.put((p.getPrice() * p.getDiscount() )/100*(100-p.getDiscount()), p.getDiscount());
-            calculatedOrder.put(p.getId(),o);
-            totalAmount+=o.get(p.getId());
+            double amount = 0;
+            if (p.getDiscountType() == DiscountTypes.FIXED_AMOUNT) {
+                amount = p.getPrice() - p.getDiscount();
+                o.put(amount, p.getDiscount());
+            } else {
+                amount = (p.getPrice() * p.getDiscount()) / 100 * (100 - p.getDiscount());
+                o.put(amount, p.getDiscount());
+            }
+            calculatedOrder.put(p.getId(), o);
+            totalAmount += amount;
         }
         HashMap<Double, Integer> o = new HashMap<Double, Integer>();
-        o.put(totalAmount, null);
+        o.put(totalAmount, -1);
         calculatedOrder.put("-1", o);
         return calculatedOrder;
     }

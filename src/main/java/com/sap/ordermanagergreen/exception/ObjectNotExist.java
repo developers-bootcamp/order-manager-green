@@ -1,4 +1,4 @@
-package com.sap.ordermanegergreen.exception;
+package com.sap.ordermanagergreen.exception;
 
 public class ObjectNotExist extends  Exception{
 }
