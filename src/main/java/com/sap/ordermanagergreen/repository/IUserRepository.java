@@ -7,5 +7,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 @Component
 public interface IUserRepository extends MongoRepository<User, String> {
     boolean existsByAddress_Email(String email);
+    User findByAddress_Email(String email);
 
 }

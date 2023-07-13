@@ -1,36 +1,36 @@
 package com.sap.ordermanagergreen.service;
 
 import org.springframework.stereotype.Service;
-import com.sap.ordermanagergreen.model.Roles;
+import com.sap.ordermanagergreen.model.Role;
 import com.sap.ordermanagergreen.model.AvailableRoles;
-import com.sap.ordermanagergreen.repository.IRolesRepository;
+import com.sap.ordermanagergreen.repository.IRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @Service
-public class RolesService {
+public class RoleService {
 
-    IRolesRepository rolesRepository;
+    IRoleRepository rolesRepository;
 
     @Autowired
-    public RolesService(IRolesRepository rolesRepository) {
+    public RoleService(IRoleRepository rolesRepository) {
         this.rolesRepository = rolesRepository;
     }
 
-    public List<Roles> getAll() {
+    public List<Role> getAll() {
         return rolesRepository.findAll();
     }
 
-    public Roles getById(String id) {
+    public Role getById(String id) {
         return rolesRepository.findById(id).get();
     }
 
-    public void add(Roles roles) {
+    public void add(Role roles) {
         rolesRepository.save(roles);
     }
 
-    public Roles put(String id, Roles roles) {
+    public Role put(String id, Role roles) {
         rolesRepository.deleteById(id);
         rolesRepository.save(roles);
         return roles;
@@ -40,7 +40,7 @@ public class RolesService {
         rolesRepository.deleteById(roleId);
     }
 
-    public Roles getByName(AvailableRoles name) {
+    public Role getByName(AvailableRoles name) {
       return rolesRepository.getByName(name);
     }
 

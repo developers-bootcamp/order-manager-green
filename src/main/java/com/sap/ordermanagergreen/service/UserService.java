@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.sap.ordermanagergreen.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.sap.ordermanagergreen.exception.NotValidException;
-import com.sap.ordermanagergreen.exception.ObjectAlreadyExistsException;
+import com.sap.ordermanagergreen.exception.ObjectExistException;
 
 import java.util.Date;
 import java.util.List;
@@ -14,11 +14,11 @@ import java.util.List;
 public class UserService {
 
     private CompanyService companyService;
-    private RolesService rolesService;
+    private RoleService rolesService;
     IUserRepository userRepository;
 
     @Autowired
-    public UserService(IUserRepository userRepository, CompanyService companyService, RolesService rolesService) {
+    public UserService(IUserRepository userRepository, CompanyService companyService, RoleService rolesService) {
         this.userRepository = userRepository;
         this.companyService = companyService;
         this.rolesService = rolesService;
@@ -38,7 +38,7 @@ public class UserService {
                 throw new NotValidException("email");
             }
             if (userRepository.existsByAddress_Email(email)) {
-                throw new ObjectAlreadyExistsException("email");
+                throw new ObjectExistException("email");
             }
             Address address = new Address();
             user.setAddress(address);
@@ -49,7 +49,7 @@ public class UserService {
             auditData.setUpdateDate(new Date());
             user.setAuditData(auditData);
             if (companyService.existsByName(companyName)) {
-                throw new ObjectAlreadyExistsException("company");
+                throw new ObjectExistException("company");
             }
             Company company = new Company();
             company.setName(companyName);
@@ -64,28 +64,4 @@ public class UserService {
         } catch (Exception e) {
             throw new Exception();
         }
-    }
-
-    public List<User> getAll() {
-        return userRepository.findAll();
-    }
-
-    public User getById(String userId) {
-        return userRepository.findById(userId).get();
-    }
-
-    public void add(User user) {
-        userRepository.save(user);
-    }
-
-    public User put(String userId, User user) {
-        userRepository.deleteById(userId);
-        userRepository.save(user);
-        return user;
-    }
-
-    public void deleteById(String userId) {
-        userRepository.deleteById(userId);
-    }
-
-}
+    }}
