@@ -100,4 +100,5 @@ public class UserController {
             return new ResponseEntity<>("Unexpected error, " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }
