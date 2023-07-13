@@ -1,4 +1,4 @@
-package com.sap.ordermanegergreen.Exception;
+package com.sap.ordermanagergreen.exception;
 
 public class NoPremissionException extends RuntimeException{
 

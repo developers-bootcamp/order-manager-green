@@ -1,4 +1,4 @@
-package com.sap.ordermanegergreen.Models;
+package com.sap.ordermanagergreen.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

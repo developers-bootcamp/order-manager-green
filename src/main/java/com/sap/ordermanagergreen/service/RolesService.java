@@ -1,9 +1,9 @@
 package com.sap.ordermanagergreen.service;
 
+import com.sap.ordermanagergreen.model.Role;
 import org.springframework.stereotype.Service;
-import com.sap.ordermanagergreen.model.Roles;
 import com.sap.ordermanagergreen.model.AvailableRoles;
-import com.sap.ordermanagergreen.repository.IRolesRepository;
+import com.sap.ordermanagergreen.repository.IRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -11,37 +11,37 @@ import java.util.List;
 @Service
 public class RolesService {
 
-    IRolesRepository rolesRepository;
+    IRoleRepository roleRepository;
 
     @Autowired
-    public RolesService(IRolesRepository rolesRepository) {
-        this.rolesRepository = rolesRepository;
+    public RolesService(IRoleRepository rolesRepository) {
+        this.roleRepository = rolesRepository;
     }
 
-    public List<Roles> getAll() {
-        return rolesRepository.findAll();
+    public List<Role> getAll() {
+        return roleRepository.findAll();
     }
 
-    public Roles getById(String id) {
-        return rolesRepository.findById(id).get();
+    public Role getById(String id) {
+        return roleRepository.findById(id).get();
     }
 
-    public void add(Roles roles) {
-        rolesRepository.save(roles);
+    public void add(Role role) {
+        roleRepository.save(role);
     }
 
-    public Roles put(String id, Roles roles) {
-        rolesRepository.deleteById(id);
-        rolesRepository.save(roles);
-        return roles;
+    public Role put(String id, Role role) {
+        roleRepository.deleteById(id);
+        roleRepository.save(role);
+        return role;
     }
 
     public void deleteById(String roleId) {
-        rolesRepository.deleteById(roleId);
+        roleRepository.deleteById(roleId);
     }
 
-    public Roles getByName(AvailableRoles name) {
-      return rolesRepository.getByName(name);
-    }
+//    public Role getByName(AvailableRoles name) {
+//      return roleRepository.getByName(name);
+//    }
 
 }

@@ -1,5 +1,7 @@
-package com.sap.ordermanegergreen.Models;
+package com.sap.ordermanagergreen.model;
 
+import com.sap.ordermanagergreen.model.AuditData;
+import com.sap.ordermanagergreen.model.AvailableRoles;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 ;
-//@Document לשנות שם לטבלה
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
