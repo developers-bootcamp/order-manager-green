@@ -75,7 +75,7 @@ public class UserService {
     @SneakyThrows
     public void add(String token, User user) {
         if (userRepository.existsByFullName(user.getFullName())) {
-            throw new ObjectExistException("user name already exist");
+            throw new ObjectExistException("user name ");
         }
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() != AvailableRoles.CUSTOMER) {
