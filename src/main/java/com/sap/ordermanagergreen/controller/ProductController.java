@@ -46,9 +46,11 @@ public class ProductController {
     public List<Product>getAll(){
 Product p= new Product("1","book","very intresting",10.2,10, DiscountTypes.FIXED_AMOUNT,"1",10,"yefe nof",null);
 Product p2= new Product("2","book2","very boaring",10.2,10, DiscountTypes.PERCENTAGE,"1",10,"yefe nof",null);
+Product p3= new Product("3","book3","very nice",18.2,10, DiscountTypes.PERCENTAGE,"1",10,"yefe nof",null);
 List<Product> l=new ArrayList<Product>();
 l.add(p);
 l.add(p2);
+l.add(p3);
 return l;
 
     }

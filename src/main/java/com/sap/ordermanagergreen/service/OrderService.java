@@ -54,10 +54,10 @@ public class OrderService {
             HashMap<Double, Integer> o = new HashMap<Double, Integer>();
             double amount = 0;
             if (p.getDiscountType() == DiscountTypes.FIXED_AMOUNT) {
-                amount = p.getPrice() - p.getDiscount();
+                amount =( p.getPrice() - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity();
                 o.put(amount, p.getDiscount());
             } else {
-                amount = (p.getPrice() * p.getDiscount()) / 100 * (100 - p.getDiscount());
+                amount = (p.getPrice() * p.getDiscount()) / 100 * (100 - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity();
                 o.put(amount, p.getDiscount());
             }
             calculatedOrder.put(p.getId(), o);
