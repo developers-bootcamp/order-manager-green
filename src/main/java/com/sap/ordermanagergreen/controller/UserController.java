@@ -1,5 +1,7 @@
 package com.sap.ordermanagergreen.controller;
 
+import com.sap.ordermanagergreen.dto.TokenDTO;
+import com.sap.ordermanagergreen.dto.UserDto;
 import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
@@ -17,6 +19,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/user")
@@ -30,6 +36,36 @@ public class UserController {
         this.jwtToken = jwtToken;
     }
 
+    @GetMapping
+    @RequestMapping("/getAllUsers")
+    public ResponseEntity<List<UserDto>> getAll(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
+        TokenDTO tokenDTO=JwtToken.decodeToken(token);
+        List<UserDto> l = null;
+        try {
+            l = userService.getAll(tokenDTO.getCompanyId(),page,pageSize);
+        }
+        catch (Exception e) {
+            System.out.println("💕💕 error "+e);
+        }
+        return ResponseEntity.ok(l);
+    }
+    @GetMapping
+    @RequestMapping("/getAllByPrefix/{prefixName}")
+    public ResponseEntity<Map<String,String>> getAllByPrefix(@PathVariable("prefixName") String prefixName, @RequestHeader("Authorization") String token) {
+        TokenDTO tokenDTO = JwtToken.decodeToken(token);
+        Map<String,String> l = null;
+        Map<String, String> errorMap = new HashMap<>();
+        try {
+            l = userService.getAllByPrefix(prefixName,tokenDTO.getCompanyId());
+        } catch (IllegalArgumentException e) {
+            errorMap.put("IllegalArgumentException","invalid prefixName");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMap);
+        } catch (Exception e) {
+            errorMap.put("Exception",e.getMessage());
+            return ResponseEntity.internalServerError().body(errorMap);
+        }
+        return ResponseEntity.ok(l);
+    }
     @PostMapping
     @RequestMapping("/signUp")
     public ResponseEntity<String> signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName, @RequestParam("email") String email, @RequestParam("password") String password) {

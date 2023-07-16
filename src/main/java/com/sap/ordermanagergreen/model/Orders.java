@@ -17,7 +17,7 @@ public class Orders {
     private String id;
  
     @DBRef
-    private String employeeId ;
+    private User employeeId ;
  
     @DBRef
     private User customerId;

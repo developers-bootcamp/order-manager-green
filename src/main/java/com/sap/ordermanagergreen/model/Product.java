@@ -25,12 +25,12 @@ public class Product {
     private DiscountTypes discountType;
         
     @DBRef
-    private String categoryId;
+    private ProductCategory categoryId;
     
     private int inventory;
     
     @DBRef
-    private String companyId;
+    private Company companyId;
     
     private AuditData auditData;
     

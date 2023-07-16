@@ -19,8 +19,11 @@ public class ProductCategory {
     private String desc;
     
     @DBRef
-    private String companyId;
+    private Company companyId;
     
     private AuditData auditData;
-    
+
+    public ProductCategory(String id) {
+        this.id=id;
+    }
 }

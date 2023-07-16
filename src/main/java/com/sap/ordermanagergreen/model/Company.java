@@ -18,5 +18,8 @@ public class Company {
     private String currency;
     
     private AuditData auditData;
-    
+
+    public Company(String name) {
+        this.id=name;
+    }
 }
