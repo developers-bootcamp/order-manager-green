@@ -3,18 +3,20 @@ package com.sap.ordermanegergreen.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 ;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder(toBuilder = true)
 public class OrderPayment {
 
     @DBRef
-   private String orderId;
+   private Order orderId;
     @DBRef
-   private String user;
+   private User user;
 
     private int amount;
 

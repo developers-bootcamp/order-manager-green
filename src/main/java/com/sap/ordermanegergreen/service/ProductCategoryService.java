@@ -41,7 +41,7 @@ public class ProductCategoryService {
 
     public ResponseEntity<String> deleteProductCategory(String id) {
         try {
-            if(productCategoryRepository.findById(id).isEmpty()){
+            if(!productCategoryRepository.findById(id).isPresent()){
                 return new ResponseEntity<>("Category not found", HttpStatus.NOT_FOUND);
             }
             productCategoryRepository.deleteById(id);
@@ -59,7 +59,7 @@ public class ProductCategoryService {
     public ResponseEntity<String> editProductCategory(String id, ProductCategory productCategory) {
         try{
             Optional<ProductCategory> oldProductCategory=productCategoryRepository.findById(id);
-            if(oldProductCategory.isEmpty()){
+            if(!oldProductCategory.isPresent()){
                 return new ResponseEntity<>("Category does not exist",HttpStatus.NOT_FOUND);
             }
             if(productCategory.getName()==null)
@@ -70,7 +70,6 @@ public class ProductCategoryService {
             return ResponseEntity.ok("success: true");
         }catch(Exception e){
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
     }
 }

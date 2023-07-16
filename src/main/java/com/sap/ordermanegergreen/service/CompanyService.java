@@ -1,14 +1,15 @@
 package com.sap.ordermanegergreen.service;
 
+import org.springframework.stereotype.Service;
 import com.sap.ordermanegergreen.model.Company;
 import com.sap.ordermanegergreen.repository.ICompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CompanyService  {
+public class CompanyService {
+
     ICompanyRepository companyRepository;
 
     @Autowired
@@ -28,13 +29,18 @@ public class CompanyService  {
         companyRepository.save(company);
     }
 
-    public Company editById(Company company, String id) {
+    public Company put(String id, Company company) {
         companyRepository.deleteById(id);
         companyRepository.save(company);
         return company;
     }
 
-    public void deletebyId(String companyId) {
+    public void deleteById(String companyId) {
         companyRepository.deleteById(companyId);
     }
+
+    public boolean existsByName(String name) {
+        return companyRepository.existsByName(name);
+    }
+
 }
