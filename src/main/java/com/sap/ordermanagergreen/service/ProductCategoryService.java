@@ -12,9 +12,9 @@ import java.util.Optional;
 
 @Service
 public class ProductCategoryService {
-    
+
     IProductCategoryRepository productCategoryRepository;
-    
+
     @Autowired
     public ProductCategoryService(IProductCategoryRepository productCategoryRepository) {
         this.productCategoryRepository = productCategoryRepository;
@@ -22,7 +22,7 @@ public class ProductCategoryService {
 
     public ResponseEntity<String> saveProductCategory(ProductCategory productCategory) {
         String categoryName = productCategory.getName();
-        if(doesCategoryExist(categoryName)==true){
+        if (doesCategoryExist(categoryName) == true) {
             return new ResponseEntity<>("Category name already exists", HttpStatus.CONFLICT);
         }
         productCategoryRepository.save(productCategory);
@@ -40,7 +40,7 @@ public class ProductCategoryService {
 
     public ResponseEntity<String> deleteProductCategory(String id) {
         try {
-            if(productCategoryRepository.findById(id).isEmpty()){
+            if (productCategoryRepository.findById(id).isEmpty()) {
                 return new ResponseEntity<>("Category not found", HttpStatus.NOT_FOUND);
             }
             productCategoryRepository.deleteById(id);
@@ -50,26 +50,26 @@ public class ProductCategoryService {
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     public boolean doesCategoryExist(String categoryName) {
         return productCategoryRepository.existsByName(categoryName);
     }
 
     public ResponseEntity<String> editProductCategory(String id, ProductCategory productCategory) {
-        try{
-            Optional<ProductCategory> oldProductCategory=productCategoryRepository.findById(id);
-            if(oldProductCategory.isEmpty()){
-                return new ResponseEntity<>("Category does not exist",HttpStatus.NOT_FOUND);
+        try {
+            Optional<ProductCategory> oldProductCategory = productCategoryRepository.findById(id);
+            if (oldProductCategory.isEmpty()) {
+                return new ResponseEntity<>("Category does not exist", HttpStatus.NOT_FOUND);
             }
-            if(productCategory.getName()==null)
+            if (productCategory.getName() == null)
                 productCategory.setName(oldProductCategory.get().getName());
-            if(productCategory.getDesc()==null)
+            if (productCategory.getDesc() == null)
                 productCategory.setDesc(oldProductCategory.get().getDesc());
             productCategoryRepository.save(productCategory);
             return ResponseEntity.ok("success: true");
-        }catch(Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
 }

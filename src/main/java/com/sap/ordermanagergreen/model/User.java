@@ -21,7 +21,7 @@ public class User {
     private Address address;
   
     @DBRef
-    private Roles roleId;
+    private Role roleId;
 
     @DBRef
     private Company companyId;
