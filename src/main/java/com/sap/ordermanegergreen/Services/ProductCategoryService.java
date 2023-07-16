@@ -24,24 +24,23 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProductCategoryService {
     IProductCategoryRepository ProductCategoryRepository;
-    JwtToken jwtToken;
     private final ProductCategoryMapper productCategoryMapper;
     private final IRolesRepository rolesRepository;
 
     @Autowired
-    public ProductCategoryService(IProductCategoryRepository ProductCategoryRepository, ProductCategoryMapper productCategoryMapper, JwtToken jwtToken, IRolesRepository rolesRepository) {
+    public ProductCategoryService(IProductCategoryRepository ProductCategoryRepository, ProductCategoryMapper productCategoryMapper,  IRolesRepository rolesRepository) {
         this.ProductCategoryRepository = ProductCategoryRepository;
         this.productCategoryMapper = productCategoryMapper;
-        this.jwtToken = jwtToken;
         this.rolesRepository = rolesRepository;
     }
-    public ResponseEntity<String> saveProductCategory(String token, ProductCategory productCategory) {
+    public void saveProductCategory(String token, ProductCategory productCategory) {
 //            try {
 //                if(isUnauthorized(token))
 //                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -54,19 +53,18 @@ public class ProductCategoryService {
         if (doesCategoryExist(categoryName) == true) {
             throw new ObjectAlreadyExistsExeption("Category name already exists");
         }
-        ProductCategoryRepository.save(productCategory);
-        return ResponseEntity.ok("success: true");
+       ProductCategoryRepository.save(productCategory);
 
     }
 
-    public ResponseEntity<List<ProductCategoryDTO>> getAllCategories(String token) {
-        String companyId = jwtToken.decodeToken(token).getCompanyId();
+    public List<ProductCategoryDTO> getAllCategories(String token) {
+        String companyId = JwtToken.decodeToken(token).getCompanyId();
         List<ProductCategory> productCategories = ProductCategoryRepository.findAllByCompanyId(companyId);
         List<ProductCategoryDTO> productCategoryDTOs = productCategoryMapper.toDtoList(productCategories);
-        return ResponseEntity.ok(productCategoryDTOs);
+        return productCategoryDTOs;
     }
 
-    public ResponseEntity<String> deleteProductCategory(String token, String id) {
+    public void deleteProductCategory(String token, String id) {
 
         if (!isUnauthorized(token))
             throw new UnauthorizedExeption();
@@ -74,12 +72,11 @@ public class ProductCategoryService {
             throw new ObjectNotFoundExeption("Category not found");
         }
         ProductCategoryRepository.deleteById(id);
-        return new ResponseEntity<>("{\"success\": true}", HttpStatus.OK);
 
     }
 
 
-    public ResponseEntity<String> editProductCategory(String id, ProductCategory productCategory, String token) {
+    public void editProductCategory(String id, ProductCategory productCategory, String token) {
         if (!isUnauthorized(token))
             throw new UnauthorizedExeption();
         Optional<ProductCategory> oldProductCategory = ProductCategoryRepository.findById(id);
@@ -87,7 +84,6 @@ public class ProductCategoryService {
             throw new ObjectNotFoundExeption("Category does not exist");
         }
         ProductCategoryRepository.save(productCategory);
-        return ResponseEntity.ok("success: true");
     }
 
     public boolean doesCategoryExist(String categoryName) {
@@ -95,7 +91,7 @@ public class ProductCategoryService {
     }
 
     public boolean isUnauthorized(String token) {
-        String roleId = jwtToken.decodeToken(token).getRoleId();
+        String roleId = JwtToken.decodeToken(token).getRoleId();
         Optional<Roles> roleOptional = rolesRepository.findById(roleId);
         if (!roleOptional.isPresent())
             throw new ObjectNotFoundExeption("Role not found");

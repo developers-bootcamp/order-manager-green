@@ -28,12 +28,10 @@ public class ProductCategoryController {
         this.productCategoryMapper = productCategoryMapper;
     }
 
-
-
     @GetMapping("/")
     public ResponseEntity<List<ProductCategoryDTO>> getAll(@RequestHeader("Authorization") String token) {
         try {
-            return ProductCategoryService.getAllCategories(token);
+            return ResponseEntity.ok(ProductCategoryService.getAllCategories(token));
     }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -42,7 +40,7 @@ public class ProductCategoryController {
     @PostMapping("/")
     public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody ProductCategory productCategory){
         try {
-            return ProductCategoryService.saveProductCategory(token, productCategory);
+            ProductCategoryService.saveProductCategory(token, productCategory);
         }catch (ObjectAlreadyExistsExeption objectAlreadyExistsExeption){
             return new ResponseEntity<>(objectAlreadyExistsExeption.getMessage(), HttpStatus.CONFLICT);
         }catch (ObjectNotFoundExeption objectNotFoundExeption){
@@ -52,27 +50,31 @@ public class ProductCategoryController {
         }catch (Exception e) {
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return ResponseEntity.ok("success: true");
+
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@RequestHeader("Authorization") String token ,@PathVariable("id") String id) {
         try {
-            return ProductCategoryService.deleteProductCategory(token, id);
+             ProductCategoryService.deleteProductCategory(token, id);
         } catch (ObjectNotFoundExeption objectNotFoundExeption) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(objectNotFoundExeption.getMessage());
         } catch (Exception e) {
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return new ResponseEntity<>("{\"success\": true}", HttpStatus.OK);
     }
     @PutMapping("/{id}")
     public ResponseEntity<String> editProductCategory(@PathVariable("id") String id, @RequestBody ProductCategory productCategory,@RequestHeader("Authorization") String token){
       try {
-        return ProductCategoryService.editProductCategory(id,productCategory,token);
+         ProductCategoryService.editProductCategory(id,productCategory,token);
       }catch (ObjectNotFoundExeption objectNotFoundExeption){
           return new ResponseEntity<>(objectNotFoundExeption.getMessage(),HttpStatus.NOT_FOUND);
       } catch(Exception e){
           return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
       }
+        return ResponseEntity.ok("success: true");
     }
 }
 

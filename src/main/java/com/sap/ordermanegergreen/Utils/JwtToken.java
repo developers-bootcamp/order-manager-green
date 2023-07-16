@@ -25,7 +25,7 @@ public class JwtToken {
                 .sign(algorithm);
         return accessToken;
     }
-    public TokenDTO decodeToken(String token) {
+    public static TokenDTO decodeToken(String token) {
         Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET.getBytes());
         DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
         TokenDTO decodedToken = new TokenDTO();
