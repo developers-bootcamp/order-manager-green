@@ -1,4 +1,3 @@
-
 package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.model.DiscountTypes;
@@ -14,10 +13,9 @@ import java.util.List;
 
 @CrossOrigin("http://localhost:3000")
 @RestController
-@RequestMapping ("/product")
+@RequestMapping("/product")
 public class ProductController {
-//    private ProductService ProductService;
-//    @Autowired
+    //    @Autowired
 //    public ProductController(ProductService ProductService){
 //        this.ProductService=ProductService;
 //    }
@@ -43,15 +41,15 @@ public class ProductController {
 //
 //    }
     @GetMapping
-    public List<Product>getAll(){
-Product p= new Product("1","book","very intresting",10.2,10, DiscountTypes.FIXED_AMOUNT,"1",10,"yefe nof",null);
-Product p2= new Product("2","book2","very boaring",10.2,10, DiscountTypes.PERCENTAGE,"1",10,"yefe nof",null);
-Product p3= new Product("3","book3","very nice",18.2,10, DiscountTypes.PERCENTAGE,"1",10,"yefe nof",null);
-List<Product> l=new ArrayList<Product>();
-l.add(p);
-l.add(p2);
-l.add(p3);
-return l;
+    public List<Product> getAll() {
+        Product p = new Product("1", "book", "very intresting", 10.2, 10, DiscountTypes.FIXED_AMOUNT, "1", 10, "yefe nof", null);
+        Product p2 = new Product("2", "book2", "very boaring", 10.2, 10, DiscountTypes.PERCENTAGE, "1", 10, "yefe nof", null);
+        Product p3 = new Product("3", "book3", "very nice", 18.2, 10, DiscountTypes.PERCENTAGE, "1", 10, "yefe nof", null);
+        List<Product> l = new ArrayList<Product>();
+        l.add(p);
+        l.add(p2);
+        l.add(p3);
+        return l;
 
     }
 //    @PutMapping("/edit/{id)")
@@ -63,5 +61,3 @@ return l;
 //
 //    }
 }
-
-
