@@ -45,11 +45,6 @@ public class GraphService {
         AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, "Orders", Document.class);
         List<Document> mappedResults = results.getMappedResults();
 
-        for (Document result : results) {
-            System.out.println("🤔🤔🤔🤔🤔🤔");
-            System.out.println(result.toJson());
-        }
-
         List<DeliverCancelOrdersDTO> resultDTOs = new ArrayList<>();
         for (Document mappedResult : mappedResults) {
             Month month = Month.of(mappedResult.getInteger("month"));
