@@ -24,7 +24,7 @@ public class GraphService {
     public GraphService(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
-    public ResponseEntity<List<DeliverCancelOrdersDTO>> getDeliverCancelOrders() {
+    public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
         LocalDate currentDate = LocalDate.now();
         LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
@@ -59,6 +59,6 @@ public class GraphService {
             resultDTOs.add(resultDTO);
         }
 
-        return ResponseEntity.ok(resultDTOs);
+        return resultDTOs;
     }
 }
