@@ -43,5 +43,5 @@ public class CompanyService {
       return companyRepository.existsByName(name);
     }
 
-    {
+
 }
