@@ -10,29 +10,13 @@ import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.ResponseEntity;
-
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bson.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
-
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.*;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 @Service
 public class GraphService {
     private final MongoTemplate mongoTemplate;
