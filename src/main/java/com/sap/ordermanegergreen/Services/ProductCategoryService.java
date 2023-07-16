@@ -1,30 +1,18 @@
 package com.sap.ordermanegergreen.Services;
 
-import ch.qos.logback.core.subst.Token;
-import com.mongodb.client.FindIterable;
 import com.sap.ordermanegergreen.DTO.ProductCategoryDTO;
-import com.sap.ordermanegergreen.DTO.TokenDTO;
-import com.sap.ordermanegergreen.Exeption.InternalServerException;
 import com.sap.ordermanegergreen.Exeption.ObjectAlreadyExistsExeption;
 import com.sap.ordermanegergreen.Exeption.ObjectNotFoundExeption;
 import com.sap.ordermanegergreen.Exeption.UnauthorizedExeption;
 import com.sap.ordermanegergreen.Models.AvailableRoles;
 import com.sap.ordermanegergreen.Models.ProductCategory;
 import com.sap.ordermanegergreen.Models.Roles;
-import com.sap.ordermanegergreen.Models.User;
 import com.sap.ordermanegergreen.Repositories.IProductCategoryRepository;
 import com.sap.ordermanegergreen.Repositories.IRolesRepository;
 import com.sap.ordermanegergreen.Utils.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.sap.ordermanegergreen.DTO.ProductCategoryMapper;
-import org.springframework.web.client.HttpClientErrorException;
-
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
