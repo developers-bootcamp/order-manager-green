@@ -1,5 +1,5 @@
 //
-//package com.sap.ordermanegergreen.Controllers;
+//package com.sap.ordermanegergreen.controller;
 //
 //import com.sap.ordermanegergreen.DTO.ProductDto;
 //import com.sap.ordermanegergreen.Models.Product;
@@ -8,7 +8,7 @@
 //import org.springframework.http.ResponseEntity;
 //import org.springframework.web.bind.annotation.*;
 //import org.springframework.web.server.ResponseStatusException;
-//import com.sap.ordermanegergreen.Services.ProductService;
+//import com.sap.ordermanegergreen.service.ProductService;
 //
 //import java.util.List;
 //
@@ -16,7 +16,7 @@
 //@RestController
 //@RequestMapping ("/product")
 //public class ProductController {
-//    private ProductService ProductService;
+//    private ProductService productService;
 //    @Autowired
 //    public ProductController(ProductService ProductService){
 //        this.ProductService=ProductService;
