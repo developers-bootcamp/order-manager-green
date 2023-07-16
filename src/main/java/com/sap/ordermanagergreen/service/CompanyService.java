@@ -11,7 +11,6 @@ import java.util.List;
 public class CompanyService {
 
     ICompanyRepository companyRepository;
-    ICompanyRepository companyRepository
 
     @Autowired
     public CompanyService(ICompanyRepository companyRepository) {
@@ -43,5 +42,6 @@ public class CompanyService {
     public boolean existsByName(String name) {
       return companyRepository.existsByName(name);
     }
+
 
 }
