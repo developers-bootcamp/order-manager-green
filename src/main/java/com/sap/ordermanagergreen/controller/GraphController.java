@@ -21,10 +21,6 @@ public class GraphController {
         this.graphService = graphService;
     }
 
-    @GetMapping
-    @RequestMapping("/topEmployee")
-    public Map<User, Integer> getTopEmployee(){
-        return graphService.getTopEmployee();
-    }
+
 
 }
