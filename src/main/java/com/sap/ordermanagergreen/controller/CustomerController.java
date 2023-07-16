@@ -8,6 +8,7 @@ import com.sap.ordermanagergreen.util.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin("http://localhost:3000")
@@ -32,7 +33,11 @@ public class CustomerController {
 
     @GetMapping
     public List<User> getAll() {
-        return customerService.getAll().stream().filter(c->c.getRoleId().equals(AvailableRoles.CUSTOMER)).toList();
+         //List<User>u= customerService.getAll().stream().filter(c->c.getRoleId().equals(AvailableRoles.CUSTOMER)).toList();
+        List<User>u=new ArrayList<User>() ;
+        User o=new User("1","me","21354",null,null,null,null);
+        u.add(o);
+         return u;
     }
 
     @GetMapping("/{id}")
