@@ -20,13 +20,13 @@ public class Orders {
     private String employeeId ;
  
     @DBRef
-    private String customerId;
+    private User customerId;
  
     private double totalAmount;
  
     private List<OrderItems> orderItemsList;
  
-    private String orderStatusId;
+    private OrderStatus orderStatus;
  
     @DBRef
     private String companyId;
