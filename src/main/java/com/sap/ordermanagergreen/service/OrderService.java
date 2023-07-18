@@ -14,8 +14,8 @@ import java.util.*;
 
 @Service
 public class OrderService {
-    private IOrderRepository orderRepository;
-    private IProductRepository productRepository;
+    private final IOrderRepository orderRepository;
+    private final IProductRepository productRepository;
 
     @Autowired
     public OrderService(IOrderRepository orderRepository, IProductRepository productRepository) {

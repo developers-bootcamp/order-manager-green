@@ -20,8 +20,8 @@ import java.util.Map;
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/orders")
 public class OrdersController {
-    private OrderService orderService;
-    private JwtToken jwtToken;
+    private final OrderService orderService;
+    private final JwtToken jwtToken;
 
     @Autowired
     public OrdersController(OrderService orderService, JwtToken jwtToken) {
@@ -34,7 +34,7 @@ public class OrdersController {
                                                  @RequestParam(defaultValue = "10") Integer pageSize,
                                                  @RequestParam int employeeId, @RequestParam OrderStatus orderStatus
             , @RequestHeader("token") String token) {
-        TokenDTO tokenDto = this.jwtToken.decodeToken(token);
+        TokenDTO tokenDto = JwtToken.decodeToken(token);
         List<Order> orders = null;
         orders = this.orderService.getOrders(pageNo, pageSize, tokenDto.getCompanyId(), employeeId, orderStatus);
         return ResponseEntity.ok(orders);
@@ -43,7 +43,7 @@ public class OrdersController {
     @PostMapping
     public ResponseEntity<String> createOrder(@RequestHeader("token") String token, @RequestBody Order order) {
         try{
-        TokenDTO tokenDto = jwtToken.decodeToken(token);
+        TokenDTO tokenDto = JwtToken.decodeToken(token);
         if (!tokenDto.getCompanyId() .equals(order.getCompanyId()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();}
         catch (Exception e){
@@ -61,7 +61,7 @@ public class OrdersController {
 
     @PutMapping("/{id}")
     public ResponseEntity updateOrder(@RequestHeader("token") String token, @PathVariable  String id,@RequestBody Order order) throws ObjectNotExist {
-        TokenDTO tokenDto = jwtToken.decodeToken(token);
+        TokenDTO tokenDto = JwtToken.decodeToken(token);
         if (tokenDto.getCompanyId() != order.getCompanyId())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         try {
