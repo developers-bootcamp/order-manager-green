@@ -29,12 +29,6 @@ public class ProductCategoryService {
         this.rolesRepository = rolesRepository;
     }
     public void saveProductCategory(String token, ProductCategory productCategory) {
-//            try {
-//                if(isUnauthorized(token))
-//                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//            }catch (ObjectNotFoundExeption objectNotFoundExeption){
-//                throw objectNotFoundExeption;
-//            }
         if (!isUnauthorized(token))
             throw new UnauthorizedExeption();
         String categoryName = productCategory.getName();
@@ -79,13 +73,9 @@ public class ProductCategoryService {
     }
 
     public boolean isUnauthorized(String token) {
-        String roleId = JwtToken.decodeToken(token).getRoleId();
-        Optional<Roles> roleOptional = rolesRepository.findById(roleId);
-        if (!roleOptional.isPresent())
-            throw new ObjectNotFoundExeption("Role not found");
-        AvailableRoles roleName = roleOptional.get().getName();
-        if (roleName != AvailableRoles.ADMIN && roleName != AvailableRoles.ADMIN.EMPLOYEE)
-            return false;
-        return true;
+        String roleId=JwtToken.decodeToken(token).getRoleId();
+        if (roleId.equals(AvailableRoles.ADMIN) || roleId.equals(AvailableRoles.EMPLOYEE))
+              return true;
+        return false;
         }
     }
