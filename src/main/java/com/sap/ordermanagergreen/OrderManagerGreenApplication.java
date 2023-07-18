@@ -9,3 +9,4 @@ public class OrderManagerGreenApplication {
 		SpringApplication.run(OrderManagerGreenApplication.class, args);
 	}
 }
+
