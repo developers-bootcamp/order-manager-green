@@ -20,13 +20,11 @@ import java.util.Optional;
 public class ProductCategoryService {
     IProductCategoryRepository ProductCategoryRepository;
     private final ProductCategoryMapper productCategoryMapper;
-    private final IRolesRepository rolesRepository;
 
     @Autowired
-    public ProductCategoryService(IProductCategoryRepository ProductCategoryRepository, ProductCategoryMapper productCategoryMapper,  IRolesRepository rolesRepository) {
+    public ProductCategoryService(IProductCategoryRepository ProductCategoryRepository, ProductCategoryMapper productCategoryMapper) {
         this.ProductCategoryRepository = ProductCategoryRepository;
         this.productCategoryMapper = productCategoryMapper;
-        this.rolesRepository = rolesRepository;
     }
     public void saveProductCategory(String token, ProductCategory productCategory) {
         if (!isUnauthorized(token))
