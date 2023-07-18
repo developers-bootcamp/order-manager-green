@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Month;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RestController
@@ -23,7 +25,7 @@ public class GraphController {
         this.graphService = graphService;
     }
     @GetMapping("/getDeliverCancelOrders")
-    public ResponseEntity<List<DeliverCancelOrdersDTO>> getDeliverCancelOrders() {
+    public ResponseEntity<Map<Month,Map<Integer,Integer>>> getDeliverCancelOrders() {
         try{
             return ResponseEntity.ok(graphService.getDeliverCancelOrders());
         }catch (Exception e){

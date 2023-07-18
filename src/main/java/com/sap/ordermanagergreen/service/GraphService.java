@@ -13,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -24,7 +27,7 @@ public class GraphService {
     public GraphService(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
-    public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
+    public Map<Month,Map<Integer,Integer>> getDeliverCancelOrders() {
         LocalDate currentDate = LocalDate.now();
         LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
@@ -45,20 +48,18 @@ public class GraphService {
         AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, "Orders", Document.class);
         List<Document> mappedResults = results.getMappedResults();
 
-        List<DeliverCancelOrdersDTO> resultDTOs = new ArrayList<>();
+        Map<Month,Map<Integer,Integer>> resultMap = new HashMap<>();
         for (Document mappedResult : mappedResults) {
             Month month = Month.of(mappedResult.getInteger("month"));
             int cancelled = mappedResult.getInteger("cancelled", 0);
             int delivered = mappedResult.getInteger("delivered", 0);
 
-            DeliverCancelOrdersDTO resultDTO = new DeliverCancelOrdersDTO();
-            resultDTO.setMonth(month);
-            resultDTO.setCancelled(cancelled);
-            resultDTO.setDelivered(delivered);
-
-            resultDTOs.add(resultDTO);
+            Map<Integer, Integer> tempMap = new HashMap<>();
+            tempMap.put(cancelled, delivered);
+            resultMap.put(month,tempMap);
         }
 
-        return resultDTOs;
+        return resultMap;
     }
+
 }

@@ -7,6 +7,7 @@ import com.sap.ordermanagergreen.model.ProductCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.sap.ordermanagergreen.repository.IProductCategoryRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class ProductCategoryService {
         if (doesCategoryExist(categoryName) == true) {
             return new ResponseEntity<>("Category name already exists", HttpStatus.CONFLICT);
         }
-        productCategoryRepository.save(productCategory);
+            productCategoryRepository.save(productCategory);
         return ResponseEntity.ok("success: true");
     }
 
