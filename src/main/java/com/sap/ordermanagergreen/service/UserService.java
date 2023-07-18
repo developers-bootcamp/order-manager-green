@@ -1,7 +1,7 @@
 package com.sap.ordermanagergreen.service;
 
 import com.sap.ordermanagergreen.dto.UserDto;
-import com.sap.ordermanagergreen.exception.NoPremissionException;
+import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.mapper.UserMapper;
@@ -106,7 +106,7 @@ public class UserService {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         //cheak password mail telephone...
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() == AvailableRoles.CUSTOMER)
-            throw new NoPremissionException("role");
+            throw new NoPermissionException("role");
         if(roleRepository.findById(tokenDTO.getRoleId()).isEmpty())
             throw new NotValidException("role");
         user.setRoleId(roleRepository.findById(tokenDTO.getRoleId()).get());
@@ -114,7 +114,7 @@ public class UserService {
         user.getRoleId().setAuditData(new AuditData(new Date(), new Date()));
         user.setAuditData(new AuditData(new Date(), new Date()));
             if (!companyRepository.findById(user.getCompanyId().getId()).orElse(new Company()).getId().equals(tokenDTO.getCompanyId())) {
-                throw new NoPremissionException("company");
+                throw new NoPermissionException("company");
             }
             user.setCompanyId(companyRepository.findById(user.getCompanyId().getId()).get());
             //user.getCompanyId().getAuditData().setUpdateDate(new Date());
@@ -129,7 +129,7 @@ public class UserService {
                 AvailableRoles.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId()).
                 orElse(new Company()).getId().equals(userRepository.findById(userId).
                         orElse(new User()).getCompanyId().getId()))) {
-            throw new NoPremissionException("You don't have permission to delete the user");
+            throw new NoPermissionException("You don't have permission to delete the user");
         }
         if (userRepository.findById(userId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
@@ -144,7 +144,7 @@ public class UserService {
                 AvailableRoles.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId())
                 .orElse(new Company()).getId().equals(userRepository.findById(user.getId())
                         .orElse(new User()).getCompanyId().getId()))) {
-            throw new NoPremissionException("You don't have permission to delete the user");
+            throw new NoPermissionException("You don't have permission to delete the user");
         }
         if (userRepository.findById(user.getId()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");

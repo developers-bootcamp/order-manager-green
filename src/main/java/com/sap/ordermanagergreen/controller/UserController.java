@@ -2,7 +2,7 @@ package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.dto.UserDto;
-import com.sap.ordermanagergreen.exception.NoPremissionException;
+import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.model.User;
@@ -39,34 +39,35 @@ public class UserController {
     @GetMapping
     @RequestMapping("/getAllUsers")
     public ResponseEntity<List<UserDto>> getAll(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
-        TokenDTO tokenDTO=JwtToken.decodeToken(token);
+        TokenDTO tokenDTO = JwtToken.decodeToken(token);
         List<UserDto> l = null;
         try {
-            l = userService.getAll(tokenDTO.getCompanyId(),page,pageSize);
-        }
-        catch (Exception e) {
-            System.out.println("💕💕 error "+e);
+            l = userService.getAll(tokenDTO.getCompanyId(), page, pageSize);
+        } catch (Exception e) {
+            System.out.println("💕💕 error " + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return ResponseEntity.ok(l);
     }
+
     @GetMapping
     @RequestMapping("/getAllByPrefix/{prefixName}")
-    public ResponseEntity<Map<String,String>> getAllByPrefix(@PathVariable("prefixName") String prefixName, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<Map<String, String>> getAllByPrefix(@PathVariable("prefixName") String prefixName, @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
-        Map<String,String> l = null;
+        Map<String, String> l = null;
         Map<String, String> errorMap = new HashMap<>();
         try {
-            l = userService.getAllByPrefix(prefixName,tokenDTO.getCompanyId());
+            l = userService.getAllByPrefix(prefixName, tokenDTO.getCompanyId());
         } catch (IllegalArgumentException e) {
-            errorMap.put("IllegalArgumentException","invalid prefixName");
+            errorMap.put("IllegalArgumentException", "invalid prefixName");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMap);
         } catch (Exception e) {
-            errorMap.put("Exception",e.getMessage());
+            errorMap.put("Exception", e.getMessage());
             return ResponseEntity.internalServerError().body(errorMap);
         }
         return ResponseEntity.ok(l);
     }
+
     @PostMapping
     @RequestMapping("/signUp")
     public ResponseEntity<String> signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName, @RequestParam("email") String email, @RequestParam("password") String password) {
@@ -101,8 +102,8 @@ public class UserController {
             userService.deleteById(token, userId);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
-        } catch (NoPremissionException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (NoPermissionException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -115,9 +116,11 @@ public class UserController {
             userService.editById(token, user);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
-        } catch (NoPremissionException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
-        } catch (Exception ex) {
+        }
+        catch (NoPermissionException ex) {
+           return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+      }
+        catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(HttpStatus.OK);

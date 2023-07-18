@@ -24,19 +24,19 @@ public class OrderService {
         this.productRepository = productRepository;
     }
 
-    public List<Orders> getOrders(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
+    public List<Order> getOrders(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
 
         Pageable paging = PageRequest.of(pageNo, pageSize);
         return orderRepository.findByOrderStatusAndCompanyId(paging, orderStatus, companyId);
 
     }
 
-    public String createOrder(Orders order) {
-        Orders newOrdr = this.orderRepository.insert(order);
+    public String createOrder(Order order) {
+        Order newOrdr = this.orderRepository.insert(order);
         return newOrdr.getId();
     }
 
-    public void updateOrder(String id, Orders order) throws ObjectNotExist {
+    public void updateOrder(String id, Order order) throws ObjectNotExist {
 
         if (orderRepository.findById(id).isEmpty())
             throw new ObjectNotExist();
@@ -44,7 +44,7 @@ public class OrderService {
 
     }
 
-    public Map<String, HashMap<Double, Integer>> calculate(Orders order) {
+    public Map<String, HashMap<Double, Integer>> calculate(Order order) {
         HashMap<String, HashMap<Double, Integer>> calculatedOrder = new HashMap<String, HashMap<Double, Integer>>();
         double totalAmount = 0;
 

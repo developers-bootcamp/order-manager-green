@@ -11,9 +11,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "Orders")
-public class Orders {
+public class Order {
 
     @Id
+    @Generated
     private String id;
 
     @DBRef

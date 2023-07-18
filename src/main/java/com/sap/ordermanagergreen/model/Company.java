@@ -7,19 +7,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection ="Company")
+@Document(collection = "Company")
 public class Company {
-    
-    @Id 
+
+    @Id
+    @Generated
     private String id;
-    
+
     private String name;
-    
+
     private String currency;
-    
+
     private AuditData auditData;
 
     public Company(String name) {
-        this.id=name;
+        this.id = name;
     }
 }

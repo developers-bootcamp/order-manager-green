@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 public class OrderPayment {
 
     @DBRef
-    private Orders orderId;
+    private Order orderId;
     
     @DBRef
     private User userId;
