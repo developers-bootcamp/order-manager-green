@@ -14,7 +14,7 @@ import java.util.Map;
 @RequestMapping("/graph")
 public class GraphController {
 
-    private GraphService graphService;
+    private final GraphService graphService;
 
     @Autowired
     public GraphController(GraphService graphService){

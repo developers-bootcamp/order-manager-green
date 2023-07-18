@@ -11,7 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "Product")
 public class Product {
     
-    @Id 
+    @Id
+    @Generated
     private String id;
     
     private String name;
@@ -25,12 +26,12 @@ public class Product {
     private DiscountTypes discountType;
         
     @DBRef
-    private String categoryId;
+    private ProductCategory categoryId;
     
     private int inventory;
     
     @DBRef
-    private String companyId;
+    private Company companyId;
     
     private AuditData auditData;
     

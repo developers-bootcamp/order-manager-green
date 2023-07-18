@@ -5,7 +5,7 @@ public enum AvailableRoles
     ADMIN("ADMIN"),
     EMPLOYEE("EMPLOYEE"),
     CUSTOMER("CUSTOMER");
-    private String name;
+    private final String name;
 
     AvailableRoles(String name) {
         this.name = name;

@@ -9,7 +9,7 @@ public class Address {
     
     private String telephone;
     
-    private String address;
+    private String addressName;
     
     private String email;
     
