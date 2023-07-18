@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class ProductCategory {
     
     @Id
+    @Generated
     private String id;
     
     private String name;
@@ -19,8 +20,11 @@ public class ProductCategory {
     private String desc;
     
     @DBRef
-    private String companyId;
+    private Company companyId;
     
     private AuditData auditData;
-    
+
+    public ProductCategory(String id) {
+        this.id=id;
+    }
 }

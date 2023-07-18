@@ -11,34 +11,35 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "Orders")
-public class Orders {
- 
-    @Id 
+public class Order {
+
+    @Id
+    @Generated
     private String id;
- 
+
     @DBRef
-    private String employeeId ;
- 
+    private User employeeId;
+
     @DBRef
     private User customerId;
- 
+
     private double totalAmount;
- 
+
     private List<OrderItems> orderItemsList;
- 
+
     private OrderStatus orderStatus;
- 
+
     @DBRef
     private String companyId;
- 
+
     private String creditCardNumber;
- 
-    private String  expiryOn;
- 
+
+    private String expiryOn;
+
     private String cvc;
- 
+
     private Boolean notificationFlag;
- 
+
     private AuditData auditData;
- 
+
 }

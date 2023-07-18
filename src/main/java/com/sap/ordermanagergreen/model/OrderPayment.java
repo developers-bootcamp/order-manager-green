@@ -9,10 +9,10 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 public class OrderPayment {
 
     @DBRef
-    private String orderId;
+    private Order orderId;
     
     @DBRef
-    private String userId;
+    private User userId;
 
     private int amount;
 

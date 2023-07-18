@@ -22,7 +22,7 @@ public class ProductCategoryService {
 
     public ResponseEntity<String> saveProductCategory(ProductCategory productCategory) {
         String categoryName = productCategory.getName();
-        if (doesCategoryExist(categoryName) == true) {
+        if (doesCategoryExist(categoryName)) {
             return new ResponseEntity<>("Category name already exists", HttpStatus.CONFLICT);
         }
         productCategoryRepository.save(productCategory);

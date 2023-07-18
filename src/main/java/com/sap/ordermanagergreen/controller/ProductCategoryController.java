@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/productCategory")
 public class ProductCategoryController {
     
-    private ProductCategoryService productCategoryService;
+    private final ProductCategoryService productCategoryService;
     
     @Autowired
     public ProductCategoryController(ProductCategoryService productCategoryService){
