@@ -2,6 +2,8 @@ package com.sap.ordermanagergreen.model;
 
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -9,8 +11,12 @@ import java.util.Date;
 @AllArgsConstructor
 public class AuditData {
   
-  private Date createDate;
+  private LocalDateTime createDate;
   
-  private Date updateDate;
-  
+  private LocalDateTime updateDate;
+  public AuditData(LocalDateTime createDate){
+    this.createDate=createDate;
+  }
+
+
 }

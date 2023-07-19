@@ -2,7 +2,7 @@ package com.sap.ordermanagergreen.service;
 
 import org.springframework.stereotype.Service;
 import com.sap.ordermanagergreen.model.Role;
-import com.sap.ordermanagergreen.model.AvailableRoles;
+import com.sap.ordermanagergreen.model.AvailableRole;
 import com.sap.ordermanagergreen.repository.IRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,7 +40,7 @@ public class RoleService {
         rolesRepository.deleteById(roleId);
     }
 
-    public Role getByName(AvailableRoles name) {
+    public Role getByName(AvailableRole name) {
       return rolesRepository.getByName(name);
     }
 

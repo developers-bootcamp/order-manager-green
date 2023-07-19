@@ -18,7 +18,7 @@ public class OrderPayment {
 
     private long invoiceNumber;
 
-    private PaymentTypes paymentType;
+    private PaymentType paymentType;
 
     private AuditData auditData;
     

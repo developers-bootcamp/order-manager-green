@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderItems {
+public class OrderItem {
     @DBRef
     private Product productId;
     //כמה עולה ביחד

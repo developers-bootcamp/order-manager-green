@@ -25,7 +25,7 @@ public class Order {
 
     private double totalAmount;
 
-    private List<OrderItems> orderItemsList;
+    private List<OrderItem> orderItemsList;
 
     private OrderStatus orderStatus;
 

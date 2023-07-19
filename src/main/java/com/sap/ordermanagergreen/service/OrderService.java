@@ -49,11 +49,11 @@ public class OrderService {
         double totalAmount = 0;
 
         for (int i = 0; i < order.getOrderItemsList().stream().count(); i++) {
-            OrderItems oi = order.getOrderItemsList().get(i);
+            OrderItem oi = order.getOrderItemsList().get(i);
             Product p = oi.getProductId();
             HashMap<Double, Integer> o = new HashMap<Double, Integer>();
             double amount = 0;
-            if (p.getDiscountType() == DiscountTypes.FIXED_AMOUNT) {
+            if (p.getDiscountType() == DiscountType.FIXED_AMOUNT) {
                 amount =( p.getPrice() - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity();
                 o.put(amount, p.getDiscount());
             } else {

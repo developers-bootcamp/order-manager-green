@@ -2,7 +2,7 @@ package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.dto.UserDto;
-import com.sap.ordermanagergreen.exception.NoPermissionException;
+import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.model.User;
@@ -102,7 +102,7 @@ public class UserController {
             userService.deleteById(token, userId);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
-        } catch (NoPermissionException ex) {
+        } catch (NoPremissionException ex) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -117,7 +117,7 @@ public class UserController {
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
         }
-        catch (NoPermissionException ex) {
+        catch (NoPremissionException ex) {
            return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
       }
         catch (Exception ex) {

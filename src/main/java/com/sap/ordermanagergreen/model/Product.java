@@ -23,7 +23,7 @@ public class Product {
     
     private int discount;
     
-    private DiscountTypes discountType;
+    private DiscountType discountType;
         
     @DBRef
     private ProductCategory categoryId;
@@ -31,7 +31,7 @@ public class Product {
     private int inventory;
     
     @DBRef
-    private Company companyId;
+    private Company company;
     
     private AuditData auditData;
     

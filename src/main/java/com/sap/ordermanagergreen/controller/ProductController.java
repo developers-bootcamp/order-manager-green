@@ -1,65 +1,95 @@
-package com.sap.ordermanagergreen.controller;
 
-import com.sap.ordermanagergreen.model.Company;
-import com.sap.ordermanagergreen.model.DiscountTypes;
+package com.sap.ordermanagergreen.controller;
+import com.sap.ordermanagergreen.dto.TokenDTO;
+import com.sap.ordermanagergreen.exception.NoPremissionException;
+import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.model.Product;
+import com.sap.ordermanagergreen.util.JwtToken;
+import com.sap.ordermanagergreen.model.Company;
+import com.sap.ordermanagergreen.model.DiscountType;
 import com.sap.ordermanagergreen.model.ProductCategory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import com.sap.ordermanagergreen.service.ProductService;
+import org.springframework.web.bind.annotation.RequestHeader;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/product")
 public class ProductController {
-    //    @Autowired
-//    public ProductController(ProductService ProductService){
-//        this.ProductService=ProductService;
-//    }
-//    @PostMapping("/add")
-//    public ResponseEntity add(Product product){
-//        try{
-//            ProductService.addProduct(product);
-//
-//        }
-//        catch(ResponseStatusException ex) {
-//            return new ResponseEntity("product name already exist",HttpStatus.CONFLICT);
-//
-//        }
-//        catch (Exception ex){
-//            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-//
-//        }
-//        return new ResponseEntity(HttpStatus.OK);
-//
-//    }
-//    @GetMapping("/getAllNames")
-//    public List<ProductDto>getAllNames(){
-//
-//    }
-    @GetMapping
-    public List<Product> getAll() {
-        Product p = new Product("1", "book", "very intresting", 10.2, 10, DiscountTypes.FIXED_AMOUNT, new ProductCategory("1"), 10,new Company("yefe nof") , null);
-        Product p2 = new Product("2", "book2", "very boaring", 10.2, 10, DiscountTypes.PERCENTAGE, new ProductCategory("1"), 10, new Company("yefe nof"), null);
-        Product p3 = new Product("3", "book3", "very nice", 18.2, 10, DiscountTypes.PERCENTAGE, new ProductCategory("1"), 10, new Company("yefe nof"), null);
-        List<Product> l = new ArrayList<Product>();
-        l.add(p);
-        l.add(p2);
-        l.add(p3);
-        return l;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private JwtToken jwtToken;
 
+    @GetMapping("/createToken")
+    public String createToken() {
+        return productService.fill();
     }
-//    @PutMapping("/edit/{id)")
-//    public ResponseEntity edit(@PathVariable String id,Product product){
-//
-//    }
-//    @DeleteMapping("/deleteById/{id}")
-//    public ResponseEntity deleteById(@PathVariable String id){
-//
-//    }
-}
+    @GetMapping("/getToken")
+    public TokenDTO getTokenFromHeader(@RequestHeader("Authorization") String token) {
+        return jwtToken.decodeToken(token);
+    }
+
+    @PostMapping
+    public ResponseEntity add(@RequestHeader("Authorization") String token, @RequestBody Product product) {
+        try{
+            productService.add(product, token);
+        } catch (ObjectExistException ex) {
+            return new ResponseEntity(ex, HttpStatus.CONFLICT);
+        } catch (NoPremissionException ex) {
+            return new ResponseEntity(ex, HttpStatus.FORBIDDEN);
+        } catch (Exception ex) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity(HttpStatus.OK);}
+
+        @GetMapping("/getAllNames/{prefix}")
+        public ResponseEntity getAllNames(@RequestHeader("Authorization") String token, @PathVariable String prefix) {
+            try {
+                return ResponseEntity.ok(productService.getAllNames(token,prefix));
+            } catch (Exception ex) {
+                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        @GetMapping("/getAll")
+        public ResponseEntity getAll(@RequestHeader("Authorization") String token) {
+            try {
+                return ResponseEntity.ok(productService.getAll(token));
+            } catch (Exception ex) {
+                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        @PutMapping("/{id}")
+        public ResponseEntity editById(@RequestHeader("Authorization") String token, @PathVariable String id, @RequestBody Product product) {
+            try {
+                productService.editById(id, product, token);
+            } catch (ObjectExistException ex) {
+                return new ResponseEntity(ex, HttpStatus.CONFLICT);
+            } catch (NoPremissionException ex) {
+                return new ResponseEntity(ex, HttpStatus.FORBIDDEN);
+            } catch (EmptyResultDataAccessException ex) {
+                return new ResponseEntity("The product is not exist in the system", HttpStatus.NOT_FOUND);
+            } catch (Exception ex) {
+                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return new ResponseEntity(HttpStatus.OK);
+        }
+        @DeleteMapping("/{id}")
+        public ResponseEntity deleteById(@RequestHeader("Authorization") String token, @PathVariable String id) {
+            try {
+                productService.deleteById(id, token);
+                return new ResponseEntity(HttpStatus.OK);
+            } catch (NoPremissionException ex) {
+                return new ResponseEntity(ex, HttpStatus.FORBIDDEN);
+            } catch (EmptyResultDataAccessException ex) {
+                return new ResponseEntity("The product is not exist in the system", HttpStatus.NOT_FOUND);
+            } catch (Exception ex) {
+                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+    }

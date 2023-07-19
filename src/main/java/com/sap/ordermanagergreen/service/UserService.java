@@ -1,7 +1,7 @@
 package com.sap.ordermanagergreen.service;
 
 import com.sap.ordermanagergreen.dto.UserDto;
-import com.sap.ordermanagergreen.exception.NoPermissionException;
+import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.mapper.UserMapper;
@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -50,7 +51,7 @@ public class UserService {
         if(prefixName==null){
             throw new IllegalArgumentException("invalid prefixName") ;
         }
-        Role roleId=roleRepository.getByName(AvailableRoles.CUSTOMER);
+        Role roleId=roleRepository.getByName(AvailableRole.CUSTOMER);
         List<User> autocomplete=userRepository.findByFullNameStartingWithAndRoleId_IdAndCompanyId_Id(prefixName,roleId.getId(),companyId);//CustomersByNameStartingWithAndRoleIdEqualAndCompanyIdEqual(prefixName,roleId.getId(),companyId);
         Map<String,String> toReturn=new HashMap<>();
         autocomplete.forEach(customer->toReturn.put(customer.getId(),customer.getFullName()));
@@ -75,10 +76,10 @@ public class UserService {
             Address address = new Address();
             user.setAddress(address);
             user.getAddress().setEmail(email);
-            user.setRoleId(roleRepository.getByName(AvailableRoles.ADMIN));
+            user.setRoleId(roleRepository.getByName(AvailableRole.ADMIN));
             AuditData auditData = new AuditData();
-            auditData.setCreateDate(new Date());
-            auditData.setUpdateDate(new Date());
+            auditData.setCreateDate(LocalDateTime.now());
+            auditData.setUpdateDate(LocalDateTime.now());
             user.setAuditData(auditData);
             if (companyRepository.existsByName(companyName)) {
                 throw new ObjectExistException("company");
@@ -87,8 +88,8 @@ public class UserService {
             company.setName(companyName);
             companyRepository.save(company);
             AuditData auditData1 = new AuditData();
-            auditData1.setCreateDate(new Date());
-            auditData1.setUpdateDate(new Date());
+            auditData1.setCreateDate(LocalDateTime.now());
+            auditData1.setUpdateDate(LocalDateTime.now());
             company.setAuditData(auditData1);
             user.setCompanyId(company);
             userRepository.insert(user);
@@ -105,20 +106,20 @@ public class UserService {
         }
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         //cheak password mail telephone...
-        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() == AvailableRoles.CUSTOMER)
-            throw new NoPermissionException("role");
+        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() == AvailableRole.CUSTOMER)
+            throw new NoPremissionException("role");
         if(roleRepository.findById(tokenDTO.getRoleId()).isEmpty())
             throw new NotValidException("role");
         user.setRoleId(roleRepository.findById(tokenDTO.getRoleId()).get());
         //user.getRoleId().getAuditData().setUpdateDate(new Date());
-        user.getRoleId().setAuditData(new AuditData(new Date(), new Date()));
-        user.setAuditData(new AuditData(new Date(), new Date()));
+        user.getRoleId().setAuditData(new AuditData(LocalDateTime.now(),LocalDateTime.now()));
+        user.setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
             if (!companyRepository.findById(user.getCompanyId().getId()).orElse(new Company()).getId().equals(tokenDTO.getCompanyId())) {
-                throw new NoPermissionException("company");
+                throw new NoPremissionException("company");
             }
             user.setCompanyId(companyRepository.findById(user.getCompanyId().getId()).get());
             //user.getCompanyId().getAuditData().setUpdateDate(new Date());
-            user.getCompanyId().setAuditData(new AuditData(new Date(), new Date()));
+            user.getCompanyId().setAuditData(new AuditData(LocalDateTime.now(),LocalDateTime.now()));
             userRepository.save(user);
         }
 
@@ -126,10 +127,10 @@ public class UserService {
     public void deleteById(String token, String userId) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
-                AvailableRoles.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId()).
+                AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId()).
                 orElse(new Company()).getId().equals(userRepository.findById(userId).
                         orElse(new User()).getCompanyId().getId()))) {
-            throw new NoPermissionException("You don't have permission to delete the user");
+            throw new NoPremissionException("You don't have permission to delete the user");
         }
         if (userRepository.findById(userId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
@@ -141,10 +142,10 @@ public class UserService {
     public void editById(String token, User user) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
-                AvailableRoles.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId())
+                AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId())
                 .orElse(new Company()).getId().equals(userRepository.findById(user.getId())
                         .orElse(new User()).getCompanyId().getId()))) {
-            throw new NoPermissionException("You don't have permission to delete the user");
+            throw new NoPremissionException("You don't have permission to delete the user");
         }
         if (userRepository.findById(user.getId()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");

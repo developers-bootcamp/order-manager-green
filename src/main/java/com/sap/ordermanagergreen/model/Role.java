@@ -13,7 +13,7 @@ public class Role {
     @Id
     private String id;
     
-    private AvailableRoles name;
+    private AvailableRole name;
     
     private String desc;
     
