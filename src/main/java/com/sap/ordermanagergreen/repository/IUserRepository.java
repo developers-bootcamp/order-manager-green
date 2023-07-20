@@ -20,10 +20,10 @@ public interface IUserRepository extends MongoRepository<User, String> {
     boolean existsByFullName(String fullName);
 
     //@Query(fields = "{'id': 1, 'fullName': 1,'password':1,'address':1}")
-    Page<User> findByCompanyIdOrderByRoleIdAscAuditData_UpdateDateDesc(String companyId, Pageable pageable);
+    Page<User> findByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(String id, Pageable pageable);
 
     @Query(fields = "{'id': 1, 'fullName': 1}")
-    List<User> findByFullNameStartingWithAndRoleId_IdAndCompanyId_Id(String prefixName, String roleId, String companyId);
+    List<User> findByFullNameStartingWithAndRole_IdAndCompany_Id(String prefixName, String roleId, String companyId);
 
 
 }

@@ -19,8 +19,15 @@ public class ProductCategoryService {
     public ProductCategoryService(IProductCategoryRepository productCategoryRepository) {
         this.productCategoryRepository = productCategoryRepository;
     }
-
-    public ResponseEntity<String> saveProductCategory(ProductCategory productCategory) {
+    public ResponseEntity<List<ProductCategory>> get() {
+        try {
+            List<ProductCategory> categories = productCategoryRepository.findAll();
+            return ResponseEntity.ok(categories);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    public ResponseEntity<String> add(ProductCategory productCategory) {
         String categoryName = productCategory.getName();
         if (doesCategoryExist(categoryName)) {
             return new ResponseEntity<>("Category name already exists", HttpStatus.CONFLICT);
@@ -29,16 +36,24 @@ public class ProductCategoryService {
         return ResponseEntity.ok("success: true");
     }
 
-    public ResponseEntity<List<ProductCategory>> getAllCategories() {
+
+    public ResponseEntity<String> update(String id, ProductCategory productCategory) {
         try {
-            List<ProductCategory> categories = productCategoryRepository.findAll();
-            return ResponseEntity.ok(categories);
+            Optional<ProductCategory> oldProductCategory = productCategoryRepository.findById(id);
+            if (oldProductCategory.isEmpty()) {
+                return new ResponseEntity<>("Category does not exist", HttpStatus.NOT_FOUND);
+            }
+            if (productCategory.getName() == null)
+                productCategory.setName(oldProductCategory.get().getName());
+            if (productCategory.getDescription() == null)
+                productCategory.setDescription(oldProductCategory.get().getDescription());
+            productCategoryRepository.save(productCategory);
+            return ResponseEntity.ok("success: true");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    public ResponseEntity<String> deleteProductCategory(String id) {
+    public ResponseEntity<String> delete(String id) {
         try {
             if (productCategoryRepository.findById(id).isEmpty()) {
                 return new ResponseEntity<>("Category not found", HttpStatus.NOT_FOUND);
@@ -55,21 +70,6 @@ public class ProductCategoryService {
         return productCategoryRepository.existsByName(categoryName);
     }
 
-    public ResponseEntity<String> editProductCategory(String id, ProductCategory productCategory) {
-        try {
-            Optional<ProductCategory> oldProductCategory = productCategoryRepository.findById(id);
-            if (oldProductCategory.isEmpty()) {
-                return new ResponseEntity<>("Category does not exist", HttpStatus.NOT_FOUND);
-            }
-            if (productCategory.getName() == null)
-                productCategory.setName(oldProductCategory.get().getName());
-            if (productCategory.getDesc() == null)
-                productCategory.setDesc(oldProductCategory.get().getDesc());
-            productCategoryRepository.save(productCategory);
-            return ResponseEntity.ok("success: true");
-        } catch (Exception e) {
-            return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+
 
 }

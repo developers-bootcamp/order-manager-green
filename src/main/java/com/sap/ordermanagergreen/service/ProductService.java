@@ -1,19 +1,17 @@
 package com.sap.ordermanagergreen.service;
-import com.sap.ordermanagergreen.dto.ProductDto;
-import com.sap.ordermanagergreen.dto.ProductNameDto;
+import com.sap.ordermanagergreen.dto.ProductDTO;
+import com.sap.ordermanagergreen.dto.ProductNameDTO;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.*;
 import com.sap.ordermanagergreen.util.JwtToken;
-import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.lang.reflect.Type;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,35 +32,33 @@ public class ProductService {
     @Autowired
     private IProductCategoryRepository productCategoryRepository;
     public String fill() {
-        AuditData d = new AuditData(LocalDateTime.now(),LocalDateTime.now());
-        Company c = new Company("7", "AAAAAAAAA", "55", d);
-        companyRepository.save(c);
-        Role roles = new Role("3", AvailableRole.ADMIN, "cust", d);
-        roleRepository.save(roles);
-        Address a = new Address("0580000000", "mezada 7", "aaa");
-        User user = new User("8", "A", "a", a, roles, c, d);
+        AuditData auditData =AuditData.builder().createDate(LocalDateTime.now()).updateDate(LocalDateTime.now()).build();
+        Company company = Company.builder().name("sap").currency(Currency.SHEKEL).auditData(auditData).build();
+        companyRepository.save(company);
+        Role role =Role.builder().name(AvailableRole.ADMIN).description("Branch manager in Israel").auditData(auditData).build();
+        roleRepository.save(role);
+        Address address = Address.builder().telephone("0583204192").address("Eli Horvitz 14").email("sap@gmail.com").build();
+        User user =User.builder().fullName("orna").password("1234").address(address).role(role).company(company).auditData(auditData).build();
         userRepository.save(user);
-        ProductCategory productCategory = new ProductCategory("6", "bc", "yu", c, d);
+        ProductCategory productCategory =ProductCategory.builder().name("Photo Album").description("None").company(company).auditData(auditData).build();
         productCategoryRepository.save(productCategory);
-        ProductCategory productCategory1 = new ProductCategory("7", "as", "vg", c, d);
-        productCategoryRepository.save(productCategory1);
         return jwtToken.generateToken(user);
+    }    public List<Product> get(String token) {
+        TokenDTO tokenDTO = jwtToken.decodeToken(token);
+        List<Product> products= productRepository.findAllByCompany_Id(tokenDTO.getCompanyId());
+        Type listType = new TypeToken<List<ProductDTO>>() {
+        }.getType();
+        return modelMapper.map(products, listType);
     }
-    public List<ProductNameDto> getAllNames(String token,String prefix) {
+    public List<ProductNameDTO> get(String token, String prefix) {
         TokenDTO tokenDTO = jwtToken.decodeToken(token);
         System.out.println(tokenDTO.getCompanyId());
-        List<Product> products = productRepository.findProductsByNameStartingWithAndCompanyIdEqual(prefix,tokenDTO.getCompanyId());
-        Type listType = new TypeToken<List<ProductNameDto>>() {
+        List<Product> products = productRepository.findProductsByNameStartingWithAndCompany_IdEqual(prefix,tokenDTO.getCompanyId());
+        Type listType = new TypeToken<List<ProductNameDTO>>() {
         }.getType();
         return modelMapper.map(products, listType);
     }
-    public List<Product> getAll(String token) {
-        TokenDTO tokenDTO = jwtToken.decodeToken(token);
-        List<Product> products= productRepository.findAllByCompanyId(tokenDTO.getCompanyId());
-        Type listType = new TypeToken<List<ProductDto>>() {
-        }.getType();
-        return modelMapper.map(products, listType);
-    }
+
     public void add(Product product, String token) throws Exception {
         if (productRepository.existsByName(product.getName()))
             throw new ObjectExistException("product name already exist");
@@ -73,7 +69,7 @@ public class ProductService {
         product.setAuditData(new AuditData(LocalDateTime.now()));
         productRepository.save(product);
     }
-    public void editById(String id, Product product, String token)throws Exception {
+    public void update(String id, Product product, String token)throws Exception {
         TokenDTO tokenDTO = jwtToken.decodeToken(token);
         Product prevProduct = productRepository.findById(id).orElse(null);
         if (productRepository.existsByName(product.getName()) && !prevProduct.getName().equals(product.getName()))
@@ -84,7 +80,7 @@ public class ProductService {
         product.setAuditData(new AuditData(prevProduct.getAuditData().getCreateDate(), LocalDateTime.now()));
         productRepository.save(product);
     }
-    public void deleteById(String id, String token)throws Exception {
+    public void delete(String id, String token)throws Exception {
         TokenDTO tokenDTO = jwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER) || !tokenDTO.getCompanyId().equals(productRepository.findById(id).orElse(null).getCompany().getId()))
             throw new NoPremissionException("You don't have permission to delete the product");

@@ -18,30 +18,30 @@ public class RoleService {
         this.rolesRepository = rolesRepository;
     }
 
-    public List<Role> getAll() {
+    public List<Role> get() {
         return rolesRepository.findAll();
     }
 
-    public Role getById(String id) {
+    public Role get(String id) {
         return rolesRepository.findById(id).get();
+    }
+    public Role get(AvailableRole name) {
+        return rolesRepository.getByName(name);
     }
 
     public void add(Role roles) {
         rolesRepository.save(roles);
     }
 
-    public Role put(String id, Role roles) {
+    public Role update(String id, Role roles) {
         rolesRepository.deleteById(id);
         rolesRepository.save(roles);
         return roles;
     }
 
-    public void deleteById(String roleId) {
+    public void delete(String roleId) {
         rolesRepository.deleteById(roleId);
     }
 
-    public Role getByName(AvailableRole name) {
-      return rolesRepository.getByName(name);
-    }
 
 }

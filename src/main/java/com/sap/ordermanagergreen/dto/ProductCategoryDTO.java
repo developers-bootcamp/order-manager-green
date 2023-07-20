@@ -12,11 +12,11 @@ public class ProductCategoryDTO {
     @Id
     private String id;
     private String name;
-    private String desc;
+    private String description;
 
     public ProductCategoryDTO(ProductCategoryDTO productCategoryDTO) {
-        id = productCategoryDTO.getId();
-        name = productCategoryDTO.getName();
-        desc = productCategoryDTO.getDesc();
+        id = productCategoryDTO.id;
+        name = productCategoryDTO.name;
+        description = productCategoryDTO.description;
     }
 }

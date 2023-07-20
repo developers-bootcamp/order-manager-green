@@ -12,9 +12,10 @@ import java.util.List;
 @RequestMapping("/currency")
 public class CurrencyController {
     @Autowired
-     private CurrencyService currencyService;
+    private CurrencyService currencyService;
+
     @GetMapping
-    public List<String>getAll(){
-        return currencyService.getAll();
+    public List<String> get() {
+        return currencyService.get();
     }
 }

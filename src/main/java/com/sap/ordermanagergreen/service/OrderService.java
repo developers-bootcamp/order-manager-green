@@ -24,19 +24,19 @@ public class OrderService {
         this.productRepository = productRepository;
     }
 
-    public List<Order> getOrders(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
+    public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
 
         Pageable paging = PageRequest.of(pageNo, pageSize);
-        return orderRepository.findByOrderStatusAndCompanyId(paging, orderStatus, companyId);
+        return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
 
     }
 
-    public String createOrder(Order order) {
+    public String add(Order order) {
         Order newOrdr = this.orderRepository.insert(order);
         return newOrdr.getId();
     }
 
-    public void updateOrder(String id, Order order) throws ObjectNotExist {
+    public void update(String id, Order order) throws ObjectNotExist {
 
         if (orderRepository.findById(id).isEmpty())
             throw new ObjectNotExist();
@@ -50,7 +50,7 @@ public class OrderService {
 
         for (int i = 0; i < order.getOrderItemsList().stream().count(); i++) {
             OrderItem oi = order.getOrderItemsList().get(i);
-            Product p = oi.getProductId();
+            Product p = oi.getProduct();
             HashMap<Double, Integer> o = new HashMap<Double, Integer>();
             double amount = 0;
             if (p.getDiscountType() == DiscountType.FIXED_AMOUNT) {

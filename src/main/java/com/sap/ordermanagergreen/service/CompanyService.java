@@ -17,11 +17,11 @@ public class CompanyService {
         this.companyRepository = companyRepository;
     }
 
-    public List<Company> getAll() {
+    public List<Company> get() {
         return companyRepository.findAll();
     }
 
-    public Company getById(String id) {
+    public Company get(String id) {
         return companyRepository.findById(id).get();
     }
 
@@ -29,13 +29,13 @@ public class CompanyService {
         companyRepository.save(company);
     }
 
-    public Company put(String id, Company company) {
+    public Company update(String id, Company company) {
         companyRepository.deleteById(id);
         companyRepository.save(company);
         return company;
     }
 
-    public void deleteById(String companyId) {
+    public void delete(String companyId) {
         companyRepository.deleteById(companyId);
     }
 

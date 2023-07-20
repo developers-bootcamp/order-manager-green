@@ -37,25 +37,33 @@ public class UserService {
         this.companyRepository = companyRepository;
     }
 
-    public List<UserDto> getAll(String companyId, int page, int pageSize) {
+    public List<UserDto> get(String companyId, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
-        Page<User> y= userRepository.findByCompanyIdOrderByRoleIdAscAuditData_UpdateDateDesc(companyId, pageRequest);
+        Page<User> y= userRepository.findByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(companyId, pageRequest);
         List<User> users=y.getContent();
         List<UserDto> toReturn =new ArrayList<>();
         users.forEach(e->toReturn.add(userMapper.UserToUserDTO(e)));
         return toReturn;
     }
-
     @SneakyThrows
-    public Map<String,String> getAllByPrefix(String prefixName, String companyId) {
+    public Map<String,String> get(String prefixName, String companyId) {
         if(prefixName==null){
             throw new IllegalArgumentException("invalid prefixName") ;
         }
         Role roleId=roleRepository.getByName(AvailableRole.CUSTOMER);
-        List<User> autocomplete=userRepository.findByFullNameStartingWithAndRoleId_IdAndCompanyId_Id(prefixName,roleId.getId(),companyId);//CustomersByNameStartingWithAndRoleIdEqualAndCompanyIdEqual(prefixName,roleId.getId(),companyId);
+        List<User> autocomplete=userRepository.findByFullNameStartingWithAndRole_IdAndCompany_Id(prefixName,roleId.getId(),companyId);//CustomersByNameStartingWithAndRoleIdEqualAndCompanyIdEqual(prefixName,roleId.getId(),companyId);
         Map<String,String> toReturn=new HashMap<>();
         autocomplete.forEach(customer->toReturn.put(customer.getId(),customer.getFullName()));
         return toReturn;
+    }   public User getUserByEmailAndPassword(String userEmail, String userPassword) {
+        User user = isEmailExists(userEmail);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found. Please sign up");
+        } else {
+            if (!user.getPassword().equals(userPassword))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+            return user;
+        }
     }
     public User signUp(String fullName, String companyName, String email, String password) throws Exception {
         try {
@@ -76,7 +84,7 @@ public class UserService {
             Address address = new Address();
             user.setAddress(address);
             user.getAddress().setEmail(email);
-            user.setRoleId(roleRepository.getByName(AvailableRole.ADMIN));
+            user.setRole(roleRepository.getByName(AvailableRole.ADMIN));
             AuditData auditData = new AuditData();
             auditData.setCreateDate(LocalDateTime.now());
             auditData.setUpdateDate(LocalDateTime.now());
@@ -91,16 +99,15 @@ public class UserService {
             auditData1.setCreateDate(LocalDateTime.now());
             auditData1.setUpdateDate(LocalDateTime.now());
             company.setAuditData(auditData1);
-            user.setCompanyId(company);
-            userRepository.insert(user);
+            user.setCompany(company);
+            userRepository.save(user);
             return user;
         } catch (Exception e) {
             throw new Exception();
         }
     }
 
-    @SneakyThrows
-    public void add(String token, User user) {
+    public void add(String token, User user) throws Exception{
         if (userRepository.existsByFullName(user.getFullName())) {
             throw new ObjectExistException("user name ");
         }
@@ -110,26 +117,37 @@ public class UserService {
             throw new NoPremissionException("role");
         if(roleRepository.findById(tokenDTO.getRoleId()).isEmpty())
             throw new NotValidException("role");
-        user.setRoleId(roleRepository.findById(tokenDTO.getRoleId()).get());
+        user.setRole(roleRepository.findById(tokenDTO.getRoleId()).get());
         //user.getRoleId().getAuditData().setUpdateDate(new Date());
-        user.getRoleId().setAuditData(new AuditData(LocalDateTime.now(),LocalDateTime.now()));
+        user.getRole().setAuditData(new AuditData(LocalDateTime.now(),LocalDateTime.now()));
         user.setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
-            if (!companyRepository.findById(user.getCompanyId().getId()).orElse(new Company()).getId().equals(tokenDTO.getCompanyId())) {
+            if (!companyRepository.findById(user.getCompany().getId()).orElse(new Company()).getId().equals(tokenDTO.getCompanyId())) {
                 throw new NoPremissionException("company");
             }
-            user.setCompanyId(companyRepository.findById(user.getCompanyId().getId()).get());
+            user.setCompany(companyRepository.findById(user.getCompany().getId()).get());
             //user.getCompanyId().getAuditData().setUpdateDate(new Date());
-            user.getCompanyId().setAuditData(new AuditData(LocalDateTime.now(),LocalDateTime.now()));
+            user.getCompany().setAuditData(new AuditData(LocalDateTime.now(),LocalDateTime.now()));
             userRepository.save(user);
         }
-
-    @SneakyThrows
-    public void deleteById(String token, String userId) {
+    public void update(String token, User user)throws Exception {
+        TokenDTO tokenDTO = JwtToken.decodeToken(token);
+        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
+                AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId())
+                .orElse(new Company()).getId().equals(userRepository.findById(user.getId())
+                        .orElse(new User()).getCompany().getId()))) {
+            throw new NoPremissionException("You don't have permission to delete the user");
+        }
+        if (userRepository.findById(user.getId()).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
+        }
+        userRepository.save(user);
+    }
+    public void delete(String token, String userId)throws Exception {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
                 AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId()).
                 orElse(new Company()).getId().equals(userRepository.findById(userId).
-                        orElse(new User()).getCompanyId().getId()))) {
+                        orElse(new User()).getCompany().getId()))) {
             throw new NoPremissionException("You don't have permission to delete the user");
         }
         if (userRepository.findById(userId).isEmpty()) {
@@ -138,34 +156,12 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    @SneakyThrows
-    public void editById(String token, User user) {
-        TokenDTO tokenDTO = JwtToken.decodeToken(token);
-        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
-                AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId())
-                .orElse(new Company()).getId().equals(userRepository.findById(user.getId())
-                        .orElse(new User()).getCompanyId().getId()))) {
-            throw new NoPremissionException("You don't have permission to delete the user");
-        }
-        if (userRepository.findById(user.getId()).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
-        }
-        userRepository.save(user);
-    }
+
 
     public User isEmailExists(String email) {
         return userRepository.findByAddress_Email(email);
     }
 
-    public User getUserByEmailAndPassword(String userEmail, String userPassword) {
-        User user = isEmailExists(userEmail);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found. Please sign up");
-        } else {
-            if (!user.getPassword().equals(userPassword))
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
-            return user;
-        }
-    }
+
 
 }

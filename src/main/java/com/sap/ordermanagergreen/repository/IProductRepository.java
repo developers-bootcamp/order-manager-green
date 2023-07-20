@@ -12,8 +12,8 @@ import java.util.List;
 public interface IProductRepository extends MongoRepository<Product, String> {
     
     boolean existsByName(String Name);
-    List<Product> findAllByCompanyId(String companyId);
-    @Query(value ="{'name': {$regex : '^?0', $options: 'i'},'companyId':?1}", fields = "{'id': 1, 'name': 1}")
-    List<Product> findProductsByNameStartingWithAndCompanyIdEqual(String prefix,String companyId);
+    List<Product> findAllByCompany_Id(String id);
+    @Query(value ="{'name': {$regex : '^?0', $options: 'i'},'company':?1}", fields = "{'id': 1, 'name': 1}")
+    List<Product> findProductsByNameStartingWithAndCompany_IdEqual(String prefix,String id);
     
 }

@@ -9,7 +9,7 @@ import java.util.List;
 @Service
 public class CurrencyService {
 
-    public List<String> getAll() {
+    public List<String> get() {
             List<String> names = new ArrayList<>();
             for (Currency currency : Currency.values()) {
                 names.add(currency.name());

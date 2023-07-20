@@ -19,10 +19,10 @@ public class JwtToken {
         Date now = new Date();
         System.out.println("begin");
         String accessToken = JWT.create()
-                .withClaim("roleId",user.getRoleId().getId())
+                .withClaim("roleId",user.getRole().getId())
 
                 .withClaim("id",user.getId())
-                .withClaim("companyId",user.getCompanyId().getId())
+                .withClaim("companyId",user.getCompany().getId())
                 .withExpiresAt(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
                 .sign(algorithm);
         System.out.println("accessToken");
