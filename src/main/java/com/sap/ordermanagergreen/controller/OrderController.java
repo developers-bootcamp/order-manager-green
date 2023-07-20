@@ -21,8 +21,6 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
-    @Autowired
-    private JwtToken jwtToken;
 
     @GetMapping
     public ResponseEntity<List<Order>> get(@RequestParam(defaultValue = "0") Integer pageNo,

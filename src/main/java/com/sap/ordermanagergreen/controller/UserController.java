@@ -30,8 +30,7 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private  UserService userService;
-    @Autowired
-    private  JwtToken jwtToken;
+
     @GetMapping
     public ResponseEntity<List<UserDto>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
@@ -45,12 +44,12 @@ public class UserController {
     }
 
     @GetMapping("/{prefixName}")
-    public ResponseEntity<Map<String, String>> get(@PathVariable("prefixName") String prefixName, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<Map<String, String>> getNames(@PathVariable("prefixName") String prefixName, @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         Map<String, String> l = null;
         Map<String, String> errorMap = new HashMap<>();
         try {
-            l = userService.get(prefixName, tokenDTO.getCompanyId());
+            l = userService.getNames(prefixName, tokenDTO.getCompanyId());
         } catch (IllegalArgumentException e) {
             errorMap.put("IllegalArgumentException", "invalid prefixName");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMap);
@@ -80,7 +79,7 @@ public class UserController {
         try {
             User user = userService.getUserByEmailAndPassword(email, password);
             System.out.println(user);
-            String token = jwtToken.generateToken(user);
+            String token = JwtToken.generateToken(user);
             return ResponseEntity.ok(token);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>(ex.getMessage(), ex.getStatusCode());

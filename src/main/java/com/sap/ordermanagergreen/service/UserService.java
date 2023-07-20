@@ -45,7 +45,7 @@ public class UserService {
     }
 
     @SneakyThrows
-    public Map<String, String> get(String prefixName, String companyId) {
+    public Map<String, String> getNames(String prefixName, String companyId) {
         if (prefixName == null) {
             throw new IllegalArgumentException("invalid prefixName");
         }
@@ -67,7 +67,7 @@ public class UserService {
         }
     }
 
-    public User signUp(String fullName, String companyName, String email, String password) throws NotValidException,NotValidException,ObjectExistException,Exception {
+    public User signUp(String fullName, String companyName, String email, String password) throws NotValidException, Exception {
 
             User user = new User();
             user.setFullName(fullName);

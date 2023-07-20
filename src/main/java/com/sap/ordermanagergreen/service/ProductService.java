@@ -17,8 +17,7 @@ import java.util.List;
 
 @Service
 public class ProductService {
-    @Autowired
-    private JwtToken jwtToken;
+
     @Autowired
     private IProductRepository productRepository;
     @Autowired
@@ -42,7 +41,7 @@ public class ProductService {
         userRepository.save(user);
         ProductCategory productCategory =ProductCategory.builder().name("Photo Album").description("None").company(company).auditData(auditData).build();
         productCategoryRepository.save(productCategory);
-        return jwtToken.generateToken(user);
+        return JwtToken.generateToken(user);
     }
 
     public List<Product> get(String token) {
@@ -53,7 +52,7 @@ public class ProductService {
         return modelMapper.map(products, listType);
     }
 
-    public List<ProductNameDTO> get(String token, String prefix) {
+    public List<ProductNameDTO> getNames(String token, String prefix) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         System.out.println(tokenDTO.getCompanyId());
         List<Product> products = productRepository.findProductsByNameStartingWithAndCompany_IdEqual(prefix,tokenDTO.getCompanyId());
