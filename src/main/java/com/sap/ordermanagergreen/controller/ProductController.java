@@ -28,7 +28,7 @@ public class ProductController {
 
     @GetMapping("/getToken")
     public TokenDTO getTokenFromHeader(@RequestHeader("Authorization") String token) {
-        return jwtToken.decodeToken(token);
+        return JwtToken.decodeToken(token);
     }
 
     @GetMapping
@@ -41,7 +41,7 @@ public class ProductController {
     }
 
     @GetMapping("/{prefix}")
-    public ResponseEntity get(@RequestHeader("Authorization") String token, @PathVariable String prefix) {
+    public ResponseEntity getName(@RequestHeader("Authorization") String token, @PathVariable String prefix) {
         try {
             return ResponseEntity.ok(productService.get(token, prefix));
         } catch (Exception ex) {
