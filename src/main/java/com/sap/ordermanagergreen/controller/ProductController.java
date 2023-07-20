@@ -39,22 +39,24 @@ public class ProductController {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/{prefix}")
-    public ResponseEntity getAllNames(@RequestHeader("Authorization") String token, @PathVariable String prefix) {
+    public ResponseEntity get(@RequestHeader("Authorization") String token, @PathVariable String prefix) {
         try {
             return ResponseEntity.ok(productService.get(token, prefix));
         } catch (Exception ex) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @PostMapping
     public ResponseEntity add(@RequestHeader("Authorization") String token, @RequestBody Product product) {
         try {
             productService.add(product, token);
         } catch (ObjectExistException ex) {
-            return new ResponseEntity(ex, HttpStatus.CONFLICT);
+            return new ResponseEntity(ex.getMessage(), HttpStatus.CONFLICT);
         } catch (NoPremissionException ex) {
-            return new ResponseEntity(ex, HttpStatus.FORBIDDEN);
+            return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception ex) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -62,15 +64,14 @@ public class ProductController {
     }
 
 
-
     @PutMapping("/{id}")
     public ResponseEntity update(@RequestHeader("Authorization") String token, @PathVariable String id, @RequestBody Product product) {
         try {
             productService.update(id, product, token);
         } catch (ObjectExistException ex) {
-            return new ResponseEntity(ex, HttpStatus.CONFLICT);
+            return new ResponseEntity(ex.getMessage(), HttpStatus.CONFLICT);
         } catch (NoPremissionException ex) {
-            return new ResponseEntity(ex, HttpStatus.FORBIDDEN);
+            return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
         } catch (EmptyResultDataAccessException ex) {
             return new ResponseEntity("The product is not exist in the system", HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
@@ -85,7 +86,7 @@ public class ProductController {
             productService.delete(id, token);
             return new ResponseEntity(HttpStatus.OK);
         } catch (NoPremissionException ex) {
-            return new ResponseEntity(ex, HttpStatus.FORBIDDEN);
+            return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
         } catch (EmptyResultDataAccessException ex) {
             return new ResponseEntity("The product is not exist in the system", HttpStatus.NOT_FOUND);
         } catch (Exception ex) {

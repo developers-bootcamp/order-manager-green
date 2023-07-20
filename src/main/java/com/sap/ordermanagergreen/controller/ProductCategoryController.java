@@ -12,12 +12,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/productCategory")
 public class ProductCategoryController {
-    private ProductCategoryService productCategoryService;
 
     @Autowired
-    public ProductCategoryController(ProductCategoryService productCategoryService) {
-        this.productCategoryService = productCategoryService;
-    }
+    private ProductCategoryService productCategoryService;
 
     @GetMapping
     public ResponseEntity<List<ProductCategory>> get() {
@@ -26,13 +23,14 @@ public class ProductCategoryController {
 
     @PostMapping
     public ResponseEntity<String> add(@RequestBody ProductCategory productCategory) {
-        System.out.println("💕💕 in createProductCategory");
         return productCategoryService.add(productCategory);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable String id, @RequestBody ProductCategory productCategory) {
         return productCategoryService.update(id, productCategory);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable String id) {
         return productCategoryService.delete(id);

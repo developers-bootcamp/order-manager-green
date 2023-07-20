@@ -13,12 +13,9 @@ import java.util.Optional;
 @Service
 public class ProductCategoryService {
 
-    IProductCategoryRepository productCategoryRepository;
-
     @Autowired
-    public ProductCategoryService(IProductCategoryRepository productCategoryRepository) {
-        this.productCategoryRepository = productCategoryRepository;
-    }
+    private IProductCategoryRepository productCategoryRepository;
+
     public ResponseEntity<List<ProductCategory>> get() {
         try {
             List<ProductCategory> categories = productCategoryRepository.findAll();
@@ -27,6 +24,7 @@ public class ProductCategoryService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     public ResponseEntity<String> add(ProductCategory productCategory) {
         String categoryName = productCategory.getName();
         if (doesCategoryExist(categoryName)) {
@@ -35,7 +33,6 @@ public class ProductCategoryService {
         productCategoryRepository.save(productCategory);
         return ResponseEntity.ok("success: true");
     }
-
 
     public ResponseEntity<String> update(String id, ProductCategory productCategory) {
         try {
@@ -53,6 +50,7 @@ public class ProductCategoryService {
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     public ResponseEntity<String> delete(String id) {
         try {
             if (productCategoryRepository.findById(id).isEmpty()) {
@@ -69,7 +67,4 @@ public class ProductCategoryService {
     public boolean doesCategoryExist(String categoryName) {
         return productCategoryRepository.existsByName(categoryName);
     }
-
-
-
 }

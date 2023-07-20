@@ -19,43 +19,44 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class UserService {
-    IUserRepository userRepository;
-    UserMapper userMapper;
-    IRoleRepository roleRepository;
-    ICompanyRepository companyRepository;
-
     @Autowired
-    public UserService(IUserRepository userRepository, UserMapper userMapper, IRoleRepository roleRepository, ICompanyRepository companyRepository) {
-        this.userRepository = userRepository;
-        this.userMapper=userMapper;
-        this.roleRepository = roleRepository;
-        this.companyRepository = companyRepository;
-    }
+    IUserRepository userRepository;
+    @Autowired
+    UserMapper userMapper;
+    @Autowired
+    IRoleRepository roleRepository;
+    @Autowired
+    ICompanyRepository companyRepository;
 
     public List<UserDto> get(String companyId, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
-        Page<User> y= userRepository.findByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(companyId, pageRequest);
-        List<User> users=y.getContent();
-        List<UserDto> toReturn =new ArrayList<>();
-        users.forEach(e->toReturn.add(userMapper.UserToUserDTO(e)));
+        Page<User> y = userRepository.findByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(companyId, pageRequest);
+        List<User> users = y.getContent();
+        List<UserDto> toReturn = new ArrayList<>();
+        users.forEach(e -> toReturn.add(userMapper.UserToUserDTO(e)));
         return toReturn;
     }
+
     @SneakyThrows
-    public Map<String,String> get(String prefixName, String companyId) {
-        if(prefixName==null){
-            throw new IllegalArgumentException("invalid prefixName") ;
+    public Map<String, String> get(String prefixName, String companyId) {
+        if (prefixName == null) {
+            throw new IllegalArgumentException("invalid prefixName");
         }
-        Role roleId=roleRepository.getByName(AvailableRole.CUSTOMER);
-        List<User> autocomplete=userRepository.findByFullNameStartingWithAndRole_IdAndCompany_Id(prefixName,roleId.getId(),companyId);//CustomersByNameStartingWithAndRoleIdEqualAndCompanyIdEqual(prefixName,roleId.getId(),companyId);
-        Map<String,String> toReturn=new HashMap<>();
-        autocomplete.forEach(customer->toReturn.put(customer.getId(),customer.getFullName()));
+        Role roleId = roleRepository.getByName(AvailableRole.CUSTOMER);
+        List<User> autocomplete = userRepository.findByFullNameStartingWithAndRole_IdAndCompany_Id(prefixName, roleId.getId(), companyId);//CustomersByNameStartingWithAndRoleIdEqualAndCompanyIdEqual(prefixName,roleId.getId(),companyId);
+        Map<String, String> toReturn = new HashMap<>();
+        autocomplete.forEach(customer -> toReturn.put(customer.getId(), customer.getFullName()));
         return toReturn;
-    }   public User getUserByEmailAndPassword(String userEmail, String userPassword) {
+    }
+
+    public User getUserByEmailAndPassword(String userEmail, String userPassword) {
         User user = isEmailExists(userEmail);
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found. Please sign up");
@@ -65,8 +66,9 @@ public class UserService {
             return user;
         }
     }
-    public User signUp(String fullName, String companyName, String email, String password) throws Exception {
-        try {
+
+    public User signUp(String fullName, String companyName, String email, String password) throws NotValidException,NotValidException,ObjectExistException,Exception {
+
             User user = new User();
             user.setFullName(fullName);
             //password validations?
@@ -75,9 +77,9 @@ public class UserService {
             }
             user.setPassword(password);
             //email validations?
-            if (!email.contains("@")) {
-                throw new NotValidException("email");
-            }
+//            if (!email.contains("@")) {
+//                throw new NotValidException("email");
+//            }
             if (userRepository.existsByAddress_Email(email)) {
                 throw new ObjectExistException("email");
             }
@@ -102,12 +104,10 @@ public class UserService {
             user.setCompany(company);
             userRepository.save(user);
             return user;
-        } catch (Exception e) {
-            throw new Exception();
         }
-    }
 
-    public void add(String token, User user) throws Exception{
+
+    public void add(String token, User user) throws ObjectExistException, NoPremissionException, NotValidException {
         if (userRepository.existsByFullName(user.getFullName())) {
             throw new ObjectExistException("user name ");
         }
@@ -115,21 +115,22 @@ public class UserService {
         //cheak password mail telephone...
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() == AvailableRole.CUSTOMER)
             throw new NoPremissionException("role");
-        if(roleRepository.findById(tokenDTO.getRoleId()).isEmpty())
+        if (roleRepository.findById(tokenDTO.getRoleId()).isEmpty())
             throw new NotValidException("role");
         user.setRole(roleRepository.findById(tokenDTO.getRoleId()).get());
         //user.getRoleId().getAuditData().setUpdateDate(new Date());
-        user.getRole().setAuditData(new AuditData(LocalDateTime.now(),LocalDateTime.now()));
+        user.getRole().setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
         user.setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
-            if (!companyRepository.findById(user.getCompany().getId()).orElse(new Company()).getId().equals(tokenDTO.getCompanyId())) {
-                throw new NoPremissionException("company");
-            }
-            user.setCompany(companyRepository.findById(user.getCompany().getId()).get());
-            //user.getCompanyId().getAuditData().setUpdateDate(new Date());
-            user.getCompany().setAuditData(new AuditData(LocalDateTime.now(),LocalDateTime.now()));
-            userRepository.save(user);
+        if (!companyRepository.findById(user.getCompany().getId()).orElse(new Company()).getId().equals(tokenDTO.getCompanyId())) {
+            throw new NoPremissionException("company");
         }
-    public void update(String token, User user)throws Exception {
+        user.setCompany(companyRepository.findById(user.getCompany().getId()).get());
+        //user.getCompanyId().getAuditData().setUpdateDate(new Date());
+        user.getCompany().setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
+        userRepository.save(user);
+    }
+
+    public void update(String token, User user) throws NoPremissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
                 AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId())
@@ -142,7 +143,8 @@ public class UserService {
         }
         userRepository.save(user);
     }
-    public void delete(String token, String userId)throws Exception {
+
+    public void delete(String token, String userId) throws NoPremissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
                 AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId()).
@@ -156,12 +158,7 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-
-
     public User isEmailExists(String email) {
         return userRepository.findByAddress_Email(email);
     }
-
-
-
 }

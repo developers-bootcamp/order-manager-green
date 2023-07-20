@@ -43,13 +43,16 @@ public class ProductService {
         ProductCategory productCategory =ProductCategory.builder().name("Photo Album").description("None").company(company).auditData(auditData).build();
         productCategoryRepository.save(productCategory);
         return jwtToken.generateToken(user);
-    }    public List<Product> get(String token) {
+    }
+
+    public List<Product> get(String token) {
         TokenDTO tokenDTO = jwtToken.decodeToken(token);
         List<Product> products= productRepository.findAllByCompany_Id(tokenDTO.getCompanyId());
         Type listType = new TypeToken<List<ProductDTO>>() {
         }.getType();
         return modelMapper.map(products, listType);
     }
+
     public List<ProductNameDTO> get(String token, String prefix) {
         TokenDTO tokenDTO = jwtToken.decodeToken(token);
         System.out.println(tokenDTO.getCompanyId());
@@ -59,17 +62,18 @@ public class ProductService {
         return modelMapper.map(products, listType);
     }
 
-    public void add(Product product, String token) throws Exception {
+    public void add(Product product, String token) throws ObjectExistException,NoPremissionException {
         if (productRepository.existsByName(product.getName()))
             throw new ObjectExistException("product name already exist");
         TokenDTO tokenDTO = jwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
             throw new NoPremissionException("You don't have permission to delete the product");
         product.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
-        product.setAuditData(new AuditData(LocalDateTime.now()));
+        product.setAuditData(new AuditData());
         productRepository.save(product);
     }
-    public void update(String id, Product product, String token)throws Exception {
+
+    public void update(String id, Product product, String token)throws ObjectExistException,NoPremissionException {
         TokenDTO tokenDTO = jwtToken.decodeToken(token);
         Product prevProduct = productRepository.findById(id).orElse(null);
         if (productRepository.existsByName(product.getName()) && !prevProduct.getName().equals(product.getName()))
@@ -80,7 +84,8 @@ public class ProductService {
         product.setAuditData(new AuditData(prevProduct.getAuditData().getCreateDate(), LocalDateTime.now()));
         productRepository.save(product);
     }
-    public void delete(String id, String token)throws Exception {
+
+    public void delete(String id, String token)throws NoPremissionException {
         TokenDTO tokenDTO = jwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER) || !tokenDTO.getCompanyId().equals(productRepository.findById(id).orElse(null).getCompany().getId()))
             throw new NoPremissionException("You don't have permission to delete the product");

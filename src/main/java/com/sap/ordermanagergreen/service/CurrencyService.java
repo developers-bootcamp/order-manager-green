@@ -10,12 +10,10 @@ import java.util.List;
 public class CurrencyService {
 
     public List<String> get() {
-            List<String> names = new ArrayList<>();
-            for (Currency currency : Currency.values()) {
-                names.add(currency.name());
-            }
-
-            return names;
+        List<String> names = new ArrayList<>();
+        for (Currency currency : Currency.values()) {
+            names.add(currency.name());
         }
+        return names;
     }
-
+}

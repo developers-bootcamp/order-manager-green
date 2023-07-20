@@ -4,7 +4,7 @@ import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
 import com.sap.ordermanagergreen.repository.IProductRepository;
 
-import com.sap.ordermanagergreen.exception.ObjectNotExist;
+import com.sap.ordermanagergreen.exception.ObjectNotExistException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,21 +14,14 @@ import java.util.*;
 
 @Service
 public class OrderService {
-    private final IOrderRepository orderRepository;
-    private final IProductRepository productRepository;
-
     @Autowired
-    public OrderService(IOrderRepository orderRepository, IProductRepository productRepository) {
-        this.orderRepository = orderRepository;
-
-        this.productRepository = productRepository;
-    }
+    private  IOrderRepository orderRepository;
+    @Autowired
+    private  IProductRepository productRepository;
 
     public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
-
         Pageable paging = PageRequest.of(pageNo, pageSize);
         return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
-
     }
 
     public String add(Order order) {
@@ -36,18 +29,15 @@ public class OrderService {
         return newOrdr.getId();
     }
 
-    public void update(String id, Order order) throws ObjectNotExist {
-
+    public void update(String id, Order order) throws ObjectNotExistException {
         if (orderRepository.findById(id).isEmpty())
-            throw new ObjectNotExist();
+            throw new ObjectNotExistException("order");
         orderRepository.save(order);
-
     }
 
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {
         HashMap<String, HashMap<Double, Integer>> calculatedOrder = new HashMap<String, HashMap<Double, Integer>>();
         double totalAmount = 0;
-
         for (int i = 0; i < order.getOrderItemsList().stream().count(); i++) {
             OrderItem oi = order.getOrderItemsList().get(i);
             Product p = oi.getProduct();
@@ -68,5 +58,4 @@ public class OrderService {
         calculatedOrder.put("-1", o);
         return calculatedOrder;
     }
-
 }

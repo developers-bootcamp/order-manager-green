@@ -1,7 +1,9 @@
 package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.*;
-import com.sap.ordermanagergreen.exception.*;
+import com.sap.ordermanagergreen.exception.NotValidException;
+import com.sap.ordermanagergreen.exception.ObjectExistException;
+import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.model.User;
 import com.sap.ordermanagergreen.service.UserService;
 import com.sap.ordermanagergreen.util.JwtToken;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,15 +28,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private final UserService userService;
-    private final JwtToken jwtToken;
-
     @Autowired
-    public UserController(UserService userService, JwtToken jwtToken) {
-        this.userService = userService;
-        this.jwtToken = jwtToken;
-    }
-
+    private  UserService userService;
+    @Autowired
+    private  JwtToken jwtToken;
     @GetMapping
     public ResponseEntity<List<UserDto>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
@@ -64,18 +62,19 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName, @RequestParam("email") String email, @RequestParam("password") String password) {
+    public ResponseEntity signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName,@RequestParam("email") @Valid String email, @RequestParam("password") String password) {
         try {
             User user = userService.signUp(fullName, companyName, email, password);
             return ResponseEntity.ok(user);
         } catch (ObjectExistException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+            return new ResponseEntity(e.getMessage(), HttpStatus.CONFLICT);
         } catch (NotValidException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>("Unexpected error Please try again later", HttpStatusCode.valueOf(500));
         }
     }
+
     @GetMapping("/{email}/{password}")
     public ResponseEntity<String> logIn(@PathVariable("email") String email, @PathVariable("password") String password) {
         try {
@@ -89,8 +88,9 @@ public class UserController {
             return new ResponseEntity<>("Unexpected error, " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @PostMapping
-    public ResponseEntity<String> add(@RequestHeader("Authorization") String token,@Valid @RequestBody User user) {
+    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @Valid @RequestBody User user) {
         try {
             userService.add(token, user);
         } catch (ObjectExistException ex) {
@@ -100,21 +100,21 @@ public class UserController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @PutMapping
     public ResponseEntity<String> update(@RequestHeader("Authorization") String token, @RequestBody User user) {
         try {
             userService.update(token, user);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
-        }
-        catch (NoPremissionException ex) {
+        } catch (NoPremissionException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> delete(@RequestHeader("Authorization") String token, @PathVariable String userId) {
         try {
@@ -128,9 +128,4 @@ public class UserController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-
-
-
-
 }

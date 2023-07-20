@@ -11,13 +11,8 @@ import java.util.List;
 @Service
 public class RoleService {
 
-    IRoleRepository rolesRepository;
-
     @Autowired
-    public RoleService(IRoleRepository rolesRepository) {
-        this.rolesRepository = rolesRepository;
-    }
-
+    private IRoleRepository rolesRepository;
     public List<Role> get() {
         return rolesRepository.findAll();
     }
@@ -25,6 +20,7 @@ public class RoleService {
     public Role get(String id) {
         return rolesRepository.findById(id).get();
     }
+
     public Role get(AvailableRole name) {
         return rolesRepository.getByName(name);
     }
@@ -42,6 +38,4 @@ public class RoleService {
     public void delete(String roleId) {
         rolesRepository.deleteById(roleId);
     }
-
-
 }

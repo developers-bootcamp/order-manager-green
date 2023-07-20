@@ -8,10 +8,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/graph")
 public class GraphController {
-    private final GraphService graphService;
-
     @Autowired
-    public GraphController(GraphService graphService) {
-        this.graphService = graphService;
-    }
+    private  GraphService graphService;
 }

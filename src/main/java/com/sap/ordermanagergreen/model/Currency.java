@@ -1,8 +1,8 @@
 package com.sap.ordermanagergreen.model;
 
 public enum Currency {
-        EURO("EUR"), SHEKEL("ILS"), FRANC("CHF"), RUBLE("RUB"), DOLLAR("USD");
 
+         DOLLAR("USD"),FRANC("CHF"), EURO("EUR"), SHEKEL("ILS"), RUBLE("RUB");
         private String code;
 
         private Currency(String code) {
