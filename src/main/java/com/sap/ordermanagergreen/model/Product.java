@@ -1,6 +1,7 @@
 package com.sap.ordermanagergreen.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,31 +9,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @Document(collection = "Product")
 public class Product {
-    
+
     @Id
-    @Generated
     private String id;
-    
     private String name;
-    
     private String description;
-    
-    private  double price;
-    
+    private double price;
     private int discount;
-    
-    private DiscountTypes discountType;
-        
+    private DiscountType discountType;
     @DBRef
-    private ProductCategory categoryId;
-    
+    private ProductCategory category;
     private int inventory;
-    
     @DBRef
-    private Company companyId;
-    
+    private Company company;
     private AuditData auditData;
-    
+
 }

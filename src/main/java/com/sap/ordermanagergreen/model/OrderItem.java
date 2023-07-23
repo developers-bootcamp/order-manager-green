@@ -1,17 +1,17 @@
 package com.sap.ordermanagergreen.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderItems {
+@SuperBuilder
+public class OrderItem {
     @DBRef
-    private Product productId;
-    //כמה עולה ביחד
+    private Product product;
     private double amount;
-    //  (כמות)
-    private double quantity ;
-    
+    private double quantity;
+
 }
