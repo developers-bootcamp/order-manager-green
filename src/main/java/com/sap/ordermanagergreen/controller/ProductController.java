@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public class ProductController {
     @Autowired
     private ProductService productService;
-    @Autowired
-    private JwtToken jwtToken;
 
     @GetMapping("/createToken")
     public String createToken() {
@@ -41,9 +39,9 @@ public class ProductController {
     }
 
     @GetMapping("/{prefix}")
-    public ResponseEntity getName(@RequestHeader("Authorization") String token, @PathVariable String prefix) {
+    public ResponseEntity getNames(@RequestHeader("Authorization") String token, @PathVariable String prefix) {
         try {
-            return ResponseEntity.ok(productService.get(token, prefix));
+            return ResponseEntity.ok(productService.getNames(token, prefix));
         } catch (Exception ex) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -62,7 +60,6 @@ public class ProductController {
         }
         return new ResponseEntity(HttpStatus.OK);
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity update(@RequestHeader("Authorization") String token, @PathVariable String id, @RequestBody Product product) {
