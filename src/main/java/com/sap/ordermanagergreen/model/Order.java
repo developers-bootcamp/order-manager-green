@@ -1,6 +1,7 @@
 package com.sap.ordermanagergreen.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,36 +11,24 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @Document(collection = "Orders")
 public class Order {
 
     @Id
-    @Generated
     private String id;
-
     @DBRef
-    private User employeeId;
-
+    private User employee;
     @DBRef
-    private User customerId;
-
+    private User customer;
     private double totalAmount;
-
-    private List<OrderItems> orderItemsList;
-
+    private List<OrderItem> orderItemsList;
     private OrderStatus orderStatus;
-
     @DBRef
-    private String companyId;
-
+    private Company company;
     private String creditCardNumber;
-
     private String expiryOn;
-
     private String cvc;
-
     private Boolean notificationFlag;
-
     private AuditData auditData;
-
 }

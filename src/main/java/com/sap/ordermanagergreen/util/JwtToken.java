@@ -14,15 +14,15 @@ public class JwtToken {
     private static final String JWT_SECRET = "mySecretKey";
     private static final long JWT_EXPIRATION = 604800000L; // 7 days in milliseconds
 
-    public String generateToken(User user) {
+    public static String generateToken(User user) {
         Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET.getBytes());
         Date now = new Date();
         System.out.println("begin");
         String accessToken = JWT.create()
-                .withClaim("roleId",user.getRoleId().getId())
+                .withClaim("roleId",user.getRole().getId())
 
                 .withClaim("id",user.getId())
-                .withClaim("companyId",user.getCompanyId().getId())
+                .withClaim("companyId",user.getCompany().getId())
                 .withExpiresAt(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
                 .sign(algorithm);
         System.out.println("accessToken");

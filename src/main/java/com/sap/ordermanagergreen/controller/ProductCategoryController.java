@@ -1,6 +1,5 @@
 package com.sap.ordermanagergreen.controller;
 
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.sap.ordermanagergreen.model.ProductCategory;
@@ -13,34 +12,28 @@ import java.util.List;
 @RestController
 @RequestMapping("/productCategory")
 public class ProductCategoryController {
-    
-    private final ProductCategoryService productCategoryService;
-    
+
     @Autowired
-    public ProductCategoryController(ProductCategoryService productCategoryService){
-        this.productCategoryService=productCategoryService;
-    }
+    private ProductCategoryService productCategoryService;
 
     @GetMapping
-    public ResponseEntity<List<ProductCategory>> getAll() {
-        return productCategoryService.getAllCategories();
+    public ResponseEntity<List<ProductCategory>> get() {
+        return productCategoryService.get();
     }
-    
-    @PostMapping
-    public ResponseEntity<String> add(@RequestBody ProductCategory productCategory){
-        System.out.println("💕💕 in createProductCategory");
-        return productCategoryService.saveProductCategory(productCategory);
 
-    }
-    
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable String id){
-        return  productCategoryService.deleteProductCategory(id);
+    @PostMapping
+    public ResponseEntity<String> add(@RequestBody ProductCategory productCategory) {
+        return productCategoryService.add(productCategory);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> put(@PathVariable String id, @RequestBody ProductCategory productCategory){
-        return productCategoryService.editProductCategory(id,productCategory);
+    public ResponseEntity<String> update(@PathVariable String id, @RequestBody ProductCategory productCategory) {
+        return productCategoryService.update(id, productCategory);
     }
-    
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable String id) {
+        return productCategoryService.delete(id);
+    }
+
 }
