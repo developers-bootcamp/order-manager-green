@@ -30,19 +30,6 @@ public class ProductService {
     private IUserRepository userRepository;
     @Autowired
     private IProductCategoryRepository productCategoryRepository;
-    public String fill() {
-        AuditData auditData =AuditData.builder().createDate(LocalDateTime.now()).updateDate(LocalDateTime.now()).build();
-        Company company = Company.builder().name("sap").currency(Currency.SHEKEL).auditData(auditData).build();
-        companyRepository.save(company);
-        Role role =Role.builder().name(AvailableRole.ADMIN).description("Branch manager in Israel").auditData(auditData).build();
-        roleRepository.save(role);
-        Address address = Address.builder().telephone("0583204192").address("Eli Horvitz 14").email("sap@gmail.com").build();
-        User user =User.builder().fullName("orna").password("1234").address(address).role(role).company(company).auditData(auditData).build();
-        userRepository.save(user);
-        ProductCategory productCategory =ProductCategory.builder().name("Photo Album").description("None").company(company).auditData(auditData).build();
-        productCategoryRepository.save(productCategory);
-        return JwtToken.generateToken(user);
-    }
 
     public List<Product> get(String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);

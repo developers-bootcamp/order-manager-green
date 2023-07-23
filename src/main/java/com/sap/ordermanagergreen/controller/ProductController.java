@@ -19,16 +19,6 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/createToken")
-    public String createToken() {
-        return productService.fill();
-    }
-
-    @GetMapping("/getToken")
-    public TokenDTO getTokenFromHeader(@RequestHeader("Authorization") String token) {
-        return JwtToken.decodeToken(token);
-    }
-
     @GetMapping
     public ResponseEntity get(@RequestHeader("Authorization") String token) {
         try {
