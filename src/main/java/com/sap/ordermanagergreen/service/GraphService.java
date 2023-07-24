@@ -43,7 +43,6 @@ public class GraphService {
 
         AggregationResults<org.bson.Document> groupResults
                 = mongoTemplate.aggregate(aggregation, "Orders", org.bson.Document.class);
-        System.out.println(groupResults.getMappedResults());
 
         List<TopEmployeeDTO> result = new ArrayList<>();
         for (Document document : groupResults.getMappedResults()) {
