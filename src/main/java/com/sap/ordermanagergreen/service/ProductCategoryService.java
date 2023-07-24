@@ -70,10 +70,9 @@ public class ProductCategoryService {
     }
 
     public boolean isUnauthorized(String token) {
-//        String roleId=JwtToken.decodeToken(token).getRoleId();
-//        if (roleId.equals(AvailableRole.ADMIN) || roleId.equals(AvailableRole.EMPLOYEE))
-//            return true;
-//        return false;
-        return true;
+        String roleId=JwtToken.decodeToken(token).getRoleId();
+        if (roleId.equals(AvailableRole.ADMIN) || roleId.equals(AvailableRole.EMPLOYEE))
+            return true;
+        return false;
     }
 }
