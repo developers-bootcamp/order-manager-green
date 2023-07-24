@@ -2,6 +2,7 @@ package com.sap.ordermanagergreen.service;
 
 import com.mongodb.client.model.Projections;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
+import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.model.User;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
 import org.bson.Document;
@@ -14,6 +15,8 @@ import org.springframework.expression.spel.ast.Projection;
 import org.springframework.stereotype.Service;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.List;
+import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -38,10 +41,10 @@ public class GraphService {
                 match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo)),
                 project()
                         .andExpression("month(auditData.updateDate)").as("month")
-                        .and("orderStatusId").as("orderStatusId"),
+                        .and("orderStatus").as("orderStatus"),
                 group("month")
-                        .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatusId").equalToValue("0")).then(1).otherwise(0)).as("cancelled")
-                        .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatusId").equalToValue("1")).then(1).otherwise(0)).as("delivered"),
+                        .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.DONE)).then(1).otherwise(0)).as("cancelled")
+                        .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("delivered"),
                 project()
                         .and("_id").as("month")
                         .and("cancelled").as("cancelled")
