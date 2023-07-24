@@ -10,14 +10,10 @@ import java.util.List;
 @Service
 public class CompanyService {
 
-    ICompanyRepository companyRepository;
-
     @Autowired
-    public CompanyService(ICompanyRepository companyRepository) {
-        this.companyRepository = companyRepository;
-    }
+    private ICompanyRepository companyRepository;
 
-    public List<Company> getAll() {
+    public List<Company> get() {
         return companyRepository.findAll();
     }
 

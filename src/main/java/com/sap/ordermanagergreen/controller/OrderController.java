@@ -1,12 +1,11 @@
 package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.TokenDTO;
+import com.sap.ordermanagergreen.exception.ObjectNotExistException;
 import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.model.Order;
 import com.sap.ordermanagergreen.service.OrderService;
 import com.sap.ordermanagergreen.util.JwtToken;
-
-import com.sap.ordermanagergreen.exception.ObjectNotExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,82 +17,60 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
-@RequestMapping("/orders")
+@RequestMapping("/order")
 public class OrderController {
-    private final OrderService orderService;
-    private final JwtToken jwtToken;
 
     @Autowired
-    public OrderController(OrderService orderService, JwtToken jwtToken) {
-        this.orderService = orderService;
-        this.jwtToken = jwtToken;
-    }
+    private OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<List<Order>> getOrders(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                 @RequestParam(defaultValue = "10") Integer pageSize,
-                                                 @RequestParam int employeeId, @RequestParam OrderStatus orderStatus
+    public ResponseEntity<List<Order>> get(@RequestParam(defaultValue = "0") Integer pageNo,
+                                           @RequestParam(defaultValue = "10") Integer pageSize,
+                                           @RequestParam int employeeId, @RequestParam OrderStatus orderStatus
             , @RequestHeader("token") String token) {
         TokenDTO tokenDto = JwtToken.decodeToken(token);
         List<Order> orders = null;
-        orders = this.orderService.getOrders(pageNo, pageSize, tokenDto.getCompanyId(), employeeId, orderStatus);
+        orders = this.orderService.get(pageNo, pageSize, tokenDto.getCompanyId(), employeeId, orderStatus);
         return ResponseEntity.ok(orders);
     }
 
     @PostMapping
-    public ResponseEntity<String> createOrder(@RequestHeader("token") String token, @RequestBody Order order) {
-        try{
-        TokenDTO tokenDto = JwtToken.decodeToken(token);
-        if (!tokenDto.getCompanyId() .equals(order.getCompanyId()))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();}
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-
-        }
-
+    public ResponseEntity<String> add(@RequestHeader("token") String token, @RequestBody Order order) {
         try {
-            return ResponseEntity.ok(this.orderService.createOrder(order));
+            TokenDTO tokenDto = JwtToken.decodeToken(token);
+            if (!tokenDto.getCompanyId().equals(order.getCompany().getId()))
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-
+        }
+        try {
+            return ResponseEntity.ok(this.orderService.add(order));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateOrder(@RequestHeader("token") String token, @PathVariable  String id,@RequestBody Order order) throws ObjectNotExist {
+    public ResponseEntity update(@RequestHeader("token") String token, @PathVariable String id, @RequestBody Order order)  {
         TokenDTO tokenDto = JwtToken.decodeToken(token);
-        if (tokenDto.getCompanyId() != order.getCompanyId())
+        if (tokenDto.getCompanyId() != order.getCompany().getId())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         try {
-            this.orderService.updateOrder(id,order);
-        } catch (ObjectNotExist e) {
+            this.orderService.update(id, order);
+        } catch (ObjectNotExistException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-
         }
         return ResponseEntity.status(HttpStatus.OK).build();
-
     }
-    @PostMapping
-    @RequestMapping("/calculate")
-    public ResponseEntity< Map<String, HashMap<Double,Integer>> >calculate(@RequestBody Order order){
-        try{
-        return ResponseEntity.ok( this.orderService.calculate(order));
-        }
-        catch (Exception e){
+
+    @PostMapping("/calculate")
+    public ResponseEntity<Map<String, HashMap<Double, Integer>>> calculate(@RequestBody Order order) {
+        try {
+            return ResponseEntity.ok(this.orderService.calculate(order));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-
         }
-
-
     }
 }
-
-
-
-
-
-
-

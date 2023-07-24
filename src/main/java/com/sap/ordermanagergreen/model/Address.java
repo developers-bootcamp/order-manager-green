@@ -1,19 +1,19 @@
 package com.sap.ordermanagergreen.model;
 
 import lombok.*;
-import org.jetbrains.annotations.NotNull;
-import javax.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Address {
-    
+
     private String telephone;
     @NotNull
     private String addressName;
     //@NotBlank
+    private String address;
+    @Email(message = "Please provide a valid email address")
     private String email;
     
 }
