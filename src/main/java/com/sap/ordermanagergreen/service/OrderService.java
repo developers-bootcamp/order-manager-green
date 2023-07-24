@@ -36,6 +36,12 @@ public class OrderService {
     }
 
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {
+        List<OrderItem> items=new ArrayList<OrderItem>();
+        order.getOrderItemsList().forEach(e->{
+            Product p=productRepository.findById(e.getProduct().getId()).get();
+            items.add(OrderItem.builder().product(p).quantity(e.getQuantity()).build());
+        });
+        order.setOrderItemsList(items);
         HashMap<String, HashMap<Double, Integer>> calculatedOrder = new HashMap<String, HashMap<Double, Integer>>();
         double totalAmount = 0;
         for (int i = 0; i < order.getOrderItemsList().stream().count(); i++) {
