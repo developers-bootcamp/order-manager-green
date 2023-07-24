@@ -12,6 +12,7 @@ import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.util.JwtToken;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -67,7 +68,7 @@ public class UserService {
         }
     }
 
-    public User signUp(String fullName, String companyName, String email, String password) throws NotValidException, Exception {
+    public User signUp(String fullName, String companyName, String email, @NotNull String password) throws NotValidException, Exception {
 
             User user = new User();
             user.setFullName(fullName);
