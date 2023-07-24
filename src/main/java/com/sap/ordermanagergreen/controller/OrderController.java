@@ -19,12 +19,12 @@ import java.util.Map;
 @RestController
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/orders")
-public class OrdersController {
+public class OrderController {
     private final OrderService orderService;
     private final JwtToken jwtToken;
 
     @Autowired
-    public OrdersController(OrderService orderService, JwtToken jwtToken) {
+    public OrderController(OrderService orderService, JwtToken jwtToken) {
         this.orderService = orderService;
         this.jwtToken = jwtToken;
     }

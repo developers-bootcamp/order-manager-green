@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "Roles")  // לשנות שם לטבלה
+@Builder
 public class Role {
     
     @Id

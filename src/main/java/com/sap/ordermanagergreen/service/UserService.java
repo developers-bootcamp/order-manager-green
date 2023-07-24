@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -77,8 +78,8 @@ public class UserService {
             user.getAddress().setEmail(email);
             user.setRoleId(roleRepository.getByName(AvailableRoles.ADMIN));
             AuditData auditData = new AuditData();
-            auditData.setCreateDate(new Date());
-            auditData.setUpdateDate(new Date());
+            auditData.setCreateDate(LocalDateTime.now());
+            auditData.setUpdateDate(LocalDateTime.now());
             user.setAuditData(auditData);
             if (companyRepository.existsByName(companyName)) {
                 throw new ObjectExistException("company");
@@ -87,8 +88,8 @@ public class UserService {
             company.setName(companyName);
             companyRepository.save(company);
             AuditData auditData1 = new AuditData();
-            auditData1.setCreateDate(new Date());
-            auditData1.setUpdateDate(new Date());
+            auditData1.setCreateDate(LocalDateTime.now());
+            auditData1.setUpdateDate(LocalDateTime.now());
             company.setAuditData(auditData1);
             user.setCompanyId(company);
             userRepository.insert(user);
@@ -111,14 +112,14 @@ public class UserService {
             throw new NotValidException("role");
         user.setRoleId(roleRepository.findById(tokenDTO.getRoleId()).get());
         //user.getRoleId().getAuditData().setUpdateDate(new Date());
-        user.getRoleId().setAuditData(new AuditData(new Date(), new Date()));
-        user.setAuditData(new AuditData(new Date(), new Date()));
+        user.getRoleId().setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
+        user.setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
             if (!companyRepository.findById(user.getCompanyId().getId()).orElse(new Company()).getId().equals(tokenDTO.getCompanyId())) {
                 throw new NoPermissionException("company");
             }
             user.setCompanyId(companyRepository.findById(user.getCompanyId().getId()).get());
             //user.getCompanyId().getAuditData().setUpdateDate(new Date());
-            user.getCompanyId().setAuditData(new AuditData(new Date(), new Date()));
+            user.getCompanyId().setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
             userRepository.save(user);
         }
 

@@ -1,16 +1,20 @@
 package com.sap.ordermanagergreen.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class AuditData {
   
-  private Date createDate;
+  private LocalDateTime createDate;
   
-  private Date updateDate;
+  private LocalDateTime updateDate;
   
 }
