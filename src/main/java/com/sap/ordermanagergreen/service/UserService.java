@@ -12,6 +12,7 @@ import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.util.JwtToken;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,7 +51,7 @@ public class UserService {
             throw new IllegalArgumentException("invalid prefixName");
         }
         Role roleId = roleRepository.getByName(AvailableRole.CUSTOMER);
-        List<User> autocomplete = userRepository.findByFullNameStartingWithAndRole_IdAndCompany_IdEqual(prefixName, roleId.getId(), companyId);//CustomersByNameStartingWithAndRoleIdEqualAndCompanyIdEqual(prefixName,roleId.getId(),companyId);
+        List<User> autocomplete = userRepository.findByFullNameStartingWithAndRole_IdAndCompany_Id(prefixName, roleId.getId(), companyId);//CustomersByNameStartingWithAndRoleIdEqualAndCompanyIdEqual(prefixName,roleId.getId(),companyId);
         Map<String, String> toReturn = new HashMap<>();
         autocomplete.forEach(customer -> toReturn.put(customer.getId(), customer.getFullName()));
         return toReturn;
@@ -67,7 +68,7 @@ public class UserService {
         }
     }
 
-    public User signUp(String fullName, String companyName, String email, String password) throws NotValidException, Exception {
+    public User signUp(String fullName, String companyName, String email, @NotNull String password) throws NotValidException, Exception {
 
             User user = new User();
             user.setFullName(fullName);
@@ -117,7 +118,7 @@ public class UserService {
             throw new NoPremissionException("role");
         if (roleRepository.findById(tokenDTO.getRoleId()).isEmpty())
             throw new NotValidException("role");
-        user.setRole(roleRepository.findById(tokenDTO.getRoleId()).get());
+        user.setRole(roleRepository.findById(user.getRole().getId()).get());
         //user.getRoleId().getAuditData().setUpdateDate(new Date());
         user.getRole().setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
         user.setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));

@@ -1,10 +1,13 @@
 package com.sap.ordermanagergreen.service;
 
+import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.model.*;
+import com.sap.ordermanagergreen.repository.ICompanyRepository;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
 import com.sap.ordermanagergreen.repository.IProductRepository;
 
 import com.sap.ordermanagergreen.exception.ObjectNotExistException;
+import com.sap.ordermanagergreen.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,14 +20,20 @@ public class OrderService {
     @Autowired
     private  IOrderRepository orderRepository;
     @Autowired
-    private  IProductRepository productRepository;
+    public OrderService(IOrderRepository orderRepository, IProductRepository productRepository) {
+        this.orderRepository = orderRepository;
+
+        this.productRepository = productRepository;
+    }
 
     public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
         Pageable paging = PageRequest.of(pageNo, pageSize);
         return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
     }
 
-    public String add(Order order) {
+    public String add(Order order, TokenDTO token) {
+        order.setCompany(companyRepository.findById(token.getCompanyId()).get());
+        order.setEmployee(userRepository.findById(token.getUserId()).get());
         Order newOrdr = this.orderRepository.insert(order);
         return newOrdr.getId();
     }
@@ -36,6 +45,12 @@ public class OrderService {
     }
 
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {
+        List<OrderItem> items=new ArrayList<OrderItem>();
+        order.getOrderItemsList().forEach(e->{
+            Product p=productRepository.findById(e.getProduct().getId()).get();
+            items.add(OrderItem.builder().product(p).quantity(e.getQuantity()).build());
+        });
+        order.setOrderItemsList(items);
         HashMap<String, HashMap<Double, Integer>> calculatedOrder = new HashMap<String, HashMap<Double, Integer>>();
         double totalAmount = 0;
         for (int i = 0; i < order.getOrderItemsList().stream().count(); i++) {
@@ -47,7 +62,7 @@ public class OrderService {
                 amount =( p.getPrice() - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity();
                 o.put(amount, p.getDiscount());
             } else {
-                amount = (p.getPrice() * p.getDiscount()) / 100 * (100 - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity();
+                amount = (p.getPrice()  / 100 * (100 - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity());
                 o.put(amount, p.getDiscount());
             }
             calculatedOrder.put(p.getId(), o);
