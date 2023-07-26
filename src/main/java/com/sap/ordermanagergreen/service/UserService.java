@@ -50,7 +50,7 @@ public class UserService {
             throw new IllegalArgumentException("invalid prefixName");
         }
         Role roleId = roleRepository.getByName(AvailableRole.CUSTOMER);
-        List<User> autocomplete = userRepository.findByFullNameStartingWithAndRole_IdAndCompany_Id(prefixName, roleId.getId(), companyId);//CustomersByNameStartingWithAndRoleIdEqualAndCompanyIdEqual(prefixName,roleId.getId(),companyId);
+        List<User> autocomplete = userRepository.findByFullNameStartingWithAndRole_IdAndCompany_IdEqual(prefixName, roleId.getId(), companyId);//CustomersByNameStartingWithAndRoleIdEqualAndCompanyIdEqual(prefixName,roleId.getId(),companyId);
         Map<String, String> toReturn = new HashMap<>();
         autocomplete.forEach(customer -> toReturn.put(customer.getId(), customer.getFullName()));
         return toReturn;

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class OrderManagerGreenApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(OrderManagerGreenApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(OrderManagerGreenApplication.class, args);
+    }
 }

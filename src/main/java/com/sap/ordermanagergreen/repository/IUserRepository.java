@@ -23,7 +23,7 @@ public interface IUserRepository extends MongoRepository<User, String> {
     Page<User> findByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(String id, Pageable pageable);
 
     @Query(fields = "{'id': 1, 'fullName': 1}")
-    List<User> findByFullNameStartingWithAndRole_IdAndCompany_Id(String prefixName, String roleId, String companyId);
+    List<User> findByFullNameStartingWithAndRole_IdAndCompany_IdEqual(String prefixName, String roleId, String companyId);
 
 
 }
