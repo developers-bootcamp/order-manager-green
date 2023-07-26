@@ -18,13 +18,13 @@ import java.util.*;
 @Service
 public class OrderService {
     @Autowired
-    private  IOrderRepository orderRepository;
+    private IOrderRepository orderRepository;
     @Autowired
-    public OrderService(IOrderRepository orderRepository, IProductRepository productRepository) {
-        this.orderRepository = orderRepository;
-
-        this.productRepository = productRepository;
-    }
+    private IProductRepository productRepository;
+    @Autowired
+    private IUserRepository userRepository;
+    @Autowired
+    private ICompanyRepository companyRepository;
 
     public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
         Pageable paging = PageRequest.of(pageNo, pageSize);
@@ -45,9 +45,9 @@ public class OrderService {
     }
 
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {
-        List<OrderItem> items=new ArrayList<OrderItem>();
-        order.getOrderItemsList().forEach(e->{
-            Product p=productRepository.findById(e.getProduct().getId()).get();
+        List<OrderItem> items = new ArrayList<OrderItem>();
+        order.getOrderItemsList().forEach(e -> {
+            Product p = productRepository.findById(e.getProduct().getId()).get();
             items.add(OrderItem.builder().product(p).quantity(e.getQuantity()).build());
         });
         order.setOrderItemsList(items);
@@ -59,10 +59,10 @@ public class OrderService {
             HashMap<Double, Integer> o = new HashMap<Double, Integer>();
             double amount = 0;
             if (p.getDiscountType() == DiscountType.FIXED_AMOUNT) {
-                amount =( p.getPrice() - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity();
+                amount = (p.getPrice() - p.getDiscount()) * order.getOrderItemsList().get(i).getQuantity();
                 o.put(amount, p.getDiscount());
             } else {
-                amount = (p.getPrice()  / 100 * (100 - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity());
+                amount = (p.getPrice() / 100 * (100 - p.getDiscount()) * order.getOrderItemsList().get(i).getQuantity());
                 o.put(amount, p.getDiscount());
             }
             calculatedOrder.put(p.getId(), o);
