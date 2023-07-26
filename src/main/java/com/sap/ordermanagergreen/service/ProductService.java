@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductService {
@@ -39,13 +41,13 @@ public class ProductService {
         return modelMapper.map(products, listType);
     }
 
-    public List<ProductNameDTO> getNames(String token, String prefix) {
+    public Map<String,String> getNames(String token, String prefix) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         System.out.println(tokenDTO.getCompanyId());
         List<Product> products = productRepository.findProductsByNameStartingWithAndCompany_IdEqual(prefix,tokenDTO.getCompanyId());
-        Type listType = new TypeToken<List<ProductNameDTO>>() {
-        }.getType();
-        return modelMapper.map(products, listType);
+        Map<String, String> toReturn = new HashMap<>();
+        products.forEach(product -> toReturn.put(product.getId(), product.getName()));
+        return toReturn;
     }
 
     public void add(Product product, String token) throws ObjectExistException,NoPremissionException {

@@ -23,6 +23,7 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+
     @GetMapping
     public ResponseEntity<List<Order>> get(@RequestParam(defaultValue = "0") Integer pageNo,
                                            @RequestParam(defaultValue = "10") Integer pageSize,
@@ -35,16 +36,18 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<String> add(@RequestHeader("token") String token, @RequestBody Order order) {
+    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody Order order) {
+        TokenDTO tokenDto;
         try {
-            TokenDTO tokenDto = JwtToken.decodeToken(token);
-            if (!tokenDto.getCompanyId().equals(order.getCompany().getId()))
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+             tokenDto = JwtToken.decodeToken(token);
+            ;
+//            if (!tokenDto.getCompanyId().equals(order.getCompany().getId()))
+//                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         try {
-            return ResponseEntity.ok(this.orderService.add(order));
+            return ResponseEntity.ok(this.orderService.add(order,tokenDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

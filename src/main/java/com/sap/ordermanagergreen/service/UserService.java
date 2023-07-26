@@ -1,7 +1,7 @@
 package com.sap.ordermanagergreen.service;
 
 import com.sap.ordermanagergreen.dto.UserDto;
-import com.sap.ordermanagergreen.exception.NoPermissionException;
+import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.mapper.UserMapper;
@@ -117,7 +117,8 @@ public class UserService {
             throw new NoPremissionException("role");
         if (roleRepository.findById(tokenDTO.getRoleId()).isEmpty())
             throw new NotValidException("role");
-        user.setRole(roleRepository.findById(tokenDTO.getRoleId()).get());
+        user.setRole(roleRepository.findById(user.getRole().getId()).get());
+        //user.getRoleId().getAuditData().setUpdateDate(new Date());
         user.getRole().setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
         user.setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
         if (!companyRepository.findById(user.getCompany().getId()).orElse(new Company()).getId().equals(tokenDTO.getCompanyId())) {
