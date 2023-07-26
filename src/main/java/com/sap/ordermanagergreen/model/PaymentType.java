@@ -1,3 +1,3 @@
 package com.sap.ordermanagergreen.model;
 
-public enum PaymentTypes {CREDIT, DEBIT};
+public enum PaymentType {CREDIT, DEBIT}

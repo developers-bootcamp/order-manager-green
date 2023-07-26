@@ -25,15 +25,9 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 @Service
 public class GraphService {
 
-    IOrderRepository orderRepository;
-
     @Autowired
-    public GraphService(IOrderRepository orderRepository){
-        this.orderRepository = orderRepository;
-    }
+    private IOrderRepository orderRepository;
     @Autowired
     private MongoTemplate mongoTemplate;
-
-
 }
 
