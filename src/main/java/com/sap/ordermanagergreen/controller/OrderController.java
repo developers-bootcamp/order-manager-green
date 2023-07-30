@@ -26,12 +26,17 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<List<Order>> get(@RequestParam(defaultValue = "0") Integer pageNo,
                                            @RequestParam(defaultValue = "10") Integer pageSize,
-                                           @RequestParam int employeeId, @RequestParam OrderStatus orderStatus
-            , @RequestHeader("token") String token) {
+                                           @RequestParam int employeeId, @RequestParam("orderStatus") OrderStatus orderStatus,
+                                           @RequestParam String orderBy
+            , @RequestHeader("Authorization") String token) {
         TokenDTO tokenDto = JwtToken.decodeToken(token);
         List<Order> orders = null;
-        orders = this.orderService.get(pageNo, pageSize, tokenDto.getCompanyId(), employeeId, orderStatus);
-        return ResponseEntity.ok(orders);
+        try{
+        orders = this.orderService.get(pageNo, pageSize, tokenDto.getCompanyId(), employeeId, orderStatus,orderBy);
+        return ResponseEntity.ok(orders);}
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping

@@ -11,6 +11,7 @@ import com.sap.ordermanagergreen.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -26,8 +27,10 @@ public class OrderService {
     @Autowired
     private IUserRepository userRepository;
 
-    public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
-        Pageable paging = PageRequest.of(pageNo, pageSize);
+    public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus,String sortBy) {
+        //Sort.Order sortOrder = Sort.Order.asc(sortBy);
+        Sort sort = Sort.by(sortBy).ascending();
+        Pageable paging = PageRequest.of(pageNo, pageSize,sort);
         return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
     }
 
