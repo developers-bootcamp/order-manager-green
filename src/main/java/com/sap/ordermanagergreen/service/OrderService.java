@@ -1,6 +1,8 @@
 package com.sap.ordermanagergreen.service;
 
 import com.sap.ordermanagergreen.dto.TokenDTO;
+import com.sap.ordermanagergreen.exception.CompanyNotExistException;
+import com.sap.ordermanagergreen.exception.UserDosentExistException;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
@@ -8,6 +10,7 @@ import com.sap.ordermanagergreen.repository.IProductRepository;
 
 import com.sap.ordermanagergreen.exception.ObjectNotExistException;
 import com.sap.ordermanagergreen.repository.IUserRepository;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,27 +22,37 @@ import java.util.*;
 @Service
 public class OrderService {
     @Autowired
-    private  IOrderRepository orderRepository;
+    private IOrderRepository orderRepository;
     @Autowired
-    private  IProductRepository productRepository;
+    private IProductRepository productRepository;
     @Autowired
     private ICompanyRepository companyRepository;
     @Autowired
     private IUserRepository userRepository;
+    @Autowired
+    private OrderChargingService orderChargingService;
 
-    public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus,String sortBy) {
+    public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus, String sortBy) {
         //Sort.Order sortOrder = Sort.Order.asc(sortBy);
         Sort sort = Sort.by(sortBy).ascending();
-        Pageable paging = PageRequest.of(pageNo, pageSize,sort);
+        Pageable paging = PageRequest.of(pageNo, pageSize, sort);
         return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
     }
 
-    public String add(Order order, TokenDTO token) {
+
+    public String add(Order order, TokenDTO token) throws CompanyNotExistException,UserDosentExistException,Exception{
+
+        if (companyRepository.findById(token.getCompanyId()).get() == null)
+            throw new CompanyNotExistException("company not exist");
         order.setCompany(companyRepository.findById(token.getCompanyId()).get());
+
+        if (userRepository.findById(token.getUserId()).get() == null)
+            throw new UserDosentExistException("employee dosent exist");
         order.setEmployee(userRepository.findById(token.getUserId()).get());
         Order newOrdr = this.orderRepository.insert(order);
         return newOrdr.getId();
     }
+
 
     public void update(String id, Order order) throws ObjectNotExistException {
         if (orderRepository.findById(id).isEmpty())
@@ -48,9 +61,9 @@ public class OrderService {
     }
 
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {
-        List<OrderItem> items=new ArrayList<OrderItem>();
-        order.getOrderItemsList().forEach(e->{
-            Product p=productRepository.findById(e.getProduct().getId()).get();
+        List<OrderItem> items = new ArrayList<OrderItem>();
+        order.getOrderItemsList().forEach(e -> {
+            Product p = productRepository.findById(e.getProduct().getId()).get();
             items.add(OrderItem.builder().product(p).quantity(e.getQuantity()).build());
         });
         order.setOrderItemsList(items);
@@ -62,10 +75,10 @@ public class OrderService {
             HashMap<Double, Integer> o = new HashMap<Double, Integer>();
             double amount = 0;
             if (p.getDiscountType() == DiscountType.FIXED_AMOUNT) {
-                amount =( p.getPrice() - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity();
+                amount = (p.getPrice() - p.getDiscount()) * order.getOrderItemsList().get(i).getQuantity();
                 o.put(amount, p.getDiscount());
             } else {
-                amount = (p.getPrice()  / 100 * (100 - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity());
+                amount = (p.getPrice() / 100 * (100 - p.getDiscount()) * order.getOrderItemsList().get(i).getQuantity());
                 o.put(amount, p.getDiscount());
             }
             calculatedOrder.put(p.getId(), o);

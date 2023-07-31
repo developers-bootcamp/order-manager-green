@@ -12,6 +12,6 @@ public class OrderItem {
     @DBRef
     private Product product;
     private double amount;
-    private double quantity;
+    private int quantity;
 
 }

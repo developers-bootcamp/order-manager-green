@@ -1,7 +1,10 @@
 package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.TokenDTO;
+import com.sap.ordermanagergreen.exception.CompanyNotExistException;
+import com.sap.ordermanagergreen.exception.ConflictException;
 import com.sap.ordermanagergreen.exception.ObjectNotExistException;
+import com.sap.ordermanagergreen.exception.UserDosentExistException;
 import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.model.Order;
 import com.sap.ordermanagergreen.service.OrderService;
@@ -52,7 +55,14 @@ public class OrderController {
         }
         try {
             return ResponseEntity.ok(this.orderService.add(order,tokenDto));
-        } catch (Exception e) {
+        }
+        catch (CompanyNotExistException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        catch (UserDosentExistException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
