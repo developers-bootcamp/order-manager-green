@@ -61,16 +61,16 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName,@RequestParam("email") @Valid String email, @RequestParam("password") String password) {
+    public ResponseEntity<String> signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName, @RequestParam("email") String email, @RequestParam("password") String password, @RequestParam("currency") String currency) {
         try {
-            User user = userService.signUp(fullName, companyName, email, password);
-            return ResponseEntity.ok(user);
-        } catch (ObjectExistException e) {
-            return new ResponseEntity(e.getMessage(), HttpStatus.CONFLICT);
+            User user = userService.signUp(fullName, companyName, email, password, currency);
+            return logIn(email, password);
         } catch (NotValidException e) {
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ObjectExistException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         } catch (Exception e) {
-            return new ResponseEntity<>("Unexpected error Please try again later", HttpStatusCode.valueOf(500));
+            return new ResponseEntity<>("Unexpected error Please try again later", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
