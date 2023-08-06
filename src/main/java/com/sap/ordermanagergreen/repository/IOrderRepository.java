@@ -5,18 +5,16 @@ import com.mongodb.client.MongoDatabase;
 import com.sap.ordermanagergreen.dto.TopProductDTO;
 import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.model.Order;
+import com.sap.ordermanagergreen.model.Month;
+
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Arrays;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import java.time.Month;
 import org.bson.Document;
 import com.sap.ordermanagergreen.dto.ProductCountDto;
 
@@ -72,8 +70,9 @@ public interface IOrderRepository extends MongoRepository<Order, String> {
                         return new ProductCountDto(productName, count);
                     })
                     .collect(Collectors.toList());
-
-            TopProductDTO topProductDTO = new TopProductDTO(Month.of(month), productCountList);
+            int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+            Month lastMonth = new Month(currentYear,month);
+            TopProductDTO topProductDTO = new TopProductDTO(lastMonth, productCountList);
             topProducts.add(topProductDTO);
         }
 
