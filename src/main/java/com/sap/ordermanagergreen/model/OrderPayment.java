@@ -1,6 +1,7 @@
 package com.sap.ordermanagergreen.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 @Data

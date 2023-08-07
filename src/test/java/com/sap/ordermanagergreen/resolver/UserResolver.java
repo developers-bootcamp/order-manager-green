@@ -20,23 +20,11 @@ public class UserResolver implements ParameterResolver {
     }
 
     @Override
-    public List<User> resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        List<User> users=new ArrayList<>();
-        users.add(User.builder().id("5")
+    public User resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+       return User.builder().id("5")
                 .fullName("unit testing1 is important").password("1111111").address(Address.builder().addressName("gilo").email("erty@rtt").telephone("0556677889").build()).
-                roleId(Role.builder().id("1").build())
+                role(Role.builder().id("1").build())
                 .auditData(AuditData.builder().updateDate(LocalDateTime.now()).createDate(LocalDateTime.now()).build())
-                .build());
-        users.add(User.builder().id("6")
-                .fullName("unit testing2 is important").password("2222222").address(Address.builder().addressName("mila").email("popo@rtt").telephone("0556697559").build()).
-                roleId(Role.builder().id("2").build())
-                .auditData(AuditData.builder().updateDate(LocalDateTime.now()).createDate(LocalDateTime.now()).build())
-                .build());
-        users.add(User.builder().id("7")
-                .fullName("unit testing3 is important").password("3333333").address(Address.builder().addressName("michina").email("shlomo@rtt").telephone("0556964229").build()).
-                roleId(Role.builder().id("3").build())
-                .auditData(AuditData.builder().updateDate(LocalDateTime.now()).createDate(LocalDateTime.now()).build())
-                .build());
-        return users;
+                .build();
     }
 }
