@@ -14,7 +14,6 @@ import javax.validation.constraints.NotNull;
 public class Address {
 
     private String telephone;
-    @NotBlank
     private String addressName;
     @Email(message = "Please provide a valid email address")
     private String email;

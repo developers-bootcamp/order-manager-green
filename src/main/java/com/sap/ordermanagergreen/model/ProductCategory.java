@@ -17,7 +17,6 @@ public class ProductCategory {
     
     @Id
     private String id;
-    @NotBlank
     private String name;
 
     private String description;

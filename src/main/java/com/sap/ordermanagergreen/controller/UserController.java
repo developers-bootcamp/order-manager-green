@@ -90,7 +90,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @Valid @RequestBody User user) {
+    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody User user) {
         try {
             userService.add(token, user);
         } catch (ObjectExistException ex) {

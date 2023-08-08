@@ -12,9 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 public class AuditData {
-  @NotNull
   private LocalDateTime createDate;
-  @NotNull
   private LocalDateTime updateDate;
   public AuditData(){
     this.createDate=LocalDateTime.now();

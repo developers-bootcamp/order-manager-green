@@ -28,7 +28,7 @@ public class ProductCategoryController {
     private ProductCategoryMapper productCategoryMapper;
 
     @GetMapping
-    public ResponseEntity<List<ProductCategoryDTO>> get(@NotBlank @RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<ProductCategoryDTO>> get(@RequestHeader("Authorization") String token) {
         try {
             return ResponseEntity.ok(ProductCategoryService.get(token));
         }catch (Exception e){
@@ -37,7 +37,7 @@ public class ProductCategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<String> add(@NotBlank @RequestHeader("Authorization") String token,@Valid @RequestBody ProductCategory productCategory){
+    public ResponseEntity<String> add(@RequestHeader("Authorization") String token,@RequestBody ProductCategory productCategory){
         try {
             ProductCategoryService.add(token, productCategory);
         }catch (ObjectAlreadyExistsExeption objectAlreadyExistsExeption){
