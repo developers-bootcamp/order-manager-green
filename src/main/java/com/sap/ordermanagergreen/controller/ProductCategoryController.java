@@ -1,22 +1,26 @@
 package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.ProductCategoryDTO;
-import com.sap.ordermanagergreen.dto.ProductCategoryMapper;
+import com.sap.ordermanagergreen.mapper.ProductCategoryMapper;
 import com.sap.ordermanagergreen.exception.ObjectAlreadyExistsExeption;
 import com.sap.ordermanagergreen.exception.ObjectNotFoundExeption;
 import com.sap.ordermanagergreen.exception.UnauthorizedExeption;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.sap.ordermanagergreen.model.ProductCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.sap.ordermanagergreen.service.ProductCategoryService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @RestController
 @RequestMapping("/productCategory")
+@CrossOrigin("http://localhost:3000")
+@Validated
 public class ProductCategoryController {
     @Autowired
     private ProductCategoryService ProductCategoryService;
@@ -24,7 +28,7 @@ public class ProductCategoryController {
     private ProductCategoryMapper productCategoryMapper;
 
     @GetMapping
-    public ResponseEntity<List<ProductCategoryDTO>> get(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<ProductCategoryDTO>> get(@NotBlank @RequestHeader("Authorization") String token) {
         try {
             return ResponseEntity.ok(ProductCategoryService.get(token));
         }catch (Exception e){
@@ -33,7 +37,7 @@ public class ProductCategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody ProductCategory productCategory){
+    public ResponseEntity<String> add(@NotBlank @RequestHeader("Authorization") String token,@Valid @RequestBody ProductCategory productCategory){
         try {
             ProductCategoryService.add(token, productCategory);
         }catch (ObjectAlreadyExistsExeption objectAlreadyExistsExeption){

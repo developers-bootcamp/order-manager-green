@@ -1,6 +1,7 @@
 package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.*;
+import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.exception.NoPremissionException;
@@ -106,8 +107,8 @@ public class UserController {
             userService.update(token, user);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
-        } catch (NoPremissionException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (NoPermissionException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

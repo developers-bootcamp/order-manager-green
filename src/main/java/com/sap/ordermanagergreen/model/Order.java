@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @AllArgsConstructor
 @SuperBuilder
 @Document(collection = "Orders")
@@ -17,6 +17,7 @@ public class Order {
 
     @Id
     private String id;
+
     @DBRef
     private User employee;
     @DBRef
@@ -25,10 +26,16 @@ public class Order {
     private List<OrderItem> orderItemsList;
     private OrderStatus orderStatus;
     @DBRef
+    @NonNull
     private Company company;
+    @NonNull
     private String creditCardNumber;
+
     private String expiryOn;
+
     private String cvc;
+
     private Boolean notificationFlag;
+
     private AuditData auditData;
 }

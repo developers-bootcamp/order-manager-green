@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
     @Mapping(source="address.telephone",target = "telephone")
-    @Mapping(source="address.address",target = "address")
+    @Mapping(source="address.addressName",target = "addressName")
     @Mapping(source="address.email",target = "email")
     @Mapping(source = "role.id",target = "roleId")
 

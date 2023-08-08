@@ -26,7 +26,7 @@ public class OrderService {
     @Autowired
     private IUserRepository userRepository;
 
-    public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
+    public List<Order> get(Integer pageNo, Integer pageSize, String companyId, OrderStatus orderStatus) {
         Pageable paging = PageRequest.of(pageNo, pageSize);
         return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
     }
@@ -34,7 +34,7 @@ public class OrderService {
     public String add(Order order, TokenDTO token) {
         order.setCompany(companyRepository.findById(token.getCompanyId()).get());
         order.setEmployee(userRepository.findById(token.getUserId()).get());
-        Order newOrdr = this.orderRepository.insert(order);
+        Order newOrdr = orderRepository.insert(order);
         return newOrdr.getId();
     }
 
@@ -73,4 +73,5 @@ public class OrderService {
         calculatedOrder.put("-1", o);
         return calculatedOrder;
     }
+
 }

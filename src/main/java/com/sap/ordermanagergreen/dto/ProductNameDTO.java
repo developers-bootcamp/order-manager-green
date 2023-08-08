@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 @AllArgsConstructor
 public class ProductNameDTO {
     @Id private String id;
+    
     private String name;
 
 }

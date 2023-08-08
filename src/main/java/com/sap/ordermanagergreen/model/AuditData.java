@@ -3,16 +3,18 @@ package com.sap.ordermanagergreen.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.Date;
+
 
 @Data
 @AllArgsConstructor
 @SuperBuilder
 public class AuditData {
-  
+  @NotNull
   private LocalDateTime createDate;
+  @NotNull
   private LocalDateTime updateDate;
   public AuditData(){
     this.createDate=LocalDateTime.now();
