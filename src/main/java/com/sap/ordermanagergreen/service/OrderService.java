@@ -26,7 +26,7 @@ public class OrderService {
     @Autowired
     private IUserRepository userRepository;
 
-    public List<Order> get(Integer pageNo, Integer pageSize, String companyId, OrderStatus orderStatus) {
+    public List<Order> get(Integer pageNo, Integer pageSize, String companyId,int employeeId ,OrderStatus orderStatus) {
         Pageable paging = PageRequest.of(pageNo, pageSize);
         return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
     }

@@ -37,7 +37,7 @@ public class OrderController {
             ,@NotBlank @RequestHeader("token") String token) {
         TokenDTO tokenDto = JwtToken.decodeToken(token);
         List<Order> orders = null;
-        orders = orderService.get(pageNo, pageSize, tokenDto.getCompanyId(), orderStatus);
+        orders = orderService.get(pageNo, pageSize, tokenDto.getCompanyId(),5, orderStatus);
         return ResponseEntity.ok(orders);
     }
 

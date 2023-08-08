@@ -1,6 +1,7 @@
 package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.service.CurrencyService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +12,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/currency")
 @CrossOrigin("http://localhost:3000")
+@AllArgsConstructor
 public class CurrencyController {
-    @Autowired
+
     private CurrencyService currencyService;
 
     @GetMapping

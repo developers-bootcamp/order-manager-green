@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @SuperBuilder
 @Document(collection = "Roles")  // לשנות שם לטבלה
-@Builder
 public class Role {
 
     @Id
