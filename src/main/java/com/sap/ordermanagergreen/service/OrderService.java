@@ -1,5 +1,5 @@
 package com.sap.ordermanagergreen.service;
-
+import org.springframework.amqp.core.AmqpTemplate;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
@@ -26,6 +26,8 @@ public class OrderService {
     @Autowired
     private IUserRepository userRepository;
 
+    @Autowired
+    private AmqpTemplate amqpTemplate;
     public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
         Pageable paging = PageRequest.of(pageNo, pageSize);
         return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
@@ -34,8 +36,10 @@ public class OrderService {
     public String add(Order order, TokenDTO token) {
         order.setCompany(companyRepository.findById(token.getCompanyId()).get());
         order.setEmployee(userRepository.findById(token.getUserId()).get());
-        Order newOrdr = this.orderRepository.insert(order);
-        return newOrdr.getId();
+        Order newOrder = this.orderRepository.insert(order);
+        amqpTemplate.convertAndSend("orderQueue", newOrder);
+
+        return newOrder.getId();
     }
 
     public void update(String id, Order order) throws ObjectNotExistException {
