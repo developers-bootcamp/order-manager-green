@@ -77,6 +77,7 @@ public class UserController {
     @GetMapping("/{email}/{password}")
     public ResponseEntity<String> logIn(@PathVariable("email") String email, @PathVariable("password") String password) {
         try {
+            System.out.println("ffffffffffffffffffffffffffffffffffffffffffffff");
             User user = userService.getUserByEmailAndPassword(email, password);
             System.out.println(user);
             String token = JwtToken.generateToken(user);
