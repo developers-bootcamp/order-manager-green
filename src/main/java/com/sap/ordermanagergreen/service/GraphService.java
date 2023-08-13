@@ -3,7 +3,6 @@ package com.sap.ordermanagergreen.service;
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
-import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.*;
@@ -22,7 +21,7 @@ public class GraphService {
     @Autowired
     private IOrderRepository orderRepository;
     @Autowired
-    private MongoTemplate mongoTemplate;
+    public MongoTemplate mongoTemplate;
 
     public List<TopEmployeeDTO> getTopEmployee() {
 
