@@ -12,7 +12,7 @@ import java.util.List;
 @RequestMapping("/Graph")
 public class GraphController {
     @Autowired
-    private  GraphService graphService;
+    public GraphService graphService;
 
     @GetMapping("/topEmployee")
     public List<TopEmployeeDTO> getTopEmployee() {
