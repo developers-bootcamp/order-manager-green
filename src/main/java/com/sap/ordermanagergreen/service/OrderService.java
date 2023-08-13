@@ -73,4 +73,8 @@ public class OrderService {
         calculatedOrder.put("-1", o);
         return calculatedOrder;
     }
+
+    public List<Order> getOrdersWithNotificationFlag() {
+        return orderRepository.findByNotificationFlag(true);
+    }
 }
