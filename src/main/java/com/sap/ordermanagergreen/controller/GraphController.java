@@ -9,20 +9,13 @@ import java.util.List;
 
 @CrossOrigin("http://localhost:3000")
 @RestController
-@RequestMapping("/graph")
+@RequestMapping("/Graph")
 public class GraphController {
     @Autowired
     private  GraphService graphService;
 
-    @Autowired
-    public GraphController(GraphService graphService) {
-        this.graphService = graphService;
-    }
-
-    @GetMapping
-    @RequestMapping("/topEmployee")
+    @GetMapping("/topEmployee")
     public List<TopEmployeeDTO> getTopEmployee() {
         return graphService.getTopEmployee();
-
     }
 }
