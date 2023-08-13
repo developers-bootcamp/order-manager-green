@@ -13,6 +13,5 @@ public interface IProductCategoryRepository extends MongoRepository<ProductCateg
     
     boolean existsByName(String categoryName);
     List<ProductCategory> findAllByCompany_Id(String companyId);
-    List<Order> findByNotificationFlag(boolean notificationFlag);
 
 }
