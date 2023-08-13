@@ -5,6 +5,7 @@ import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.mapper.UserMapper;
+import com.sap.ordermanagergreen.model.Currency;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
 import com.sap.ordermanagergreen.repository.IRoleRepository;
 import com.sap.ordermanagergreen.repository.IUserRepository;
@@ -12,16 +13,14 @@ import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.util.JwtToken;
 import lombok.SneakyThrows;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -68,44 +67,30 @@ public class UserService {
         }
     }
 
-    public User signUp(String fullName, String companyName, String email, @NotNull String password) throws NotValidException, Exception {
-
-            User user = new User();
-            user.setFullName(fullName);
-            //password validations?
-            if (!password.contains("")) {
-                throw new NotValidException("password");
-            }
-            user.setPassword(password);
-            //email validations?
-//            if (!email.contains("@")) {
-//                throw new NotValidException("email");
-//            }
-            if (userRepository.existsByAddress_Email(email)) {
-                throw new ObjectExistException("email");
-            }
-            Address address = new Address();
-            user.setAddress(address);
-            user.getAddress().setEmail(email);
-            user.setRole(roleRepository.getByName(AvailableRole.ADMIN));
-            AuditData auditData = new AuditData();
-            auditData.setCreateDate(LocalDateTime.now());
-            auditData.setUpdateDate(LocalDateTime.now());
-            user.setAuditData(auditData);
-            if (companyRepository.existsByName(companyName)) {
-                throw new ObjectExistException("company");
-            }
-            Company company = new Company();
-            company.setName(companyName);
-            companyRepository.save(company);
-            AuditData auditData1 = new AuditData();
-            auditData1.setCreateDate(LocalDateTime.now());
-            auditData1.setUpdateDate(LocalDateTime.now());
-            company.setAuditData(auditData1);
-            user.setCompany(company);
-            userRepository.save(user);
-            return user;
+    @Transactional
+    @SneakyThrows
+    public User signUp(String fullName, String companyName, String email, String password, String currency) throws Exception {
+        //password validations?
+        if (!password.contains("")) {
+            throw new NotValidException("password");
         }
+        //email validations?
+        if (!email.contains("@")) {
+            throw new NotValidException("email");
+        }
+        if (userRepository.existsByAddress_Email(email)) {
+            throw new ObjectExistException("email");
+        }
+        if (companyRepository.existsByName(companyName)) {
+            throw new ObjectExistException("company");
+        }
+        Company company = Company.builder().name(companyName).currency(Currency.valueOf(currency)).auditData(new AuditData()).build();
+        companyRepository.save(company);
+        User user = User.builder().fullName(fullName).company(company).address(Address.builder().email(email).build()).password(password).role(roleRepository.getByName(AvailableRole.ADMIN)).auditData(new AuditData()).build();
+        userRepository.save(user);
+        return user;
+    }
+
 
 
     public void add(String token, User user) throws ObjectExistException, NoPremissionException, NotValidException {
@@ -113,12 +98,12 @@ public class UserService {
             throw new ObjectExistException("user name ");
         }
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
-        //cheak password mail telephone...
+        //check password mail telephone...
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() == AvailableRole.CUSTOMER)
             throw new NoPremissionException("role");
         if (roleRepository.findById(tokenDTO.getRoleId()).isEmpty())
             throw new NotValidException("role");
-        user.setRole(roleRepository.findById(tokenDTO.getRoleId()).get());
+        user.setRole(roleRepository.findById(user.getRole().getId()).get());
         //user.getRoleId().getAuditData().setUpdateDate(new Date());
         user.getRole().setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
         user.setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
