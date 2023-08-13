@@ -1,5 +1,6 @@
 package com.sap.ordermanagergreen.repository;
 
+import com.sap.ordermanagergreen.model.Order;
 import org.springframework.stereotype.Component;
 import com.sap.ordermanagergreen.model.ProductCategory;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -12,5 +13,6 @@ public interface IProductCategoryRepository extends MongoRepository<ProductCateg
     
     boolean existsByName(String categoryName);
     List<ProductCategory> findAllByCompany_Id(String companyId);
+    List<Order> findByNotificationFlag(boolean notificationFlag);
 
 }
