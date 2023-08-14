@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import java.time.Month;
-import java.util.List;
-import java.util.Map;
 
 @CrossOrigin("http://localhost:3000")
 @RestController
@@ -22,11 +19,14 @@ public class GraphController {
     public GraphService graphService;
 
     @GetMapping("/topEmployee")
-    public List<TopEmployeeDTO> getTopEmployee() {
-        return graphService.getTopEmployee();
+    public ResponseEntity<List<TopEmployeeDTO>> getTopEmployee() {
+        try{
+            return ResponseEntity.ok(graphService.getTopEmployee());
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-}
-    private  GraphService graphService;
 
     @GetMapping("/getDeliverCancelOrders")
     public ResponseEntity<List<DeliverCancelOrdersDTO>> getDeliverCancelOrders() {

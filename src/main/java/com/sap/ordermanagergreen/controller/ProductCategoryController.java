@@ -15,6 +15,7 @@ import com.sap.ordermanagergreen.service.ProductCategoryService;
 
 import java.util.List;
 
+@CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/productCategory")
 public class ProductCategoryController {

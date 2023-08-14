@@ -2,13 +2,9 @@ package com.sap.ordermanagergreen.service;
 
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.model.OrderStatus;
-import com.mongodb.client.model.Projections;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
-import com.sap.ordermanagergreen.model.OrderStatus;
-import com.sap.ordermanagergreen.model.User;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.*;
@@ -22,8 +18,6 @@ import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import java.time.LocalDate;
 import java.util.*;
 import java.time.Month;
-import java.time.Year;
-import java.util.*;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -52,7 +46,6 @@ public class GraphService {
 
         return result.getMappedResults();
     }
-    private MongoTemplate mongoTemplate;
 
         public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
         LocalDate currentDate = LocalDate.now();
