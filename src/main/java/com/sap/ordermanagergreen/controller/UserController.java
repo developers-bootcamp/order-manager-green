@@ -9,7 +9,6 @@ import com.sap.ordermanagergreen.service.UserService;
 import com.sap.ordermanagergreen.util.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,14 +16,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin("http://localhost:3000")
+import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
+
+@CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/user")
 public class UserController {

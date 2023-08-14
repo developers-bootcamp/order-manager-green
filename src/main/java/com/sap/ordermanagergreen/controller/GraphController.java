@@ -4,7 +4,9 @@ import com.sap.ordermanagergreen.service.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("http://localhost:3000")
+import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
+
+@CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/graph")
 public class GraphController {
