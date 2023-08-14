@@ -15,14 +15,16 @@ import java.util.Map;
 @RestController
 @RequestMapping("/graph")
 public class GraphController {
+
     @Autowired
-    private  GraphService graphService;
+    private GraphService graphService;
 
     @GetMapping("/getDeliverCancelOrders")
     public ResponseEntity<List<DeliverCancelOrdersDTO>> getDeliverCancelOrders() {
-        try{
+        try {
             return ResponseEntity.ok(graphService.getDeliverCancelOrders());
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-}}
+    }
+}

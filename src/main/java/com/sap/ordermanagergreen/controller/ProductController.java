@@ -5,6 +5,7 @@ import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.model.Product;
 import com.sap.ordermanagergreen.util.JwtToken;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -15,8 +16,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/product")
+@AllArgsConstructor
 public class ProductController {
-    @Autowired
+
     private ProductService productService;
 
     @GetMapping
