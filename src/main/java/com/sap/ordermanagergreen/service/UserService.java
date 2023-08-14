@@ -37,7 +37,7 @@ public class UserService {
 
     public List<UserDto> get(String companyId, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
-        Page<User> y = userRepository.findByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(companyId, pageRequest);
+        Page<User> y = userRepository.findByCompany_IdOrderByRoleAscAuditData_UpdateDateDesc(companyId, pageRequest);
         List<User> users = y.getContent();
         List<UserDto> toReturn = new ArrayList<>();
         users.forEach(e -> toReturn.add(userMapper.UserToUserDTO(e)));
@@ -50,12 +50,11 @@ public class UserService {
             throw new IllegalArgumentException("invalid prefixName");
         }
         Role roleId = roleRepository.getByName(AvailableRole.CUSTOMER);
-        List<User> autocomplete = userRepository.findByFullNameStartingWithAndRole_IdAndCompany_Id(prefixName, roleId.getId(), companyId);//CustomersByNameStartingWithAndRoleIdEqualAndCompanyIdEqual(prefixName,roleId.getId(),companyId);
+        List<User> autocomplete = userRepository.findByFullNameStartingWithAndRole_IdAndCompany_Id(prefixName, roleId.getId(), companyId);
         Map<String, String> toReturn = new HashMap<>();
         autocomplete.forEach(customer -> toReturn.put(customer.getId(), customer.getFullName()));
         return toReturn;
     }
-
     public User getUserByEmailAndPassword(String userEmail, String userPassword) {
         User user = isEmailExists(userEmail);
         if (user == null) {
@@ -111,7 +110,6 @@ public class UserService {
             throw new NoPremissionException("company");
         }
         user.setCompany(companyRepository.findById(user.getCompany().getId()).get());
-        //user.getCompanyId().getAuditData().setUpdateDate(new Date());
         user.getCompany().setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
         userRepository.save(user);
     }
