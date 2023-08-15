@@ -7,11 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
+
 import java.time.Month;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/graph")
 public class GraphController {
