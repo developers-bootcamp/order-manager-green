@@ -6,6 +6,7 @@ import com.sap.ordermanagergreen.exception.ObjectNotExistException;
 import com.sap.ordermanagergreen.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.sap.ordermanagergreen.model.ProductCategory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 @CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/productCategory")
+@Validated
 public class ProductCategoryController {
 
     @Autowired

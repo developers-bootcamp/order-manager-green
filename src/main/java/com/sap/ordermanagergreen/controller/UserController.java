@@ -1,6 +1,7 @@
 package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.*;
+import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.exception.NoPremissionException;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +90,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @Valid @RequestBody User user) {
+    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody User user) {
         try {
             userService.add(token, user);
         } catch (ObjectExistException ex) {
@@ -107,8 +107,8 @@ public class UserController {
             userService.update(token, user);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
-        } catch (NoPremissionException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (NoPermissionException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
