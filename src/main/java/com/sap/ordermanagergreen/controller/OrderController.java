@@ -10,11 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
 
 import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 
@@ -25,7 +24,6 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
-
 
     @GetMapping
     public ResponseEntity<List<Order>> get(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -42,7 +40,7 @@ public class OrderController {
     public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody Order order) {
         TokenDTO tokenDto;
         try {
-             tokenDto = JwtToken.decodeToken(token);
+            tokenDto = JwtToken.decodeToken(token);
             ;
 //            if (!tokenDto.getCompanyId().equals(order.getCompany().getId()))
 //                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -50,14 +48,14 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         try {
-            return ResponseEntity.ok(this.orderService.add(order,tokenDto));
+            return ResponseEntity.ok(this.orderService.add(order, tokenDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity update(@RequestHeader("token") String token, @PathVariable String id, @RequestBody Order order)  {
+    public ResponseEntity update(@RequestHeader("token") String token, @PathVariable String id, @RequestBody Order order) {
         TokenDTO tokenDto = JwtToken.decodeToken(token);
         if (tokenDto.getCompanyId() != order.getCompany().getId())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -79,4 +77,5 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 }

@@ -1,10 +1,10 @@
 package com.sap.ordermanagergreen.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.sap.ordermanagergreen.model.Role;
 import com.sap.ordermanagergreen.model.AvailableRole;
 import com.sap.ordermanagergreen.repository.IRoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -13,6 +13,7 @@ public class RoleService {
 
     @Autowired
     private IRoleRepository rolesRepository;
+
     public List<Role> get() {
         return rolesRepository.findAll();
     }
@@ -38,4 +39,5 @@ public class RoleService {
     public void delete(String roleId) {
         rolesRepository.deleteById(roleId);
     }
+
 }

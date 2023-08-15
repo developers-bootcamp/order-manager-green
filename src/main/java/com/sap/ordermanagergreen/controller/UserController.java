@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +28,9 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
     @Autowired
-    private  UserService userService;
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<List<UserDto>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
@@ -126,4 +128,5 @@ public class UserController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }

@@ -12,7 +12,6 @@ import com.sap.ordermanagergreen.repository.IUserRepository;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.util.JwtToken;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,12 +19,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import lombok.SneakyThrows;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class UserService {
+
     @Autowired
     IUserRepository userRepository;
     @Autowired
@@ -71,7 +72,7 @@ public class UserService {
     @SneakyThrows
     public User signUp(String fullName, String companyName, String email, String password, String currency) throws Exception {
         //password validations?
-        if (!password.contains("")) {
+        if (password.contains(" ")) {
             throw new NotValidException("password");
         }
         //email validations?
@@ -90,7 +91,6 @@ public class UserService {
         userRepository.save(user);
         return user;
     }
-
 
 
     public void add(String token, User user) throws ObjectExistException, NoPremissionException, NotValidException {
@@ -147,4 +147,5 @@ public class UserService {
     public User isEmailExists(String email) {
         return userRepository.findByAddress_Email(email);
     }
+
 }

@@ -1,10 +1,8 @@
 package com.sap.ordermanagergreen.controller;
 
-import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.model.Product;
-import com.sap.ordermanagergreen.util.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -19,6 +17,7 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 @RestController
 @RequestMapping("/product")
 public class ProductController {
+
     @Autowired
     private ProductService productService;
 
@@ -83,4 +82,5 @@ public class ProductController {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }
