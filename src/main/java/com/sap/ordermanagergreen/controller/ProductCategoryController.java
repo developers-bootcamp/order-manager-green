@@ -23,7 +23,6 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 @CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/productCategory")
-@CrossOrigin("http://localhost:3000")
 @Validated
 public class ProductCategoryController {
     @Autowired
@@ -35,22 +34,22 @@ public class ProductCategoryController {
     public ResponseEntity<List<ProductCategoryDTO>> get(@RequestHeader("Authorization") String token) {
         try {
             return ResponseEntity.ok(ProductCategoryService.get(token));
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PostMapping
-    public ResponseEntity<String> add(@RequestHeader("Authorization") String token,@RequestBody ProductCategory productCategory){
+    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody ProductCategory productCategory) {
         try {
             ProductCategoryService.add(token, productCategory);
-        }catch (ObjectAlreadyExistsExeption objectAlreadyExistsExeption){
+        } catch (ObjectAlreadyExistsExeption objectAlreadyExistsExeption) {
             return new ResponseEntity<>(objectAlreadyExistsExeption.getMessage(), HttpStatus.CONFLICT);
-        }catch (ObjectNotFoundExeption objectNotFoundExeption){
+        } catch (ObjectNotFoundExeption objectNotFoundExeption) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(objectNotFoundExeption.getMessage());
-        }catch (UnauthorizedExeption unauthorizedExeption) {
+        } catch (UnauthorizedExeption unauthorizedExeption) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok("success: true");
@@ -58,7 +57,7 @@ public class ProductCategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@RequestHeader("Authorization") String token ,@PathVariable("id") String id) {
+    public ResponseEntity<String> delete(@RequestHeader("Authorization") String token, @PathVariable("id") String id) {
         try {
             ProductCategoryService.delete(token, id);
         } catch (ObjectNotFoundExeption objectNotFoundExeption) {
@@ -68,13 +67,14 @@ public class ProductCategoryController {
         }
         return new ResponseEntity<>("{\"success\": true}", HttpStatus.OK);
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable("id") String id, @RequestBody ProductCategory productCategory,@RequestHeader("Authorization") String token){
+    public ResponseEntity<String> update(@PathVariable("id") String id, @RequestBody ProductCategory productCategory, @RequestHeader("Authorization") String token) {
         try {
-            ProductCategoryService.update(id,productCategory,token);
-        }catch (ObjectNotFoundExeption objectNotFoundExeption){
-            return new ResponseEntity<>(objectNotFoundExeption.getMessage(),HttpStatus.NOT_FOUND);
-        } catch(Exception e){
+            ProductCategoryService.update(id, productCategory, token);
+        } catch (ObjectNotFoundExeption objectNotFoundExeption) {
+            return new ResponseEntity<>(objectNotFoundExeption.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok("success: true");

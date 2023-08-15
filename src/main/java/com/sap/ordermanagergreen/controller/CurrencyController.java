@@ -14,7 +14,6 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 @CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/currency")
-@CrossOrigin("http://localhost:3000")
 @AllArgsConstructor
 public class CurrencyController {
 
