@@ -15,5 +15,5 @@ public interface IProductRepository extends MongoRepository<Product, String> {
     List<Product> findAllByCompany_Id(String id);
     @Query(value ="{'name': {$regex : '^?0', $options: 'i'},'company':?1}", fields = "{'id': 1, 'name': 1}")
     List<Product> findProductsByNameStartingWithAndCompany_IdEqual(String prefix,String id);
-    
+
 }
