@@ -1,5 +1,5 @@
 package com.sap.ordermanagergreen.service;
-import com.sap.ordermanagergreen.dto.UserDto;
+import com.sap.ordermanagergreen.dto.UserDTO;
 import com.sap.ordermanagergreen.mapper.UserMapper;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.IRoleRepository;
@@ -46,7 +46,7 @@ public class UserServiceTest {
         private IRoleRepository roleRepository;
 
         @Test
-        public void getAll_ReturnsListOfUserDto(User demoUser,UserDto demoUserDto) {
+        public void getAll_ReturnsListOfUserDto(User demoUser, UserDTO demoUserDto) {
             // Mocking the userRepository.findByCompanyIdOrderByRoleIdAscAuditData_UpdateDateDesc() method
             String companyId = "234";
             int page = 0;
@@ -54,7 +54,7 @@ public class UserServiceTest {
             PageRequest pageRequest = PageRequest.of(page, pageSize);
 
         List<User> testUsers=getListOfUser();
-        List<UserDto> testUsersDto=getListOfUserDto();
+        List<UserDTO> testUsersDto=getListOfUserDto();
         Mockito.doReturn(new PageImpl<>(testUsers, pageRequest, testUsers.size()))
                     .when(userRepository)
                     .findByCompany_IdOrderByRoleAscAuditData_UpdateDateDesc(eq(companyId), any(PageRequest.class));
@@ -66,12 +66,12 @@ public class UserServiceTest {
 
             when(userMapper.UserToUserDTO(any(User.class))).thenAnswer(invocation -> {
                 User user = invocation.getArgument(0);
-                UserDto userDto = new UserDto(user.getId(),user.getFullName(),user.getAddress().getEmail(),user.getAddress().getAddressName(),user.getAddress().getTelephone(), user.getRole().getId());
+                UserDTO userDto = new UserDTO(user.getId(),user.getFullName(),user.getAddress().getEmail(),user.getAddress().getAddressName(),user.getAddress().getTelephone(), user.getRole().getId());
                 return userDto;
             });
 
             // Calling the getAll method of the userService
-            List<UserDto> result = userService.get(companyId, page, pageSize);
+            List<UserDTO> result = userService.get(companyId, page, pageSize);
 
             // Assertions
             Assertions.assertNotNull(result);
@@ -152,13 +152,13 @@ public void testGetNamesWithValidPrefixName() {
                 .build());
         return users;
     }
-    public List<UserDto> getListOfUserDto(){
-        List<UserDto> usersDto=new ArrayList<>();
-        usersDto.add(UserDto.builder().id("5")
+    public List<UserDTO> getListOfUserDto(){
+        List<UserDTO> usersDto=new ArrayList<>();
+        usersDto.add(UserDTO.builder().id("5")
                 .fullName("unit testing1 is important").addressName("gilo").email("erty@rtt").telephone("0556677889").roleId("1").build());
-        usersDto.add(UserDto.builder().id("6")
+        usersDto.add(UserDTO.builder().id("6")
                 .fullName("unit testing2 is important").addressName("mila").email("popo@rtt").telephone("0556697559").roleId("2").build());
-        usersDto.add(UserDto.builder().id("7")
+        usersDto.add(UserDTO.builder().id("7")
                 .fullName("unit testing3 is important").addressName("michina").email("shlomo@rtt").telephone("0556964229").roleId("3").build());
         return usersDto;
     }
