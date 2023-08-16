@@ -36,7 +36,7 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody Order order) {
-        TokenDTO tokenDto;
+        TokenDTO tokenDto=new TokenDTO();
         try {
              tokenDto = JwtToken.decodeToken(token);
             ;

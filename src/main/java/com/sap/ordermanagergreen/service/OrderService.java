@@ -1,4 +1,5 @@
 package com.sap.ordermanagergreen.service;
+import com.sap.ordermanagergreen.util.DefaultExchangeProducer;
 import org.springframework.amqp.core.AmqpTemplate;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.model.*;
@@ -25,9 +26,9 @@ public class OrderService {
     private ICompanyRepository companyRepository;
     @Autowired
     private IUserRepository userRepository;
+@Autowired
+private OrderChargingBL orderChargingBL;
 
-    @Autowired
-    private AmqpTemplate amqpTemplate;
     public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
         Pageable paging = PageRequest.of(pageNo, pageSize);
         return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
@@ -37,8 +38,9 @@ public class OrderService {
         order.setCompany(companyRepository.findById(token.getCompanyId()).get());
         order.setEmployee(userRepository.findById(token.getUserId()).get());
         Order newOrder = this.orderRepository.insert(order);
-        amqpTemplate.convertAndSend("orderQueue", newOrder);
 
+      //  producer.sendMessageAfterCharge();
+        orderChargingBL.chargingStep(newOrder);
         return newOrder.getId();
     }
 
