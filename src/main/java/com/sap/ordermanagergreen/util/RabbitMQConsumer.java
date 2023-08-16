@@ -1,5 +1,5 @@
 package com.sap.ordermanagergreen.util;
-import com.sap.ordermanagergreen.model.OrderDTO;
+import com.sap.ordermanagergreen.dto.OrderDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

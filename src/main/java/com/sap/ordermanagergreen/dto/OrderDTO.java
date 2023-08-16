@@ -1,4 +1,4 @@
-package com.sap.ordermanagergreen.model;
+package com.sap.ordermanagergreen.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

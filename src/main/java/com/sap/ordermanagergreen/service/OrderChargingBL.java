@@ -1,5 +1,6 @@
 package com.sap.ordermanagergreen.service;
 //import com.sap.ordermanagergreen.dto.OrderDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sap.ordermanagergreen.model.Order;
 import com.sap.ordermanagergreen.model.OrderItem;
 import com.sap.ordermanagergreen.model.OrderStatus;
@@ -20,7 +21,7 @@ public class OrderChargingBL {
         private DefaultExchangeProducer producer;
         @Autowired
         private ModelMapper modelMapper;
-        public void chargingStep(Order order) {
+        public void chargingStep(Order order) throws JsonProcessingException {
          //   if (order.getOrderStatus() == OrderStatus.APPROVED) {
           //      order.setOrderStatus(OrderStatus.CHARGING);
          //      for (OrderItem item : order.getOrderItemsList()) {

@@ -1,4 +1,5 @@
 package com.sap.ordermanagergreen.service;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sap.ordermanagergreen.util.DefaultExchangeProducer;
 import org.springframework.amqp.core.AmqpTemplate;
 import com.sap.ordermanagergreen.dto.TokenDTO;
@@ -34,7 +35,7 @@ private OrderChargingBL orderChargingBL;
         return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
     }
 
-    public String add(Order order, TokenDTO token) {
+    public String add(Order order, TokenDTO token) throws JsonProcessingException {
         order.setCompany(companyRepository.findById(token.getCompanyId()).get());
         order.setEmployee(userRepository.findById(token.getUserId()).get());
         Order newOrder = this.orderRepository.insert(order);

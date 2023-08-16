@@ -1,6 +1,6 @@
 package com.sap.ordermanagergreen.util;
 
-import com.sap.ordermanagergreen.model.OrderDTO;
+import com.sap.ordermanagergreen.dto.OrderDTO;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
