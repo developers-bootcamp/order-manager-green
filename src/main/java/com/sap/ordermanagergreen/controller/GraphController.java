@@ -25,7 +25,7 @@ public class GraphController {
     @GetMapping("/topProduct")
     public List<TopProductDTO> topProduct() {
         return graphService.getTopProductsGroupedByMonth(LocalDate.now().minusMonths(3).withDayOfMonth(1), LocalDate.now());
-    private GraphService graphService;
+    }
 
     @GetMapping("/getDeliverCancelOrders")
     public ResponseEntity<List<DeliverCancelOrdersDTO>> getDeliverCancelOrders() {

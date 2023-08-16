@@ -21,18 +21,16 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.expression.spel.ast.Projection;
 import org.springframework.stereotype.Service;
 import org.springframework.data.mongodb.core.MongoTemplate;
+
+import java.time.Month;
 import java.util.List;
 import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.Currency;
 import java.util.stream.Collectors;
-import java.time.Month;
-import java.time.Year;
-import java.util.*;
+import com.sap.ordermanagergreen.model.MonthInYear;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -87,7 +85,7 @@ public class GraphService {
                     })
                     .collect(Collectors.toList());
             int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-            Month lastMonth = new Month(currentYear, month);
+            MonthInYear lastMonth = new MonthInYear(currentYear, month);
             TopProductDTO topProductDTO = new TopProductDTO(lastMonth, productCountList);
             topProducts.add(topProductDTO);
         }
