@@ -21,10 +21,11 @@ public interface ProductCategoryMapper {
                 .map(this::fromDto)
                 .collect(Collectors.toList());
     }
+
     default List<ProductCategoryDTO> toDtoList(List<ProductCategory> productCategories) {
         return productCategories.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+
     }
 }
-

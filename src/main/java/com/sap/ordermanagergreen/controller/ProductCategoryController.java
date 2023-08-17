@@ -23,13 +23,12 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 @CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/productCategory")
-@CrossOrigin("http://localhost:3000")
 @Validated
 public class ProductCategoryController {
     @Autowired
     private ProductCategoryService ProductCategoryService;
-    @Autowired
-    private ProductCategoryMapper productCategoryMapper;
+   @Autowired
+   private ProductCategoryMapper productCategoryMapper;
 
     @GetMapping
     public ResponseEntity<List<ProductCategoryDTO>> get(@RequestHeader("Authorization") String token) {
