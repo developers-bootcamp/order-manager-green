@@ -1,6 +1,7 @@
 package com.sap.ordermanagergreen.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sap.ordermanagergreen.util.DefaultExchangeProducer;
+import lombok.SneakyThrows;
 import org.springframework.amqp.core.AmqpTemplate;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.model.*;
@@ -15,7 +16,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.YearMonth;
 import java.util.*;
+
 
 @Service
 public class OrderService {
@@ -34,15 +37,24 @@ private OrderChargingBL orderChargingBL;
         Pageable paging = PageRequest.of(pageNo, pageSize);
         return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
     }
-
+@SneakyThrows
     public String add(Order order, TokenDTO token) throws JsonProcessingException {
+    System.out.println("🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️");
+    System.out.println(order);
         order.setCompany(companyRepository.findById(token.getCompanyId()).get());
         order.setEmployee(userRepository.findById(token.getUserId()).get());
-        Order newOrder = this.orderRepository.insert(order);
-
+        try{
+            Order newOrder = this.orderRepository.insert(order);
+            newOrder.setOrderStatus(OrderStatus.APPROVED);
+            orderChargingBL.chargingStep(newOrder);
+            return newOrder.getId();}
+        catch (Exception e){
+            System.out.println(e);
+            throw  new Exception();
+        }
+     //   System.out.println(newOrder);
       //  producer.sendMessageAfterCharge();
-        orderChargingBL.chargingStep(newOrder);
-        return newOrder.getId();
+
     }
 
     public void update(String id, Order order) throws ObjectNotExistException {

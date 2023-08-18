@@ -1,13 +1,14 @@
 package com.sap.ordermanagergreen.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.YearMonth;
 import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,7 +28,7 @@ public class Order {
     @DBRef
     private Company company;
     private String creditCardNumber;
-    private String expiryOn;
+    private YearMonth expiryOn;
     private String cvc;
     private Boolean notificationFlag;
     private AuditData auditData;
