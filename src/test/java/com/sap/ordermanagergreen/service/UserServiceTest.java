@@ -66,7 +66,7 @@ public class UserServiceTest {
 
             when(userMapper.UserToUserDTO(any(User.class))).thenAnswer(invocation -> {
                 User user = invocation.getArgument(0);
-                UserDto userDto = new UserDto(user.getId(),user.getFullName(),user.getAddress().getEmail(),user.getAddress().getAddressName(),user.getAddress().getTelephone(), user.getRole().getId());
+                UserDto userDto = new UserDto(user.getId(),user.getFullName(),user.getAddress().getEmail(),user.getAddress().getAddress(),user.getAddress().getTelephone(), user.getRole().getId());
                 return userDto;
             });
 
@@ -133,19 +133,19 @@ public void testGetNamesWithValidPrefixName() {
     public List<User> getListOfUser(){
         List<User> users=new ArrayList<>();
         users.add(User.builder().id("5")
-                .fullName("unit testing1 is important").password("1111111").address(Address.builder().addressName("gilo").email("erty@rtt").telephone("0556677889").build()).
+                .fullName("unit testing1 is important").password("1111111").address(Address.builder().address("gilo").email("erty@rtt").telephone("0556677889").build()).
                 role(Role.builder().id("1").build()).
                 company(Company.builder().id("123").build())
                 .auditData(AuditData.builder().updateDate(LocalDateTime.now()).createDate(LocalDateTime.now()).build())
                 .build());
         users.add(User.builder().id("6")
-                .fullName("unit testing2 is important").password("2222222").address(Address.builder().addressName("mila").email("popo@rtt").telephone("0556697559").build()).
+                .fullName("unit testing2 is important").password("2222222").address(Address.builder().address("mila").email("popo@rtt").telephone("0556697559").build()).
                 role(Role.builder().id("2").build()).
                 company(Company.builder().id("123").build())
                 .auditData(AuditData.builder().updateDate(LocalDateTime.now()).createDate(LocalDateTime.now()).build())
                 .build());
         users.add(User.builder().id("7")
-                .fullName("unit testing3 is important").password("3333333").address(Address.builder().addressName("michina").email("shlomo@rtt").telephone("0556964229").build()).
+                .fullName("unit testing3 is important").password("3333333").address(Address.builder().address("michina").email("shlomo@rtt").telephone("0556964229").build()).
                 role(Role.builder().id("3").build()).
                 company(Company.builder().id("1234").build())
                 .auditData(AuditData.builder().updateDate(LocalDateTime.now()).createDate(LocalDateTime.now()).build())
@@ -155,11 +155,11 @@ public void testGetNamesWithValidPrefixName() {
     public List<UserDto> getListOfUserDto(){
         List<UserDto> usersDto=new ArrayList<>();
         usersDto.add(UserDto.builder().id("5")
-                .fullName("unit testing1 is important").addressName("gilo").email("erty@rtt").telephone("0556677889").roleId("1").build());
+                .fullName("unit testing1 is important").address("gilo").email("erty@rtt").telephone("0556677889").roleId("1").build());
         usersDto.add(UserDto.builder().id("6")
-                .fullName("unit testing2 is important").addressName("mila").email("popo@rtt").telephone("0556697559").roleId("2").build());
+                .fullName("unit testing2 is important").address("mila").email("popo@rtt").telephone("0556697559").roleId("2").build());
         usersDto.add(UserDto.builder().id("7")
-                .fullName("unit testing3 is important").addressName("michina").email("shlomo@rtt").telephone("0556964229").roleId("3").build());
+                .fullName("unit testing3 is important").address("michina").email("shlomo@rtt").telephone("0556964229").roleId("3").build());
         return usersDto;
     }
 

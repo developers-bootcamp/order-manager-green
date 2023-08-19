@@ -22,7 +22,7 @@ public class UserResolver implements ParameterResolver {
     @Override
     public User resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
        return User.builder().id("5")
-                .fullName("unit testing1 is important").password("1111111").address(Address.builder().addressName("gilo").email("erty@rtt").telephone("0556677889").build()).
+                .fullName("unit testing1 is important").password("1111111").address(Address.builder().address("gilo").email("erty@rtt").telephone("0556677889").build()).
                 role(Role.builder().id("1").build())
                 .auditData(AuditData.builder().updateDate(LocalDateTime.now()).createDate(LocalDateTime.now()).build())
                 .build();

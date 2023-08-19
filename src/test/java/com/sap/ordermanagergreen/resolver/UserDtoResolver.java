@@ -26,7 +26,7 @@ public class UserDtoResolver implements ParameterResolver {
 //                .fullName("unit testing3 is important").addressName("michina").email("shlomo@rtt").telephone("0556964229").roleId("3").build());
 //        return users;
         return UserDto.builder().id("5")
-                .fullName("unit testing1 is important").addressName("gilo").email("erty@rtt").telephone("0556677889").roleId("1").build();
+                .fullName("unit testing1 is important").address("gilo").email("erty@rtt").telephone("0556677889").roleId("1").build();
 
     }
 }
