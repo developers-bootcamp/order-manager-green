@@ -14,8 +14,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
+import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
+
+@CrossOrigin(MY_URL)
 @RestController
-@CrossOrigin("http://localhost:3000")
 @RequestMapping("/order")
 public class OrderController {
 
@@ -38,7 +42,7 @@ public class OrderController {
     public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody Order order) {
         TokenDTO tokenDto;
         try {
-             tokenDto = JwtToken.decodeToken(token);
+            tokenDto = JwtToken.decodeToken(token);
             ;
 //            if (!tokenDto.getCompanyId().equals(order.getCompany().getId()))
 //                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

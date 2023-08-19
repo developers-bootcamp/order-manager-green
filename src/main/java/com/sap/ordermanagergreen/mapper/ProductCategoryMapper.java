@@ -1,5 +1,6 @@
-package com.sap.ordermanagergreen.dto;
+package com.sap.ordermanagergreen.mapper;
 
+import com.sap.ordermanagergreen.dto.ProductCategoryDTO;
 import com.sap.ordermanagergreen.model.ProductCategory;
 import org.mapstruct.Mapper;
 
@@ -20,10 +21,11 @@ public interface ProductCategoryMapper {
                 .map(this::fromDto)
                 .collect(Collectors.toList());
     }
+
     default List<ProductCategoryDTO> toDtoList(List<ProductCategory> productCategories) {
         return productCategories.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+
     }
 }
-

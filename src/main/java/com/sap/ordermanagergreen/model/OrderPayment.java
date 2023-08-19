@@ -15,8 +15,11 @@ public class OrderPayment {
     @DBRef
     private User user;
     private int amount;
+
     private long invoiceNumber;
+
     private PaymentType paymentType;
+
     private AuditData auditData;
     
 }
