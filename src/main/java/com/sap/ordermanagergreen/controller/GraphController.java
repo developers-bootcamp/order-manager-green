@@ -18,6 +18,7 @@ public class GraphController {
 
     @GetMapping("/topProduct")
     public List<TopProductDTO> topProduct() {
+        graphService.getMonthlyProductSales();
         return graphService.getTopProductsGroupedByMonth(LocalDate.now().minusMonths(3).withDayOfMonth(1), LocalDate.now());
     }
 }
