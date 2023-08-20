@@ -28,7 +28,7 @@ public class JwtToken {
         return accessToken;
     }
 
-    public static TokenDTO decodeToken(String token) throws TokenNotValidException {
+    public static TokenDTO decodeToken(String token)  {
         try{
 
 
