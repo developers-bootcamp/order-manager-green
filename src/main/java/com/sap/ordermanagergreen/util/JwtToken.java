@@ -28,7 +28,11 @@ public class JwtToken {
         return accessToken;
     }
 
-    public static TokenDTO decodeToken(String token) {
+    public static TokenDTO decodeToken(String token) throws TokenNotValidException {
+        try{
+
+
+
         Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET.getBytes());
         DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
         TokenDTO decodedToken = new TokenDTO();
@@ -38,5 +42,5 @@ public class JwtToken {
         decodedToken.setExpirationDate(jwt.getExpiresAt());
         return decodedToken;}
 
-    }
+    }}
 

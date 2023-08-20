@@ -42,7 +42,11 @@ public class ProductService {
         return modelMapper.map(products, listType);
     }
 
-    public Map<String, String> getNames(String token, String prefix) {
+@SneakyThrows
+    public Map<String,String> getNames(String token, String prefix) {
+
+
+
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         System.out.println(tokenDTO.getCompanyId());
         List<Product> products = productRepository.findProductsByNameStartingWithAndCompany_IdEqual(prefix, tokenDTO.getCompanyId());
@@ -51,7 +55,10 @@ public class ProductService {
         return toReturn;
     }
 
-    public void add(Product product, String token) throws ObjectExistException, NoPermissionException {
+@SneakyThrows
+    public void add(Product product, String token) throws ObjectExistException,NoPremissionException {
+
+    
         if (productRepository.existsByName(product.getName()))
             throw new ObjectExistException("product name already exist");
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
@@ -61,8 +68,10 @@ public class ProductService {
         product.setAuditData(new AuditData());
         productRepository.save(product);
     }
+@SneakyThrows
+    public void update(String id, Product product, String token)throws ObjectExistException,NoPremissionException {
 
-    public void update(String id, Product product, String token) throws ObjectExistException, NoPermissionException {
+ 
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         Product prevProduct = productRepository.findById(id).orElse(null);
         if (productRepository.existsByName(product.getName()) && !prevProduct.getName().equals(product.getName()))
@@ -74,7 +83,11 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public void delete(String id, String token) throws NoPermissionException {
+@SneakyThrows
+    public void delete(String id, String token)throws NoPremissionException {
+
+
+
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER) || !tokenDTO.getCompanyId().equals(productRepository.findById(id).orElse(null).getCompany().getId()))
             throw new NoPermissionException("You don't have permission to delete the product");

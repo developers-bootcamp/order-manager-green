@@ -30,7 +30,8 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private  UserService userService;
+@SneakyThrows
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
