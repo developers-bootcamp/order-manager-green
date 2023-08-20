@@ -6,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.time.LocalDate;
 import java.util.List;
-
 import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
+import java.time.Month;
+import java.util.Map;
 
 @CrossOrigin(MY_URL)
 @RestController
@@ -17,7 +18,13 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 public class GraphController {
 
     @Autowired
-    private GraphService graphService;
+    private  GraphService graphService;
+
+
+    @GetMapping("/topProduct")
+    public List<GraphService.MonthlyProductSalesResult> topProduct() {
+        return graphService.getMonthlyProductSales();
+    }
 
     @GetMapping("/getDeliverCancelOrders")
     public ResponseEntity<List<DeliverCancelOrdersDTO>> getDeliverCancelOrders() {
@@ -26,6 +33,10 @@ public class GraphController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+    @GetMapping("/fill")
+    public void fill(){
+        graphService.fill();
     }
 
 }
