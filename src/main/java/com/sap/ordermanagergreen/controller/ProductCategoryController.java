@@ -4,12 +4,14 @@ import com.sap.ordermanagergreen.dto.ProductCategoryDTO;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.exception.ObjectNotExistException;
 import com.sap.ordermanagergreen.exception.UnauthorizedException;
+import com.sap.ordermanagergreen.mapper.ProductCategoryMapper;
+import com.sap.ordermanagergreen.model.ProductCategory;
+import com.sap.ordermanagergreen.service.ProductCategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import com.sap.ordermanagergreen.model.ProductCategory;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.sap.ordermanagergreen.service.ProductCategoryService;
 
 import java.util.List;
 
@@ -18,10 +20,13 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 @CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/productCategory")
+@Validated
 public class ProductCategoryController {
 
     @Autowired
     private ProductCategoryService ProductCategoryService;
+    @Autowired
+    private ProductCategoryMapper productCategoryMapper;
 
     @GetMapping
     public ResponseEntity<List<ProductCategoryDTO>> get(@RequestHeader("Authorization") String token) {
@@ -44,6 +49,7 @@ public class ProductCategoryController {
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok("success: true");
+
     }
 
     @DeleteMapping("/{id}")

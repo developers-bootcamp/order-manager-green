@@ -1,6 +1,6 @@
 package com.sap.ordermanagergreen.controller;
 
-import com.sap.ordermanagergreen.exception.NoPremissionException;
+import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class ProductController {
             productService.add(product, token);
         } catch (ObjectExistException ex) {
             return new ResponseEntity(ex.getMessage(), HttpStatus.CONFLICT);
-        } catch (NoPremissionException ex) {
+        } catch (NoPermissionException ex) {
             return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception ex) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -59,7 +59,7 @@ public class ProductController {
             productService.update(id, product, token);
         } catch (ObjectExistException ex) {
             return new ResponseEntity(ex.getMessage(), HttpStatus.CONFLICT);
-        } catch (NoPremissionException ex) {
+        } catch (NoPermissionException ex) {
             return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
         } catch (EmptyResultDataAccessException ex) {
             return new ResponseEntity("The product is not exist in the system", HttpStatus.NOT_FOUND);
@@ -74,7 +74,7 @@ public class ProductController {
         try {
             productService.delete(id, token);
             return new ResponseEntity(HttpStatus.OK);
-        } catch (NoPremissionException ex) {
+        } catch (NoPermissionException ex) {
             return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
         } catch (EmptyResultDataAccessException ex) {
             return new ResponseEntity("The product is not exist in the system", HttpStatus.NOT_FOUND);

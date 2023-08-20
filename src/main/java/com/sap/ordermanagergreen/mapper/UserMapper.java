@@ -1,10 +1,10 @@
 package com.sap.ordermanagergreen.mapper;
 
+import com.sap.ordermanagergreen.dto.UserDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
-import com.sap.ordermanagergreen.dto.UserDto;
 import com.sap.ordermanagergreen.model.User;
 
 @Component
@@ -17,6 +17,6 @@ public interface UserMapper {
     @Mapping(source = "address.address", target = "address")
     @Mapping(source = "address.email", target = "email")
     @Mapping(source = "role.id", target = "roleId")
-    UserDto UserToUserDTO(User user);
+    UserDTO UserToUserDTO(User user);
 
 }
