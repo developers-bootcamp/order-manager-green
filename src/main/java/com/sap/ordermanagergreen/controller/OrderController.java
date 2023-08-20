@@ -29,13 +29,13 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<List<Order>> get(@RequestParam(defaultValue = "0") Integer pageNo,
                                            @RequestParam(defaultValue = "1") Integer pageSize,
-                                            @RequestParam("orderStatus") List<OrderStatus> orderStatus,
+                                           @RequestParam("orderStatus") List<OrderStatus> orderStatus,
                                            @RequestParam String orderBy
             ,@RequestHeader("Authorization") String token) {
 
         TokenDTO tokenDto=null;
         try{
-        tokenDto = JwtToken.decodeToken(token);}
+            tokenDto = JwtToken.decodeToken(token);}
         catch (TokenNotValidException e){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
@@ -48,8 +48,8 @@ public class OrderController {
             List<OrderStatus> statusList=new  ArrayList<OrderStatus>();
             statusList.add(OrderStatus.CREATED);
             statusList.add(OrderStatus.APPROVED);
-        orders = this.orderService.get(pageNo, pageSize, tokenDto.getCompanyId(), orderStatus,orderBy);
-        return ResponseEntity.ok(orders);}
+            orders = this.orderService.get(pageNo, pageSize, tokenDto.getCompanyId(), orderStatus,orderBy);
+            return ResponseEntity.ok(orders);}
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -59,7 +59,7 @@ public class OrderController {
     public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody Order order) {
         TokenDTO tokenDto;
         try {
-             tokenDto = JwtToken.decodeToken(token);
+            tokenDto = JwtToken.decodeToken(token);
             ;
 //            if (!tokenDto.getCompanyId().equals(order.getCompany().getId()))
 //                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

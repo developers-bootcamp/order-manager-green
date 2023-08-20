@@ -1,17 +1,19 @@
 package com.sap.ordermanagergreen.dto;
 
-import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Month;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductNameDTO {
+public class DeliverCancelOrdersDTO {
 
-    @Id
-    private String id;
-    private String name;
+    private Month month;
+    private int cancelled;
+    private int delivered;
 
 }
+
