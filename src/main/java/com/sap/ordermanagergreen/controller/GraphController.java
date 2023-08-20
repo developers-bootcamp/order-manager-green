@@ -2,6 +2,7 @@ package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
+import com.sap.ordermanagergreen.dto.TopProductDTO;
 import com.sap.ordermanagergreen.service.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,8 +13,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
-import java.time.Month;
-import java.util.Map;
 
 @CrossOrigin(MY_URL)
 @RestController
