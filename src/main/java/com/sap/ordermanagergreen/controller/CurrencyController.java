@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 
-@CrossOrigin("http://localhost:3000")
 
 
 @CrossOrigin(MY_URL)
