@@ -13,6 +13,9 @@ import java.util.List;
 public interface IOrderRepository extends MongoRepository<Order, String> {
 List<Order>findByOrderStatusInAndCompanyId(Pageable pageable, List<OrderStatus> orderStatus,String companyId);
 
+
+
+
 //List<Order> findByOrderStatusAndCompanyId(Pageable pageable, OrderStatus orderStatus,String companyId);
 
 
