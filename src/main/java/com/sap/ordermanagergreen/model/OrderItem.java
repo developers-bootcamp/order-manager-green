@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class OrderItem {
     @DBRef
     private Product product;
