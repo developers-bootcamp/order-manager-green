@@ -10,10 +10,13 @@ import org.springframework.data.annotation.Id;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDTO {
-    @Id private   String id;
+    @Id
+    private String id;
     private String name;
     private String description;
-    private String categoryId;
-    private String inventory;
+    private int inventory;
+    private double discount;
+    private String discountType;
+    private String productCategoryName;
     private double price;
 }

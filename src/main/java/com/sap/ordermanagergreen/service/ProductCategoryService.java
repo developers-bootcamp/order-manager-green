@@ -2,10 +2,15 @@ package com.sap.ordermanagergreen.service;
 
 import com.sap.ordermanagergreen.dto.ProductCategoryDTO;
 import com.sap.ordermanagergreen.dto.ProductCategoryMapper;
+import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.ObjectAlreadyExistsExeption;
 import com.sap.ordermanagergreen.exception.ObjectNotFoundExeption;
 import com.sap.ordermanagergreen.exception.UnauthorizedExeption;
+import com.sap.ordermanagergreen.model.AuditData;
 import com.sap.ordermanagergreen.model.AvailableRole;
+import com.sap.ordermanagergreen.model.Role;
+import com.sap.ordermanagergreen.repository.ICompanyRepository;
+import com.sap.ordermanagergreen.repository.IRoleRepository;
 import com.sap.ordermanagergreen.util.JwtToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,16 +27,22 @@ public class ProductCategoryService {
     @Autowired
     private IProductCategoryRepository ProductCategoryRepository;
     @Autowired
-    private  ProductCategoryMapper productCategoryMapper;
-
+    private ProductCategoryMapper productCategoryMapper;
+    @Autowired
+    private IRoleRepository roleRepository;
+    @Autowired
+    private ICompanyRepository companyRepository;
 
     public void add(String token, ProductCategory productCategory) {
+        TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (!isUnauthorized(token))
             throw new UnauthorizedExeption();
         String categoryName = productCategory.getName();
         if (doesCategoryExist(categoryName) == true) {
             throw new ObjectAlreadyExistsExeption("Category name already exists");
         }
+        productCategory.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
+        productCategory.setAuditData(new AuditData());
         ProductCategoryRepository.save(productCategory);
 
     }
@@ -70,8 +81,9 @@ public class ProductCategoryService {
     }
 
     public boolean isUnauthorized(String token) {
-        String roleId=JwtToken.decodeToken(token).getRoleId();
-        if (roleId.equals(AvailableRole.ADMIN) || roleId.equals(AvailableRole.EMPLOYEE))
+        String roleId = JwtToken.decodeToken(token).getRoleId();
+        Role role = roleRepository.findById(roleId).orElse(null);
+        if (role.getName().equals(AvailableRole.ADMIN) || role.getName().equals(AvailableRole.EMPLOYEE))
             return true;
         return false;
     }
