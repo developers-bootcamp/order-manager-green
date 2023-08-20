@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 @AllArgsConstructor
 @SuperBuilder
 public class OrderItem {
+
     @DBRef
     private Product product;
     private double amount;

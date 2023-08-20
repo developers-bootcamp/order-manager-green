@@ -1,7 +1,6 @@
 package com.sap.ordermanagergreen.model;
 
-public enum AvailableRole
-{
+public enum AvailableRole {
     ADMIN("ADMIN"),
     EMPLOYEE("EMPLOYEE"),
     CUSTOMER("CUSTOMER");
@@ -10,9 +9,11 @@ public enum AvailableRole
     AvailableRole(String name) {
         this.name = name;
     }
+
     public String getName() {
         return name;
     }
+
 }
 
 

@@ -1,32 +1,32 @@
 package com.sap.ordermanagergreen.service;
 
-import com.sap.ordermanagergreen.dto.UserDto;
-import com.sap.ordermanagergreen.exception.NoPremissionException;
+import com.sap.ordermanagergreen.dto.UserDTO;
+import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.mapper.UserMapper;
+import com.sap.ordermanagergreen.model.Currency;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
 import com.sap.ordermanagergreen.repository.IRoleRepository;
 import com.sap.ordermanagergreen.repository.IUserRepository;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.util.JwtToken;
-import lombok.SneakyThrows;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import lombok.SneakyThrows;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class UserService {
+
     @Autowired
     IUserRepository userRepository;
     @Autowired
@@ -36,11 +36,11 @@ public class UserService {
     @Autowired
     ICompanyRepository companyRepository;
 
-    public List<UserDto> get(String companyId, int page, int pageSize) {
+    public List<UserDTO> get(String companyId, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
         Page<User> y = userRepository.findByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(companyId, pageRequest);
         List<User> users = y.getContent();
-        List<UserDto> toReturn = new ArrayList<>();
+        List<UserDTO> toReturn = new ArrayList<>();
         users.forEach(e -> toReturn.add(userMapper.UserToUserDTO(e)));
         return toReturn;
     }
@@ -68,54 +68,39 @@ public class UserService {
         }
     }
 
-    public User signUp(String fullName, String companyName, String email, @NotNull String password) throws NotValidException, Exception {
-
-            User user = new User();
-            user.setFullName(fullName);
-            //password validations?
-            if (!password.contains("")) {
-                throw new NotValidException("password");
-            }
-            user.setPassword(password);
-            //email validations?
-//            if (!email.contains("@")) {
-//                throw new NotValidException("email");
-//            }
-            if (userRepository.existsByAddress_Email(email)) {
-                throw new ObjectExistException("email");
-            }
-            Address address = new Address();
-            user.setAddress(address);
-            user.getAddress().setEmail(email);
-            user.setRole(roleRepository.getByName(AvailableRole.ADMIN));
-            AuditData auditData = new AuditData();
-            auditData.setCreateDate(LocalDateTime.now());
-            auditData.setUpdateDate(LocalDateTime.now());
-            user.setAuditData(auditData);
-            if (companyRepository.existsByName(companyName)) {
-                throw new ObjectExistException("company");
-            }
-            Company company = new Company();
-            company.setName(companyName);
-            companyRepository.save(company);
-            AuditData auditData1 = new AuditData();
-            auditData1.setCreateDate(LocalDateTime.now());
-            auditData1.setUpdateDate(LocalDateTime.now());
-            company.setAuditData(auditData1);
-            user.setCompany(company);
-            userRepository.save(user);
-            return user;
+    @Transactional
+    @SneakyThrows
+    public User signUp(String fullName, String companyName, String email, String password, String currency) throws Exception {
+        //password validations?
+        if (password.contains(" ")) {
+            throw new NotValidException("password");
         }
+        //email validations?
+        if (!email.contains("@")) {
+            throw new NotValidException("email");
+        }
+        if (userRepository.existsByAddress_Email(email)) {
+            throw new ObjectExistException("email");
+        }
+        if (companyRepository.existsByName(companyName)) {
+            throw new ObjectExistException("company");
+        }
+        Company company = Company.builder().name(companyName).currency(Currency.valueOf(currency)).auditData(new AuditData()).build();
+        companyRepository.save(company);
+        User user = User.builder().fullName(fullName).company(company).address(Address.builder().email(email).build()).password(password).role(roleRepository.getByName(AvailableRole.ADMIN)).auditData(new AuditData()).build();
+        userRepository.save(user);
+        return user;
+    }
 
 
-    public void add(String token, User user) throws ObjectExistException, NoPremissionException, NotValidException {
+    public void add(String token, User user) throws ObjectExistException, NoPermissionException, NotValidException {
         if (userRepository.existsByFullName(user.getFullName())) {
             throw new ObjectExistException("user name ");
         }
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
-        //cheak password mail telephone...
+        //check password mail telephone...
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() == AvailableRole.CUSTOMER)
-            throw new NoPremissionException("role");
+            throw new NoPermissionException("role");
         if (roleRepository.findById(tokenDTO.getRoleId()).isEmpty())
             throw new NotValidException("role");
         user.setRole(roleRepository.findById(user.getRole().getId()).get());
@@ -123,7 +108,7 @@ public class UserService {
         user.getRole().setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
         user.setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
         if (!companyRepository.findById(user.getCompany().getId()).orElse(new Company()).getId().equals(tokenDTO.getCompanyId())) {
-            throw new NoPremissionException("company");
+            throw new NoPermissionException("company");
         }
         user.setCompany(companyRepository.findById(user.getCompany().getId()).get());
         //user.getCompanyId().getAuditData().setUpdateDate(new Date());
@@ -131,13 +116,13 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void update(String token, User user) throws NoPremissionException {
+    public void update(String token, User user) throws NoPermissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
                 AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId())
                 .orElse(new Company()).getId().equals(userRepository.findById(user.getId())
                         .orElse(new User()).getCompany().getId()))) {
-            throw new NoPremissionException("You don't have permission to delete the user");
+            throw new NoPermissionException("You don't have permission to delete the user");
         }
         if (userRepository.findById(user.getId()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
@@ -145,13 +130,13 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void delete(String token, String userId) throws NoPremissionException {
+    public void delete(String token, String userId) throws NoPermissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
                 AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId()).
                 orElse(new Company()).getId().equals(userRepository.findById(userId).
                         orElse(new User()).getCompany().getId()))) {
-            throw new NoPremissionException("You don't have permission to delete the user");
+            throw new NoPermissionException("You don't have permission to delete the user");
         }
         if (userRepository.findById(userId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
@@ -162,4 +147,5 @@ public class UserService {
     public User isEmailExists(String email) {
         return userRepository.findByAddress_Email(email);
     }
+
 }

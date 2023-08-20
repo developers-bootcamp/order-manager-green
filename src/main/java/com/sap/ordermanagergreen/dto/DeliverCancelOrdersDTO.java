@@ -4,16 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.Month;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TokenDTO {
+public class DeliverCancelOrdersDTO {
 
-    private String userId;
-    private String companyId;
-    private String roleId;
-    private Date expirationDate;
+    private Month month;
+    private int cancelled;
+    private int delivered;
 
 }
+

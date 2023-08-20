@@ -1,8 +1,8 @@
 package com.sap.ordermanagergreen.service;
+
 import com.sap.ordermanagergreen.dto.ProductDTO;
-import com.sap.ordermanagergreen.dto.ProductNameDTO;
 import com.sap.ordermanagergreen.dto.TokenDTO;
-import com.sap.ordermanagergreen.exception.NoPremissionException;
+import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.mapper.ProductMapper;
 import com.sap.ordermanagergreen.model.*;
@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -43,10 +44,10 @@ public class ProductService {
         return productDTO;
     }
 
-    public Map<String,String> getNames(String token, String prefix) {
+    public Map<String, String> getNames(String token, String prefix) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         System.out.println(tokenDTO.getCompanyId());
-        List<Product> products = productRepository.findProductsByNameStartingWithAndCompany_IdEqual(prefix,tokenDTO.getCompanyId());
+        List<Product> products = productRepository.findProductsByNameStartingWithAndCompany_IdEqual(prefix, tokenDTO.getCompanyId());
         Map<String, String> toReturn = new HashMap<>();
         products.forEach(product -> toReturn.put(product.getId(), product.getName()));
         return toReturn;
@@ -80,14 +81,11 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public void delete(String id, String token)throws NoPremissionException {
+    public void delete(String id, String token) throws NoPermissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER) || !tokenDTO.getCompanyId().equals(productRepository.findById(id).orElse(null).getCompany().getId()))
-            throw new NoPremissionException("You don't have permission to delete the product");
+            throw new NoPermissionException("You don't have permission to delete the product");
         productRepository.deleteById(id);
     }
+
 }
-
-
-
-

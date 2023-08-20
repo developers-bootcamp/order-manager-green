@@ -5,7 +5,6 @@ import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
 import com.sap.ordermanagergreen.repository.IProductRepository;
-
 import com.sap.ordermanagergreen.exception.ObjectNotExistException;
 import com.sap.ordermanagergreen.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import java.util.*;
 
 @Service
 public class OrderService {
+
     @Autowired
     private IOrderRepository orderRepository;
     @Autowired
