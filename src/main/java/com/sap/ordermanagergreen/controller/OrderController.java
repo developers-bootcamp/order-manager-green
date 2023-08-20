@@ -36,10 +36,7 @@ public class OrderController {
         TokenDTO tokenDto=null;
         try{
             tokenDto = JwtToken.decodeToken(token);}
-        catch (TokenNotValidException e){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-        }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
