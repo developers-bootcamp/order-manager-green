@@ -23,4 +23,5 @@ public class User {
     @DBRef
     private Company company;
     private AuditData auditData;
+
 }

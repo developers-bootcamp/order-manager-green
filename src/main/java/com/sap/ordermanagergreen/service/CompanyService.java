@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import com.sap.ordermanagergreen.model.Company;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
 
 @Service
