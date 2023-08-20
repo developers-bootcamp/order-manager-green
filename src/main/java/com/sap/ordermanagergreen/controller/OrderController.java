@@ -21,8 +21,6 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
-
-
     @GetMapping
     public ResponseEntity<List<Order>> get(@RequestParam(defaultValue = "0") Integer pageNo,
                                            @RequestParam(defaultValue = "10") Integer pageSize,

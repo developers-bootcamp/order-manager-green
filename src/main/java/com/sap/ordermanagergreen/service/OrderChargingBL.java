@@ -27,8 +27,6 @@ public class OrderChargingBL {
         private DefaultExchangeProducer producer;
 
 
-
-
         public void chargingStep(Order order) throws JsonProcessingException {
                 if (order.getOrderStatus() == OrderStatus.APPROVED) {
                         order.setOrderStatus(OrderStatus.CHARGING);
