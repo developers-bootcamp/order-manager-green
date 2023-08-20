@@ -1,19 +1,17 @@
-package com.sap.ordermanagergreen.util;
+package com.sap.ordermanagergreen.util.rabbitMQ;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sap.ordermanagergreen.dto.OrderDTO;
-import com.sap.ordermanagergreen.repository.IOrderRepository;
-import com.sap.ordermanagergreen.repository.IProductRepository;
 import com.sap.ordermanagergreen.service.OrderChargingBL;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-import static com.sap.ordermanagergreen.util.RabbitMQConfig.*;
-import static com.sap.ordermanagergreen.util.MessagingLoggingUtil.logReceivedMessage;
+import static com.sap.ordermanagergreen.util.rabbitMQ.RabbitMQConfig.*;
+import static com.sap.ordermanagergreen.util.rabbitMQ.MessagingLoggingUtil.logReceivedMessage;
 @Service
-public class RabbitMQConsumer {
+public class Consumer {
     ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private OrderChargingBL orderChargingBL=new OrderChargingBL();

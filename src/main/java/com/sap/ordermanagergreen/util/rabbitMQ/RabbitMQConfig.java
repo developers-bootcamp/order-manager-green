@@ -1,4 +1,4 @@
-package com.sap.ordermanagergreen.util;
+package com.sap.ordermanagergreen.util.rabbitMQ;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,8 +1,6 @@
 package com.sap.ordermanagergreen.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sap.ordermanagergreen.util.DefaultExchangeProducer;
 import lombok.SneakyThrows;
-import org.springframework.amqp.core.AmqpTemplate;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
@@ -16,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.YearMonth;
 import java.util.*;
 
 

@@ -2,15 +2,13 @@ package com.sap.ordermanagergreen.service;
 //import com.sap.ordermanagergreen.dto.OrderDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sap.ordermanagergreen.dto.OrderDTO;
-import com.sap.ordermanagergreen.mapper.OrderMapper;
 import com.sap.ordermanagergreen.model.Order;
 import com.sap.ordermanagergreen.model.OrderItem;
 import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.model.Product;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
 import com.sap.ordermanagergreen.repository.IProductRepository;
-import com.sap.ordermanagergreen.util.DefaultExchangeProducer;
-import org.modelmapper.ModelMapper;
+import com.sap.ordermanagergreen.util.rabbitMQ.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @Service
@@ -24,7 +22,7 @@ public class OrderChargingBL {
         @Autowired
         private IOrderRepository orderRepository;
         @Autowired
-        private DefaultExchangeProducer producer;
+        private Producer producer;
 
 
         public void chargingStep(Order order) throws JsonProcessingException {

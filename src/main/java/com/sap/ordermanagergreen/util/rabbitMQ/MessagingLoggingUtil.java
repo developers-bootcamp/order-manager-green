@@ -1,4 +1,4 @@
-package com.sap.ordermanagergreen.util;
+package com.sap.ordermanagergreen.util.rabbitMQ;
 
 import com.sap.ordermanagergreen.dto.OrderDTO;
 import lombok.experimental.UtilityClass;
