@@ -2,14 +2,12 @@ package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
-import com.sap.ordermanagergreen.dto.TopProductDTO;
 import com.sap.ordermanagergreen.service.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
@@ -30,11 +28,6 @@ public class GraphController {
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
-
-    @GetMapping("/topProduct")
-    public List<TopProductDTO> topProduct() {
-        return graphService.getTopProductsGroupedByMonth(LocalDate.now().minusMonths(3).withDayOfMonth(1), LocalDate.now());
     }
 
     @GetMapping("/getDeliverCancelOrders")
