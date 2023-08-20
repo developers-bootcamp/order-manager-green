@@ -25,18 +25,18 @@ public class CompanyService {
         companyRepository.save(company);
     }
 
-    public Company put(String id, Company company) {
+    public Company update(String id, Company company) {
         companyRepository.deleteById(id);
         companyRepository.save(company);
         return company;
     }
 
-    public void deleteById(String companyId) {
+    public void delete(String companyId) {
         companyRepository.deleteById(companyId);
     }
 
     public boolean existsByName(String name) {
-      return companyRepository.existsByName(name);
+        return companyRepository.existsByName(name);
     }
 
 }
