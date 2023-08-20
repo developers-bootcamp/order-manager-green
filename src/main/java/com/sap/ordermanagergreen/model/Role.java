@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Document(collection = "Roles")  // לשנות שם לטבלה
+@Document(collection = "Roles")
 public class Role {
 
     @Id
@@ -17,4 +17,5 @@ public class Role {
     private AvailableRole name;
     private String description;
     private AuditData auditData;
+
 }
