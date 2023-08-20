@@ -9,25 +9,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "Users")
 @SuperBuilder
+@Document(collection = "Users")
 public class User {
 
     @Id
     private String id;
-
     private String fullName;
-
     private String password;
-
     private Address address;
-  
     @DBRef
     private Role role;
-
     @DBRef
     private Company company;
-
     private AuditData auditData;
 
 }
