@@ -92,7 +92,7 @@ public class UserService {
     }
 
 
-
+@SneakyThrows
     public void add(String token, User user) throws ObjectExistException, NoPremissionException, NotValidException {
         if (userRepository.existsByFullName(user.getFullName())) {
             throw new ObjectExistException("user name ");
@@ -115,7 +115,7 @@ public class UserService {
         user.getCompany().setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
         userRepository.save(user);
     }
-
+@SneakyThrows
     public void update(String token, User user) throws NoPremissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
@@ -129,7 +129,7 @@ public class UserService {
         }
         userRepository.save(user);
     }
-
+@SneakyThrows
     public void delete(String token, String userId) throws NoPremissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==

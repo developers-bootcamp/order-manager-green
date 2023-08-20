@@ -7,6 +7,7 @@ import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.*;
 import com.sap.ordermanagergreen.util.JwtToken;
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class ProductService {
     private IUserRepository userRepository;
     @Autowired
     private IProductCategoryRepository productCategoryRepository;
-
+@SneakyThrows
     public List<Product> get(String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         List<Product> products= productRepository.findAllByCompany_Id(tokenDTO.getCompanyId());
@@ -40,7 +41,7 @@ public class ProductService {
         }.getType();
         return modelMapper.map(products, listType);
     }
-
+@SneakyThrows
     public Map<String,String> getNames(String token, String prefix) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         System.out.println(tokenDTO.getCompanyId());
@@ -49,7 +50,7 @@ public class ProductService {
         products.forEach(product -> toReturn.put(product.getId(), product.getName()));
         return toReturn;
     }
-
+@SneakyThrows
     public void add(Product product, String token) throws ObjectExistException,NoPremissionException {
         if (productRepository.existsByName(product.getName()))
             throw new ObjectExistException("product name already exist");
@@ -60,7 +61,7 @@ public class ProductService {
         product.setAuditData(new AuditData());
         productRepository.save(product);
     }
-
+@SneakyThrows
     public void update(String id, Product product, String token)throws ObjectExistException,NoPremissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         Product prevProduct = productRepository.findById(id).orElse(null);
@@ -72,7 +73,7 @@ public class ProductService {
         product.setAuditData(new AuditData(prevProduct.getAuditData().getCreateDate(), LocalDateTime.now()));
         productRepository.save(product);
     }
-
+@SneakyThrows
     public void delete(String id, String token)throws NoPremissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER) || !tokenDTO.getCompanyId().equals(productRepository.findById(id).orElse(null).getCompany().getId()))

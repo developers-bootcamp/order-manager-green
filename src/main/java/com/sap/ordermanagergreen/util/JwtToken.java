@@ -1,6 +1,7 @@
 package com.sap.ordermanagergreen.util;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.sap.ordermanagergreen.dto.TokenDTO;
+import com.sap.ordermanagergreen.exception.TokenNotValidException;
 import com.sap.ordermanagergreen.model.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -28,7 +29,8 @@ public class JwtToken {
         System.out.println("accessToken");
         return accessToken;
     }
-    public static TokenDTO decodeToken(String token) {
+    public static TokenDTO decodeToken(String token) throws TokenNotValidException {
+        try{
         Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET.getBytes());
         DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
         TokenDTO decodedToken = new TokenDTO();
@@ -36,6 +38,9 @@ public class JwtToken {
         decodedToken.setCompanyId(jwt.getClaim("companyId").asString());
         decodedToken.setRoleId(jwt.getClaim("roleId").asString());
         decodedToken.setExpirationDate(jwt.getExpiresAt());
-        return decodedToken;
+        return decodedToken;}
+        catch (Exception e){
+            throw new TokenNotValidException("");
+        }
     }
 }

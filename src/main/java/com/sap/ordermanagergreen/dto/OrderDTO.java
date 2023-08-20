@@ -20,5 +20,4 @@ public class OrderDTO {
     private String creditCardNumber;
     private Date expiryDate;
     private String ccv;
-
 }

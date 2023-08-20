@@ -32,15 +32,20 @@ public class OrderService {
     @Autowired
     private OrderChargingService orderChargingService;
 
-    public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus, String sortBy) {
-        //Sort.Order sortOrder = Sort.Order.asc(sortBy);
-        Sort sort = Sort.by(sortBy).ascending();
-        Pageable paging = PageRequest.of(pageNo, pageSize, sort);
-        return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
+    public List<Order> get(Integer pageNo, Integer pageSize, String companyId,  List<OrderStatus> orderStatus, String sortBy) {
+        Pageable paging;
+        if (sortBy != "") {
+            Sort sort = Sort.by(sortBy).ascending();
+            paging = PageRequest.of(pageNo, pageSize, sort);
+        } else {
+            paging = PageRequest.of(pageNo, pageSize);
+        }
+        return orderRepository.findByOrderStatusInAndCompanyId(paging,orderStatus,companyId);
+
     }
 
 
-    public String add(Order order, TokenDTO token) throws CompanyNotExistException,UserDosentExistException,Exception{
+    public String add(Order order, TokenDTO token) throws CompanyNotExistException, UserDosentExistException, Exception {
 
         if (companyRepository.findById(token.getCompanyId()).get() == null)
             throw new CompanyNotExistException("company not exist");

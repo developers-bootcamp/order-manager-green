@@ -7,6 +7,7 @@ import com.sap.ordermanagergreen.exception.ObjectNotFoundExeption;
 import com.sap.ordermanagergreen.exception.UnauthorizedExeption;
 import com.sap.ordermanagergreen.model.AvailableRole;
 import com.sap.ordermanagergreen.util.JwtToken;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class ProductCategoryService {
         ProductCategoryRepository.save(productCategory);
 
     }
-
+@SneakyThrows
     public List<ProductCategoryDTO> get(String token) {
         String companyId = JwtToken.decodeToken(token).getCompanyId();
         List<ProductCategory> productCategories = ProductCategoryRepository.findAllByCompany_Id(companyId);
@@ -68,7 +69,7 @@ public class ProductCategoryService {
     public boolean doesCategoryExist(String categoryName) {
         return ProductCategoryRepository.existsByName(categoryName);
     }
-
+@SneakyThrows
     public boolean isUnauthorized(String token) {
         String roleId=JwtToken.decodeToken(token).getRoleId();
         if (roleId.equals(AvailableRole.ADMIN) || roleId.equals(AvailableRole.EMPLOYEE))

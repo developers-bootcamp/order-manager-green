@@ -7,6 +7,7 @@ import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.model.User;
 import com.sap.ordermanagergreen.service.UserService;
 import com.sap.ordermanagergreen.util.JwtToken;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -30,7 +31,7 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private  UserService userService;
-
+@SneakyThrows
     @GetMapping
     public ResponseEntity<List<UserDto>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
@@ -42,7 +43,7 @@ public class UserController {
         }
         return ResponseEntity.ok(l);
     }
-
+    @SneakyThrows
     @GetMapping("/{prefixName}")
     public ResponseEntity<Map<String, String>> getNames(@PathVariable("prefixName") String prefixName, @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
