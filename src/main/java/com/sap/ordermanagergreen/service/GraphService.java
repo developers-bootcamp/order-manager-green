@@ -44,7 +44,9 @@ public class GraphService {
                 aggregation, "Order", TopEmployeeDTO.class
         );
 
-        return result.getMappedResults();
+        List<TopEmployeeDTO> topEmployee = result.getMappedResults();
+
+        return topEmployee;
     }
 
         public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
