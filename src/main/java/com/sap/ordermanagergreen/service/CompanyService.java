@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import com.sap.ordermanagergreen.model.Company;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
 
 @Service
@@ -24,18 +25,18 @@ public class CompanyService {
         companyRepository.save(company);
     }
 
-    public Company update(String id, Company company) {
+    public Company put(String id, Company company) {
         companyRepository.deleteById(id);
         companyRepository.save(company);
         return company;
     }
 
-    public void delete(String companyId) {
+    public void deleteById(String companyId) {
         companyRepository.deleteById(companyId);
     }
 
     public boolean existsByName(String name) {
-        return companyRepository.existsByName(name);
+      return companyRepository.existsByName(name);
     }
 
 }

@@ -8,13 +8,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
+import java.time.Month;
+import java.util.Map;
 
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/Graph")
 public class GraphController {
+
     @Autowired
     public GraphService graphService;
 
@@ -26,6 +31,11 @@ public class GraphController {
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/topProduct")
+    public List<TopProductDTO> topProduct() {
+        return graphService.getTopProductsGroupedByMonth(LocalDate.now().minusMonths(3).withDayOfMonth(1), LocalDate.now());
     }
 
     @GetMapping("/getDeliverCancelOrders")
