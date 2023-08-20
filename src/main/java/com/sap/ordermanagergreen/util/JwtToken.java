@@ -29,8 +29,6 @@ public class JwtToken {
     }
 
     public static TokenDTO decodeToken(String token)  {
-        try{
-
 
 
         Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET.getBytes());
@@ -40,7 +38,8 @@ public class JwtToken {
         decodedToken.setCompanyId(jwt.getClaim("companyId").asString());
         decodedToken.setRoleId(jwt.getClaim("roleId").asString());
         decodedToken.setExpirationDate(jwt.getExpiresAt());
-        return decodedToken;}
+        return decodedToken;
 
-    }}
+    }
+}
 
