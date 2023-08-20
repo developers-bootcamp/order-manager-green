@@ -60,7 +60,6 @@ public class GraphService {
         );
 
         List<TopEmployeeDTO> topEmployee = result.getMappedResults();
-
         return topEmployee;
     }
 
