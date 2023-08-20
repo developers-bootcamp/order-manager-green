@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 public class OrderItem {
 
     @DBRef
