@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TopEmployeeDTO {
 
-     private User employee;
+     private User user;
      private  int CountOfDeliveredOrders;
 }

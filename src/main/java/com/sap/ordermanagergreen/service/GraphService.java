@@ -4,18 +4,15 @@ import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
-import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
 import com.sap.ordermanagergreen.repository.IProductCategoryRepository;
 import com.sap.ordermanagergreen.repository.IProductRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.expression.spel.ast.Projection;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,21 +23,16 @@ import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import java.util.List;
 import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.*;
 
 @Service
 public class GraphService {
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    public MongoTemplate mongoTemplate;
 
     @Getter
     @Setter
@@ -57,18 +49,17 @@ public class GraphService {
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
                 match(Criteria.where("orderStatus").is(OrderStatus.DONE)),
-                group("employee").count().as("countOfDeliveredOrders"),
-                project("countOfDeliveredOrders").and("_id").as("employee"),
+                group("user").count().as("countOfDeliveredOrders"),
+                project("countOfDeliveredOrders").and("_id").as("user"),
                 sort(Sort.Direction.DESC, "countOfDeliveredOrders"),
                 limit(5)
         );
 
         AggregationResults<TopEmployeeDTO> result = mongoTemplate.aggregate(
-                aggregation, "Order", TopEmployeeDTO.class
+                aggregation, Order.class, TopEmployeeDTO.class
         );
 
-        List<TopEmployeeDTO> topEmployee = result.getMappedResults();
-        return topEmployee;
+        return result.getMappedResults();
     }
 
     public List<MonthlyProductSalesResult> getMonthlyProductSales() {
@@ -139,10 +130,8 @@ public class GraphService {
         ////////////////////////////////// Temporary, for data generation only ////////////////////////////////////
     }
         @Autowired
-
         private IProductRepository productRepository;
         @Autowired
-
         private IProductCategoryRepository productCategoryRepository;
 
         @Autowired
