@@ -6,7 +6,6 @@ import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
 import com.sap.ordermanagergreen.repository.IProductRepository;
-
 import com.sap.ordermanagergreen.exception.ObjectNotExistException;
 import com.sap.ordermanagergreen.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +18,11 @@ import java.util.*;
 
 @Service
 public class OrderService {
+
     @Autowired
-    private  IOrderRepository orderRepository;
+    private IOrderRepository orderRepository;
     @Autowired
-    private  IProductRepository productRepository;
+    private IProductRepository productRepository;
     @Autowired
     private ICompanyRepository companyRepository;
     @Autowired
@@ -61,9 +61,9 @@ private OrderChargingBL orderChargingBL;
     }
 
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {
-        List<OrderItem> items=new ArrayList<OrderItem>();
-        order.getOrderItemsList().forEach(e->{
-            Product p=productRepository.findById(e.getProduct().getId()).get();
+        List<OrderItem> items = new ArrayList<OrderItem>();
+        order.getOrderItemsList().forEach(e -> {
+            Product p = productRepository.findById(e.getProduct().getId()).get();
             items.add(OrderItem.builder().product(p).quantity(e.getQuantity()).build());
         });
         order.setOrderItemsList(items);
@@ -75,10 +75,10 @@ private OrderChargingBL orderChargingBL;
             HashMap<Double, Integer> o = new HashMap<Double, Integer>();
             double amount = 0;
             if (p.getDiscountType() == DiscountType.FIXED_AMOUNT) {
-                amount =( p.getPrice() - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity();
+                amount = (p.getPrice() - p.getDiscount()) * order.getOrderItemsList().get(i).getQuantity();
                 o.put(amount, p.getDiscount());
             } else {
-                amount = (p.getPrice()  / 100 * (100 - p.getDiscount())*order.getOrderItemsList().get(i).getQuantity());
+                amount = (p.getPrice() / 100 * (100 - p.getDiscount()) * order.getOrderItemsList().get(i).getQuantity());
                 o.put(amount, p.getDiscount());
             }
             calculatedOrder.put(p.getId(), o);
@@ -89,4 +89,5 @@ private OrderChargingBL orderChargingBL;
         calculatedOrder.put("-1", o);
         return calculatedOrder;
     }
+
 }

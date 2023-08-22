@@ -31,4 +31,5 @@ public class Order {
     private String cvc;
     private Boolean notificationFlag;
     private AuditData auditData;
+
 }

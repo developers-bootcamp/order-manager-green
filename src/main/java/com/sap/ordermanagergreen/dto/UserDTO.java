@@ -1,14 +1,14 @@
 package com.sap.ordermanagergreen.dto;
 
+import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class UserDTO {
     @Id
     private String id;
     private String fullName;
@@ -16,4 +16,5 @@ public class UserDto {
     private String address;
     private String telephone;
     private String roleId;
+
 }

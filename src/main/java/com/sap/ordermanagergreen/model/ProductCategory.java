@@ -10,9 +10,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Document(collection ="ProductCategory")
+@Document(collection = "ProductCategory")
 public class ProductCategory {
-    
+
     @Id
     private String id;
     private String name;
@@ -20,7 +20,9 @@ public class ProductCategory {
     @DBRef
     private Company company;
     private AuditData auditData;
+
     public ProductCategory(String id) {
-        this.id=id;
+        this.id = id;
     }
+
 }
