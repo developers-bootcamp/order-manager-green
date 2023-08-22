@@ -2,6 +2,7 @@ package com.sap.ordermanagergreen.service;
 
 import com.sap.ordermanagergreen.dto.UserDTO;
 import com.sap.ordermanagergreen.exception.NoPermissionException;
+import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.mapper.UserMapper;
@@ -94,7 +95,7 @@ public class UserService {
 
 
 @SneakyThrows
-    public void add(String token, User user) throws ObjectExistException, NoPremissionException, NotValidException {
+    public void add(String token, User user) throws ObjectExistException, NotValidException {
 
         if (userRepository.existsByFullName(user.getFullName())) {
             throw new ObjectExistException("user name ");

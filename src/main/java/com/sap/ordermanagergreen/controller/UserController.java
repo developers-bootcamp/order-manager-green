@@ -31,7 +31,7 @@ public class UserController {
 
     @Autowired
     private  UserService userService;
-@SneakyThrows
+
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
@@ -108,8 +108,6 @@ public class UserController {
             userService.update(token, user);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
-        } catch (NoPermissionException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -122,8 +120,6 @@ public class UserController {
             userService.delete(token, userId);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
-        } catch (NoPermissionException ex) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

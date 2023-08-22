@@ -33,7 +33,7 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<List<Order>> get(@RequestParam(defaultValue = "0") Integer pageNo,
-                                           @RequestParam(defaultValue = "1") Integer pageSize,
+                                           @RequestParam(defaultValue = "3") Integer pageSize,
                                            @RequestParam("orderStatus") List<OrderStatus> orderStatus,
                                            @RequestParam String orderBy
             ,@RequestHeader("Authorization") String token) {
