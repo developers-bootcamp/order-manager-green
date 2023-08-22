@@ -1,15 +1,15 @@
 package com.sap.ordermanagergreen.dto;
 
 import com.sap.ordermanagergreen.model.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class TopEmployeeDTO {
 
      private User user;
-     private  int CountOfDeliveredOrders;
+     private  int countOfDeliveredOrders;
 }

@@ -6,6 +6,7 @@ import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
 import com.sap.ordermanagergreen.repository.IProductCategoryRepository;
 import com.sap.ordermanagergreen.repository.IProductRepository;
+import com.sap.ordermanagergreen.repository.IUserRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
@@ -49,7 +50,7 @@ public class GraphService {
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
                 match(Criteria.where("orderStatus").is(OrderStatus.DONE)),
-                group("user").count().as("countOfDeliveredOrders"),
+                group("employee").count().as("countOfDeliveredOrders"),
                 project("countOfDeliveredOrders").and("_id").as("user"),
                 sort(Sort.Direction.DESC, "countOfDeliveredOrders"),
                 limit(5)
@@ -129,15 +130,19 @@ public class GraphService {
         return resultsDTO;
         ////////////////////////////////// Temporary, for data generation only ////////////////////////////////////
     }
-        @Autowired
-        private IProductRepository productRepository;
-        @Autowired
-        private IProductCategoryRepository productCategoryRepository;
 
-        @Autowired
-        IOrderRepository orderRepository;
+    @Autowired
+    private IProductRepository productRepository;
+    @Autowired
+    private IProductCategoryRepository productCategoryRepository;
 
-        public void fill() {
+    @Autowired
+    IOrderRepository orderRepository;
+
+    @Autowired
+    IUserRepository userRepository;
+
+    public void fill() {
             List<Company> companies = new ArrayList<Company>();
             List<Role> roles = new ArrayList<Role>();
             List<User> users = new ArrayList<User>();
@@ -182,6 +187,8 @@ public class GraphService {
                 Product p = new Product(String.valueOf(i), "aaa", "aaa", 40, 50, DiscountType.PERCENTAGE, pc, 4, company1, AuditData.builder().updateDate(LocalDateTime.now()).createDate(LocalDateTime.now()).build());
                 productRepository.save(p);
             }
+
+            users.forEach(o -> userRepository.save(o));
 
             orders.add(new Order("A", user2, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(200).build()),
