@@ -2,9 +2,9 @@ package com.sap.ordermanagergreen.service;
 
 import com.sap.ordermanagergreen.dto.ProductCategoryDTO;
 import com.sap.ordermanagergreen.dto.TokenDTO;
-import com.sap.ordermanagergreen.exception.ObjectAlreadyExistsExeption;
-import com.sap.ordermanagergreen.exception.ObjectNotFoundExeption;
-import com.sap.ordermanagergreen.exception.UnauthorizedExeption;
+import com.sap.ordermanagergreen.exception.ObjectExistException;
+import com.sap.ordermanagergreen.exception.ObjectNotExistException;
+import com.sap.ordermanagergreen.exception.UnauthorizedException;
 import com.sap.ordermanagergreen.mapper.ProductCategoryMapper;
 import com.sap.ordermanagergreen.model.AuditData;
 import com.sap.ordermanagergreen.model.AvailableRole;
@@ -28,13 +28,13 @@ public class ProductCategoryService {
     private ICompanyRepository companyRepository;
 
 
-    public void add(String token, ProductCategory productCategory) {
+    public void add(String token, ProductCategory productCategory) throws ObjectExistException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (!isUnauthorized(token))
-            throw new UnauthorizedExeption();
+            throw new UnauthorizedException();
         String categoryName = productCategory.getName();
         if (doesCategoryExist(categoryName) == true) {
-            throw new ObjectAlreadyExistsExeption("Category name already exists");
+            throw new ObjectExistException("Category name already exists");
         }
         productCategory.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
         productCategory.setAuditData(new AuditData());
@@ -50,24 +50,24 @@ public class ProductCategoryService {
         return productCategoryDTOs;
     }
 
-    public void delete(String token, String id) {
+    public void delete(String token, String id) throws ObjectNotExistException {
 
         if (!isUnauthorized(token))
-            throw new UnauthorizedExeption();
+            throw new UnauthorizedException();
         if (ProductCategoryRepository.findById(id).isEmpty()) {
-            throw new ObjectNotFoundExeption("Category not found");
+            throw new ObjectNotExistException("Category not found");
         }
         ProductCategoryRepository.deleteById(id);
 
     }
 
 
-    public void update(String id, ProductCategory productCategory, String token) {
+    public void update(String id, ProductCategory productCategory, String token) throws ObjectNotExistException {
         if (!isUnauthorized(token))
-            throw new UnauthorizedExeption();
+            throw new UnauthorizedException();
         Optional<ProductCategory> oldProductCategory = ProductCategoryRepository.findById(id);
         if (oldProductCategory.isEmpty()) {
-            throw new ObjectNotFoundExeption("Category does not exist");
+            throw new ObjectNotExistException("Category does not exist");
         }
         ProductCategoryRepository.save(productCategory);
     }

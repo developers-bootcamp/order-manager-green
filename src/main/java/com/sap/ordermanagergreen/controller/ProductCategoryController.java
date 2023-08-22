@@ -1,9 +1,9 @@
 package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.ProductCategoryDTO;
-import com.sap.ordermanagergreen.exception.ObjectAlreadyExistsExeption;
-import com.sap.ordermanagergreen.exception.ObjectNotFoundExeption;
-import com.sap.ordermanagergreen.exception.UnauthorizedExeption;
+import com.sap.ordermanagergreen.exception.ObjectExistException;
+import com.sap.ordermanagergreen.exception.ObjectNotExistException;
+import com.sap.ordermanagergreen.exception.UnauthorizedException;
 import com.sap.ordermanagergreen.mapper.ProductCategoryMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
