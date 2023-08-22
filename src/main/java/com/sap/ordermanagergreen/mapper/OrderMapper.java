@@ -1,21 +1,14 @@
 package com.sap.ordermanagergreen.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sap.ordermanagergreen.dto.OrderDTO;
-import com.sap.ordermanagergreen.dto.UserDto;
 import com.sap.ordermanagergreen.model.Order;
-import com.sap.ordermanagergreen.model.User;
-import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-// ...
 
-import java.time.YearMonth;
+
 
 
 @Mapper(componentModel = "spring")

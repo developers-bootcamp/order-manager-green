@@ -7,7 +7,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.YearMonth;
 import java.util.List;
 @Data
 @NoArgsConstructor
@@ -28,7 +27,7 @@ public class Order {
     @DBRef
     private Company company;
     private String creditCardNumber;
-    private YearMonth expiryOn;
+    private String expiryOn;
     private String cvc;
     private Boolean notificationFlag;
     private AuditData auditData;
