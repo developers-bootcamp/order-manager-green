@@ -7,6 +7,8 @@ import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.model.User;
 import com.sap.ordermanagergreen.service.UserService;
 import com.sap.ordermanagergreen.util.JwtToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ public class UserController {
     @Autowired
     private  UserService userService;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
@@ -82,6 +85,7 @@ public class UserController {
             User user = userService.getUserByEmailAndPassword(email, password);
             System.out.println(user);
             String token = JwtToken.generateToken(user);
+            LOGGER.info("login "+email);
             return ResponseEntity.ok(token);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>(ex.getMessage(), ex.getStatusCode());
@@ -93,8 +97,10 @@ public class UserController {
     @PostMapping
     public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @Valid @RequestBody User user) {
         try {
+            LOGGER.info("try to add user");
             userService.add(token, user);
         } catch (ObjectExistException ex) {
+            LOGGER.error("the user tried to be added already exists");
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -105,8 +111,10 @@ public class UserController {
     @PutMapping
     public ResponseEntity<String> update(@RequestHeader("Authorization") String token, @RequestBody User user) {
         try {
+            LOGGER.info("updating user id:"+user.getId());
             userService.update(token, user);
         } catch (ResponseStatusException ex) {
+            LOGGER.error("user updated dosent exist id:"+user.getId());
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -117,8 +125,10 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> delete(@RequestHeader("Authorization") String token, @PathVariable String userId) {
         try {
+            LOGGER.info("deleting user, id:"+userId);
             userService.delete(token, userId);
         } catch (ResponseStatusException ex) {
+            LOGGER.error("user deleted dosent exist, id:"+userId);
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

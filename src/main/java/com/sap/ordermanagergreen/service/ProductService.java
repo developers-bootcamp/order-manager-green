@@ -1,5 +1,6 @@
 package com.sap.ordermanagergreen.service;
 
+import com.sap.ordermanagergreen.controller.OrderController;
 import com.sap.ordermanagergreen.dto.ProductDTO;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.NoPermissionException;
@@ -10,6 +11,8 @@ import com.sap.ordermanagergreen.repository.*;
 import com.sap.ordermanagergreen.util.JwtToken;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +37,10 @@ public class ProductService {
     private IUserRepository userRepository;
     @Autowired
     private IProductCategoryRepository productCategoryRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
     public List<Product> get(String token) {
+        LOGGER.info("get products");
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         List<Product> products = productRepository.findAllByCompany_Id(tokenDTO.getCompanyId());
         Type listType = new TypeToken<List<ProductDTO>>() {
@@ -45,9 +50,6 @@ public class ProductService {
 
 
     public Map<String,String> getNames(String token, String prefix) {
-
-
-
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         System.out.println(tokenDTO.getCompanyId());
         List<Product> products = productRepository.findProductsByNameStartingWithAndCompany_IdEqual(prefix, tokenDTO.getCompanyId());
@@ -67,6 +69,7 @@ public class ProductService {
             throw new NoPermissionException("");
         product.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
         product.setAuditData(new AuditData());
+        LOGGER.info("add product to company"+product.getCompany().getId());
         productRepository.save(product);
     }
 
@@ -91,7 +94,9 @@ public class ProductService {
 
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER) || !tokenDTO.getCompanyId().equals(productRepository.findById(id).orElse(null).getCompany().getId()))
-            throw new NoPermissionException("mm");
+        { LOGGER.error("no permission to delete product");
+            throw new NoPermissionException("no permission to delete product");
+        }
         productRepository.deleteById(id);
     }
 

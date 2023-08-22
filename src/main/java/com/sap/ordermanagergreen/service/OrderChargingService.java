@@ -7,11 +7,15 @@ import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.model.Product;
 import com.sap.ordermanagergreen.repository.IProductRepository;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrderChargingService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderChargingService.class);
+
     @Autowired
     private IProductRepository productRepository;
 
@@ -23,6 +27,7 @@ public class OrderChargingService {
             for (OrderItem item : order.getOrderItemsList()) {
                 Product p = productRepository.findById(item.getProduct().getId()).get();
                 if (p.getInventory() == 0) {
+                    LOGGER.info("missing inventory");
                     order.setOrderStatus(OrderStatus.PAYMENT_CANCELED);
                     return;
                 } else {
@@ -47,8 +52,10 @@ public class OrderChargingService {
         if(order.getOrderStatus()==OrderStatus.APPROVED)
         {
             order.setOrderStatus(OrderStatus.PACKING);
+            LOGGER.info("order in status packing");
         }
         else{
+            LOGGER.error("payment canceled");
             order.setOrderStatus(OrderStatus.PAYMENT_CANCELED);
             for (OrderItem item : order.getOrderItemsList()) {
                 Product p = productRepository.findById(item.getProduct().getId()).get();
