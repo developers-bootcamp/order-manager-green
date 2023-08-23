@@ -54,10 +54,15 @@ public class OrderService {
         if (userRepository.findById(token.getUserId()).get() == null)
             throw new UserDosentExistException("employee dosent exist");
         order.setEmployee(userRepository.findById(token.getUserId()).get());
-        Order newOrdr = this.orderRepository.insert(order);
-        return newOrdr.getId();
-    }
+        try {
+            Order newOrdr = this.orderRepository.insert(order);
+            return newOrdr.getId();
+        } catch (Exception e) {
+            System.out.println("");
+        }
+return "";
 
+    }
 
     public void update(String id, Order order) throws ObjectNotExistException {
         if (orderRepository.findById(id).isEmpty())
