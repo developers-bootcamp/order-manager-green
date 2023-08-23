@@ -95,21 +95,20 @@ public class GraphService {
         LocalDate currentDate = LocalDate.now();
         LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
-        Aggregation aggregation = newAggregation(
-                match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo)),
-                project()
-                        .andExpression("month(auditData.updateDate)").as("month")
-                        .and("orderStatus").as("orderStatus"),
-                group("month")
-                        .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.DONE)).then(1).otherwise(0)).as("delivered")
-                        .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("cancelledPayment")
-                        .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PROCESS_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
-                project()
-                        .and("_id").as("month")
-                        .and("cancelledProcess").plus("cancelledPayment").as("cancelled")
-                        .and("delivered").as("delivered")
-        );
-
+           Aggregation aggregation = newAggregation(
+                   match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo)),
+                   project()
+                           .andExpression("month(auditData.updateDate)").as("month")
+                           .and("orderStatus").as("orderStatus"),
+                   group("month")
+                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(0).otherwise(1)).as("delivered")
+                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("cancelledPayment")
+                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PROCESS_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
+                   project()
+                           .and("_id").as("month")
+                           .and("cancelledProcess").plus("cancelledPayment").as("cancelled")
+                           .and("delivered").minus("cancelledProcess").as("delivered")
+           );
         AggregationResults<org.bson.Document> results = mongoTemplate.aggregate(aggregation, "Orders", org.bson.Document.class);
         List<org.bson.Document> mappedResults = results.getMappedResults();
 
