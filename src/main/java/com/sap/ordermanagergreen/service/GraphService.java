@@ -101,7 +101,7 @@ public class GraphService {
                            .andExpression("month(auditData.updateDate)").as("month")
                            .and("orderStatus").as("orderStatus"),
                    group("month")
-                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(0).otherwise(1)).as("delivered")
+                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").notEqualToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("delivered")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("cancelledPayment")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PROCESS_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
                    project()
