@@ -1,5 +1,6 @@
 package com.sap.ordermanagergreen.controller;
 
+import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
 import com.sap.ordermanagergreen.service.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,21 @@ import java.util.Map;
 
 @CrossOrigin(MY_URL)
 @RestController
-@RequestMapping("/graph")
+@RequestMapping("/Graph")
 public class GraphController {
 
     @Autowired
     private  GraphService graphService;
+
+    @GetMapping("/topEmployee")
+    public ResponseEntity<List<TopEmployeeDTO>> getTopEmployee() {
+        try{
+            return ResponseEntity.ok(graphService.getTopEmployee());
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @GetMapping("/topProduct")
     public List<GraphService.MonthlyProductSalesResult> topProduct() {
