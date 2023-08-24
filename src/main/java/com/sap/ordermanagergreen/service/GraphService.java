@@ -1,11 +1,16 @@
 package com.sap.ordermanagergreen.service;
 
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Projections;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
 import com.sap.ordermanagergreen.repository.IProductCategoryRepository;
 import com.sap.ordermanagergreen.repository.IProductRepository;
+import com.sap.ordermanagergreen.model.OrderStatus;
+import com.sap.ordermanagergreen.model.User;
 import com.sap.ordermanagergreen.repository.IUserRepository;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +21,12 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
+import java.time.Month;
+import java.util.List;
+import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -28,12 +39,23 @@ import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 
 
-
 @Service
 public class GraphService {
 
     @Autowired
     public MongoTemplate mongoTemplate;
+  
+    @Autowired
+    private IProductRepository productRepository;
+  
+    @Autowired
+    private IProductCategoryRepository productCategoryRepository;
+
+    @Autowired
+    IOrderRepository orderRepository;
+
+    @Autowired
+    IUserRepository userRepository;
 
     @Getter
     @Setter
@@ -65,7 +87,6 @@ public class GraphService {
 
     public List<MonthlyProductSalesResult> getMonthlyProductSales() {
 
-
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
                 match(Criteria.where("orderStatus").is(OrderStatus.DONE)),
@@ -92,24 +113,26 @@ public class GraphService {
         return results.getMappedResults();
     }
 
-    public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
+
+   public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
+
         LocalDate currentDate = LocalDate.now();
         LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
-        Aggregation aggregation = newAggregation(
-                match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo)),
-                project()
-                        .andExpression("month(auditData.updateDate)").as("month")
-                        .and("orderStatus").as("orderStatus"),
-                group("month")
-                        .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.DONE)).then(1).otherwise(0)).as("cancelled")
-                        .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("delivered"),
-                project()
-                        .and("_id").as("month")
-                        .and("cancelled").as("cancelled")
-                        .and("delivered").as("delivered")
-        );
-
+           Aggregation aggregation = newAggregation(
+                   match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo)),
+                   project()
+                           .andExpression("month(auditData.updateDate)").as("month")
+                           .and("orderStatus").as("orderStatus"),
+                   group("month")
+                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").notEqualToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("delivered")
+                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("cancelledPayment")
+                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PROCESS_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
+                   project()
+                           .and("_id").as("month")
+                           .and("cancelledProcess").plus("cancelledPayment").as("cancelled")
+                           .and("delivered").minus("cancelledProcess").as("delivered")
+           );
         AggregationResults<org.bson.Document> results = mongoTemplate.aggregate(aggregation, "Orders", org.bson.Document.class);
         List<org.bson.Document> mappedResults = results.getMappedResults();
 
@@ -128,19 +151,9 @@ public class GraphService {
         }
 
         return resultsDTO;
-        ////////////////////////////////// Temporary, for data generation only ////////////////////////////////////
     }
 
-    @Autowired
-    private IProductRepository productRepository;
-    @Autowired
-    private IProductCategoryRepository productCategoryRepository;
-
-    @Autowired
-    IOrderRepository orderRepository;
-
-    @Autowired
-    IUserRepository userRepository;
+  
 
     public void fill() {
             List<Company> companies = new ArrayList<Company>();
