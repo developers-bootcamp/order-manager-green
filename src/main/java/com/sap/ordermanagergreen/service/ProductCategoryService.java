@@ -9,6 +9,7 @@ import com.sap.ordermanagergreen.mapper.ProductCategoryMapper;
 import com.sap.ordermanagergreen.model.AuditData;
 import com.sap.ordermanagergreen.model.AvailableRole;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
+import com.sap.ordermanagergreen.repository.IRoleRepository;
 import com.sap.ordermanagergreen.util.JwtToken;
 import org.springframework.stereotype.Service;
 import com.sap.ordermanagergreen.model.ProductCategory;
@@ -26,6 +27,8 @@ public class ProductCategoryService {
     private ProductCategoryMapper productCategoryMapper;
     @Autowired
     private ICompanyRepository companyRepository;
+    @Autowired
+    private IRoleRepository roleRepository;
 
 
     public void add(String token, ProductCategory productCategory) throws ObjectExistException {
@@ -77,8 +80,8 @@ public class ProductCategoryService {
     }
 
     public boolean isUnauthorized(String token) {
-        String roleId=JwtToken.decodeToken(token).getRoleId();
-        if (roleId.equals(AvailableRole.ADMIN) || roleId.equals(AvailableRole.EMPLOYEE))
+        AvailableRole availableRole= roleRepository.findById(JwtToken.decodeToken(token).getRoleId()).orElse(null).getName();
+        if (availableRole.equals(AvailableRole.ADMIN) || availableRole.equals(AvailableRole.EMPLOYEE))
             return true;
         return false;
     }

@@ -30,7 +30,7 @@ public class OrderChargingBL {
                         order.setOrderStatus(OrderStatus.CHARGING);
                         for (OrderItem item : order.getOrderItemsList()) {
                                 Product p = productRepository.findById(item.getProduct().getId()).get();
-                                if (p.getInventory() == 0) {
+                                if (p.getInventory() < item.getQuantity()) {
                                         order.setOrderStatus(OrderStatus.PAYMENT_CANCELED);
                                         return;
                                 } else {

@@ -41,7 +41,6 @@ public class OrderController {
         TokenDTO tokenDto=new TokenDTO();
         try {
             tokenDto = JwtToken.decodeToken(token);
-            ;
 //            if (!tokenDto.getCompanyId().equals(order.getCompany().getId()))
 //                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
@@ -55,7 +54,7 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity update(@RequestHeader("token") String token, @PathVariable String id, @RequestBody Order order) {
+    public ResponseEntity update(@RequestHeader("Authorization") String token, @PathVariable String id, @RequestBody Order order) {
         TokenDTO tokenDto = JwtToken.decodeToken(token);
         if (tokenDto.getCompanyId() != order.getCompany().getId())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

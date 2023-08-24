@@ -36,28 +36,25 @@ private OrderChargingBL orderChargingBL;
     }
 @SneakyThrows
     public String add(Order order, TokenDTO token) throws JsonProcessingException {
-    System.out.println("🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️");
-    System.out.println(order);
         order.setCompany(companyRepository.findById(token.getCompanyId()).get());
         order.setEmployee(userRepository.findById(token.getUserId()).get());
         try{
             Order newOrder = this.orderRepository.insert(order);
-            newOrder.setOrderStatus(OrderStatus.APPROVED);
-            orderChargingBL.chargingStep(newOrder);
+            if(newOrder.getOrderStatus()==OrderStatus.APPROVED)
+                orderChargingBL.chargingStep(newOrder);
             return newOrder.getId();}
         catch (Exception e){
             System.out.println(e);
             throw  new Exception();
         }
-     //   System.out.println(newOrder);
-      //  producer.sendMessageAfterCharge();
-
     }
 
-    public void update(String id, Order order) throws ObjectNotExistException {
+    public void update(String id, Order order) throws ObjectNotExistException, JsonProcessingException {
         if (orderRepository.findById(id).isEmpty())
             throw new ObjectNotExistException("order");
         orderRepository.save(order);
+        if(order.getOrderStatus()==OrderStatus.APPROVED)
+            orderChargingBL.chargingStep(order);
     }
 
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {
