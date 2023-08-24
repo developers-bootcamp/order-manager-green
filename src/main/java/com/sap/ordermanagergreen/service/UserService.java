@@ -1,7 +1,9 @@
 package com.sap.ordermanagergreen.service;
 
+import com.sap.ordermanagergreen.controller.OrderController;
 import com.sap.ordermanagergreen.dto.UserDTO;
 import com.sap.ordermanagergreen.exception.NoPermissionException;
+import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.mapper.UserMapper;
@@ -12,6 +14,8 @@ import com.sap.ordermanagergreen.repository.IUserRepository;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.util.JwtToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +39,7 @@ public class UserService {
     IRoleRepository roleRepository;
     @Autowired
     ICompanyRepository companyRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     public List<UserDTO> get(String companyId, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
@@ -71,6 +76,7 @@ public class UserService {
     @Transactional
     @SneakyThrows
     public User signUp(String fullName, String companyName, String email, String password, String currency) throws Exception {
+        LOGGER.info("try to sign up a new company "+companyName+"admin "+fullName);
         //password validations?
         if (password.contains(" ")) {
             throw new NotValidException("password");
@@ -89,11 +95,14 @@ public class UserService {
         companyRepository.save(company);
         User user = User.builder().fullName(fullName).company(company).address(Address.builder().email(email).build()).password(password).role(roleRepository.getByName(AvailableRole.ADMIN)).auditData(new AuditData()).build();
         userRepository.save(user);
+        LOGGER.info("company signed up successfully");
         return user;
     }
 
 
-    public void add(String token, User user) throws ObjectExistException, NoPermissionException, NotValidException {
+@SneakyThrows
+    public void add(String token, User user) throws ObjectExistException, NotValidException {
+
         if (userRepository.existsByFullName(user.getFullName())) {
             throw new ObjectExistException("user name ");
         }
@@ -115,8 +124,9 @@ public class UserService {
         user.getCompany().setAuditData(new AuditData(LocalDateTime.now(), LocalDateTime.now()));
         userRepository.save(user);
     }
+@SneakyThrows
+    public void update(String token, User user) throws NoPremissionException {
 
-    public void update(String token, User user) throws NoPermissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
                 AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId())
@@ -129,8 +139,11 @@ public class UserService {
         }
         userRepository.save(user);
     }
+@SneakyThrows
+    public void delete(String token, String userId) throws NoPremissionException {
 
-    public void delete(String token, String userId) throws NoPermissionException {
+
+
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
                 AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId()).

@@ -10,5 +10,12 @@ import java.util.List;
 
 @Repository
 public interface IOrderRepository extends MongoRepository<Order, String> {
-    List<Order> findByOrderStatusAndCompany_Id(Pageable pageable, OrderStatus orderStatusId, String companyName);
+List<Order>findByOrderStatusInAndCompanyId(Pageable pageable, List<OrderStatus> orderStatus,String companyId);
+
+
+
+
+//List<Order> findByOrderStatusAndCompanyId(Pageable pageable, OrderStatus orderStatus,String companyId);
+
+
 }
