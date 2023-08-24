@@ -33,9 +33,9 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<List<Order>> get(@RequestParam(defaultValue = "0") Integer pageNo,
-                                           @RequestParam(defaultValue = "3") Integer pageSize,
+                                           @RequestParam(defaultValue = "1") Integer pageSize,
                                            @RequestParam("orderStatus") List<OrderStatus> orderStatus,
-                                           @RequestParam String orderBy
+                                           @RequestParam String orderBy//,@RequestParam("filters") Map<String,Object> filters
             ,@RequestHeader("Authorization") String token) {
 
         TokenDTO tokenDto=null;
@@ -47,15 +47,17 @@ public class OrderController {
         }
         List<Order> orders = null;
         try{
-            List<OrderStatus> statusList=new  ArrayList<OrderStatus>();
-            statusList.add(OrderStatus.CREATED);
-            statusList.add(OrderStatus.APPROVED);
-            orders = this.orderService.get(pageNo, pageSize, tokenDto.getCompanyId(), orderStatus,orderBy);
+            Map<String,Object> filters=new HashMap<>();
+           // filters.put("cvc","111");
+
+            orders = this.orderService.get(pageNo, pageSize, tokenDto.getCompanyId(), orderStatus,orderBy,filters);
             return ResponseEntity.ok(orders);}
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+
 
     @PostMapping
     public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody Order order) {

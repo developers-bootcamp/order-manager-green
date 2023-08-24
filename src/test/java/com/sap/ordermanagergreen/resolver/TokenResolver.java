@@ -16,6 +16,6 @@ public class TokenResolver implements ParameterResolver {
 
     @Override
     public TokenDTO resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-      return TokenDTO.builder().userId("64bfe34d3e372e02ff12edb5").companyId("64c0e6023a814769ada5fea3").roleId("1").build();
+      return TokenDTO.builder().userId("64bfe34d3e372e02ff12edb5").companyId("64e5bc404c6d3a5bee0f9ef5").roleId("77f9").build();
     }
 }

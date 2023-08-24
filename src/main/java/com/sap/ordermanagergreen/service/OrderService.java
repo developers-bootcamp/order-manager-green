@@ -1,21 +1,22 @@
 package com.sap.ordermanagergreen.service;
 
+import ch.qos.logback.core.spi.AbstractComponentTracker;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.CompanyNotExistException;
 import com.sap.ordermanagergreen.exception.UserDosentExistException;
 import com.sap.ordermanagergreen.model.*;
-import com.sap.ordermanagergreen.repository.ICompanyRepository;
-import com.sap.ordermanagergreen.repository.IOrderRepository;
-import com.sap.ordermanagergreen.repository.IProductRepository;
+import com.sap.ordermanagergreen.repository.*;
 import com.sap.ordermanagergreen.exception.ObjectNotExistException;
-import com.sap.ordermanagergreen.repository.IUserRepository;
 import lombok.SneakyThrows;
+import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import java.util.*;
 
 @Service
@@ -23,6 +24,8 @@ public class OrderService {
 
     @Autowired
     private IOrderRepository orderRepository;
+//    @Autowired
+//    private OrderRepository orderRepository2;
     @Autowired
     private IProductRepository productRepository;
     @Autowired
@@ -31,8 +34,9 @@ public class OrderService {
     private IUserRepository userRepository;
     @Autowired
     private OrderChargingService orderChargingService;
-
-    public List<Order> get(Integer pageNo, Integer pageSize, String companyId,  List<OrderStatus> orderStatus, String sortBy) {
+    @Autowired
+    private MongoTemplate mongoTemplate;
+    public List<Order> get(Integer pageNo, Integer pageSize, String companyId,  List<OrderStatus> orderStatus, String sortBy,Map<String,Object>filters) throws Exception {//,
         Pageable paging;
         if (sortBy != "") {
             Sort sort = Sort.by(sortBy).ascending();
@@ -40,9 +44,21 @@ public class OrderService {
         } else {
             paging = PageRequest.of(pageNo, pageSize);
         }
-        return orderRepository.findByOrderStatusInAndCompanyId(paging,orderStatus,companyId);
+        Criteria criteria = Criteria.where("orderStatus").in(orderStatus);
+        filters.forEach((key,val) -> {
+            criteria.and(key).is(val);
+    });
+
+        Query query = new Query(criteria);
+query.with(paging);
+        return mongoTemplate.find(query, Order.class);
+
+
+        //return orderRepository.findByOrderStatusInAndCompanyId(paging,orderStatus,companyId);//,query
 
     }
+
+
 
 
     public String add(Order order, TokenDTO token) throws CompanyNotExistException, UserDosentExistException, Exception {

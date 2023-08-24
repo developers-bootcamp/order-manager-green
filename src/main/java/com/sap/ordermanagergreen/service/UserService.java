@@ -58,7 +58,7 @@ public class UserService {
         return toReturn;
     }
 
-    public User getUserByEmailAndPassword(String userEmail, String userPassword) {
+    public User getUserByEmailAndPassword( String userEmail,String userPassword) {
         User user = isEmailExists(userEmail);
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found. Please sign up");

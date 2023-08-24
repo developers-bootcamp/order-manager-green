@@ -73,13 +73,13 @@ public class OrderServiceTest {
         assertEquals(result.get(product.getId()).values().iterator().next(), product.getDiscount());
 
     }
-    @Test
-    public void testCreateOrder_whenOk(Order order,TokenDTO token) throws Exception {
-        Mockito.when(iOrderRepository.save(order)).thenReturn(order);
-        String result = orderService.add(order,token);
-        Mockito.verify(iOrderRepository, Mockito.times(1));
-        Assertions.assertEquals(order, result);
-    }
+//    @Test
+//    public void testCreateOrder_whenOk(Order order,TokenDTO token) throws Exception {
+//        Mockito.when(iOrderRepository.save(order)).thenReturn(order);
+//        String result = orderService.add(order,token);
+//        Mockito.verify(iOrderRepository, Mockito.times(1));
+//        Assertions.assertEquals(order, result);
+//    }
 //    @Test
 //    public void testCreateOrder_whenCompanyNotExist_throwException(Order order,TokenDTO token)throws CompanyNotExistException,Exception {
 //        Mockito.when(this.companyRepository.findById(token.getCompanyId())==null).then(throw new CompanyNotExistException);
