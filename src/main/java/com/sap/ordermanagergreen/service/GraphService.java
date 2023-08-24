@@ -3,10 +3,7 @@ package com.sap.ordermanagergreen.service;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.model.*;
-import com.sap.ordermanagergreen.repository.IOrderRepository;
-import com.sap.ordermanagergreen.repository.IProductCategoryRepository;
-import com.sap.ordermanagergreen.repository.IProductRepository;
-import com.sap.ordermanagergreen.repository.IUserRepository;
+import com.sap.ordermanagergreen.repository.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
@@ -45,11 +42,12 @@ public class GraphService {
 
     }
 
-    public List<TopEmployeeDTO> getTopEmployee() {
+    public List<TopEmployeeDTO> getTopEmployee(String companyId) {
 
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
                 match(Criteria.where("orderStatus").is(OrderStatus.DONE)),
+                match(Criteria.where("company.id").is(companyId)),
                 group("employee").count().as("countOfDeliveredOrders"),
                 project("countOfDeliveredOrders").and("_id").as("user"),
                 sort(Sort.Direction.DESC, "countOfDeliveredOrders"),
@@ -142,6 +140,9 @@ public class GraphService {
     @Autowired
     IUserRepository userRepository;
 
+    @Autowired
+    ICompanyRepository companyRepository;
+
     public void fill() {
             List<Company> companies = new ArrayList<Company>();
             List<Role> roles = new ArrayList<Role>();
@@ -159,6 +160,9 @@ public class GraphService {
             companies.add(company1);
             companies.add(company2);
             companies.add(company3);
+
+            companies.forEach(c-> companyRepository.save(c));
+
             Role role1 = new Role("101", AvailableRole.ADMIN, "bos", d3);
             Role role2 = new Role("102", AvailableRole.EMPLOYEE, "GOOD EMPLOYEE", d2);
             Role role3 = new Role("103", AvailableRole.CUSTOMER, "CUSTOMER", d1);
