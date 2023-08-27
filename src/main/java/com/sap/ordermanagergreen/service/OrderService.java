@@ -10,13 +10,13 @@ import com.sap.ordermanagergreen.exception.ObjectNotExistException;
 import lombok.SneakyThrows;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+
+import java.net.http.HttpHeaders;
 import java.util.*;
 
 @Service
@@ -44,14 +44,23 @@ public class OrderService {
         } else {
             paging = PageRequest.of(pageNo, pageSize);
         }
-        Criteria criteria = Criteria.where("orderStatus").in(orderStatus);
+        Criteria criteria = Criteria.where("orderStatus").in(orderStatus)
+                .and("companyId.id").is(companyId);
+        criteria.where("orderStatus").in(orderStatus);
         filters.forEach((key,val) -> {
             criteria.and(key).is(val);
     });
 
         Query query = new Query(criteria);
 query.with(paging);
-        return mongoTemplate.find(query, Order.class);
+//        List<Order>aa= mongoTemplate.find(query, Order.class);
+//        Page<Order> resultPage = new PageImpl<Order>(aa , paging,7);
+//        resultPage.getTotalPages();
+//return resultPage
+        List<Order>ans= mongoTemplate.find(query, Order.class);
+
+       return ans;
+
 
 
         //return orderRepository.findByOrderStatusInAndCompanyId(paging,orderStatus,companyId);//,query
@@ -114,6 +123,9 @@ return "";
         o.put(totalAmount, -1);
         calculatedOrder.put("-1", o);
         return calculatedOrder;
+    }
+    public long count(){
+        return  orderRepository.count();
     }
 
 }
