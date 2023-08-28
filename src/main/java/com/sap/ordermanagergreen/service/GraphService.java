@@ -75,15 +75,6 @@ public class MonthlyProductSalesResult {
     }
 }
 
-
-
-
-//    public List<Object> getGeneric(String object){
-//        Aggregation aggregation=newAggregation(
-//                match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
-//        )
-//    }
-
     public List<TopEmployeeDTO> getTopEmployee() {
 
         Aggregation aggregation = newAggregation(
@@ -103,13 +94,11 @@ public class MonthlyProductSalesResult {
     }
 
     public List<MonthlyProductSalesResult> getMonthlyProductSales() {
-
         LocalDate currentDate = LocalDate.now();
         LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
         Aggregation aggregation = newAggregation(
-                match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo)),
-                match(Criteria.where("orderStatus").is("DONE")),
+                match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo).and("orderStatus").is("DONE")),
                 unwind("orderItemsList"),
                 project()
                         .andExpression("month(auditData.updateDate)").as("month")
@@ -118,24 +107,20 @@ public class MonthlyProductSalesResult {
                 lookup("Product", "productId.$id", "_id", "productData"),
                 unwind("productData"),
                 project()
-                        .andExclude("_id")
                         .and("month").as("month")
                         .and("productData.name").as("product")
                         .and("quantity").as("quantity"),
-                group(
-                        Fields.fields("product","month")
-                ).sum("quantity").as("totalQuantity"),
+                group(Fields.fields("product", "month"))
+                        .sum("quantity").as("totalQuantity"),
                 sort(Sort.Direction.DESC, "totalQuantity"),
                 limit(5),
                 project()
-                        .and("_id.$product").as("product")
-                        .and("month").as("month")
+                        .and("_id.product").as("product")
+                        .and("_id.month").as("month")
                         .and("totalQuantity").as("totalQuantity"),
-                group(
-                        Fields.fields("month")
-                ).push(
-                        new BasicDBObject("product", "$product")
-                                .append("quantity", "$totalQuantity")).as("products"),
+                group("month")
+                        .push(new BasicDBObject("product", "$product").append("quantity", "$totalQuantity"))
+                        .as("products"),
                 project()
                         .and("_id").as("month")
                         .and("products").as("products")
