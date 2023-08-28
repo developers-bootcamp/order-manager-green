@@ -5,14 +5,13 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Projections;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
+import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.model.*;
-import com.sap.ordermanagergreen.repository.IOrderRepository;
-import com.sap.ordermanagergreen.repository.IProductCategoryRepository;
-import com.sap.ordermanagergreen.repository.IProductRepository;
+import com.sap.ordermanagergreen.repository.*;
 import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.model.User;
-import com.sap.ordermanagergreen.repository.IUserRepository;
+import com.sap.ordermanagergreen.util.JwtToken;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
@@ -58,6 +57,9 @@ public class GraphService {
     @Autowired
     IUserRepository userRepository;
 
+    @Autowired
+    ICompanyRepository companyRepository;
+
 //333
 @Getter
 @Setter
@@ -101,6 +103,7 @@ public class MonthlyProductSalesResult {
     }
 
     public List<MonthlyProductSalesResult> getMonthlyProductSales() {
+
         LocalDate currentDate = LocalDate.now();
         LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
@@ -144,8 +147,7 @@ public class MonthlyProductSalesResult {
         return results.getMappedResults();
     }
 
-   public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
-
+   public List<DeliverCancelOrdersDTO> getDeliverCancelOrders(String token) {
         LocalDate currentDate = LocalDate.now();
         LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 

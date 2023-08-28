@@ -45,9 +45,9 @@ public class GraphController {
     }
 
     @GetMapping("/getDeliverCancelOrders")
-    public ResponseEntity<List<DeliverCancelOrdersDTO>> getDeliverCancelOrders() {
+    public ResponseEntity<List<DeliverCancelOrdersDTO>> getDeliverCancelOrders(@RequestHeader("Authorization") String token) {
         try {
-            return ResponseEntity.ok(graphService.getDeliverCancelOrders());
+            return ResponseEntity.ok(graphService.getDeliverCancelOrders(token));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
