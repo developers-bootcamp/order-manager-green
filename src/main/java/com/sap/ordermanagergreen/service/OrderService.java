@@ -80,6 +80,7 @@ private OrderChargingBL orderChargingBL;
             }
             calculatedOrder.put(p.getId(), o);
             totalAmount += amount;
+            //
         }
         HashMap<Double, Integer> o = new HashMap<Double, Integer>();
         o.put(totalAmount, -1);
