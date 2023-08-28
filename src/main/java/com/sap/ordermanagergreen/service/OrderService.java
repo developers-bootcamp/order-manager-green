@@ -56,7 +56,7 @@ query.with(paging);
 //        List<Order>aa= mongoTemplate.find(query, Order.class);
 //        Page<Order> resultPage = new PageImpl<Order>(aa , paging,7);
 //        resultPage.getTotalPages();
-//return resultPage
+//return resultPage;
         List<Order>ans= mongoTemplate.find(query, Order.class);
 
        return ans;
@@ -124,8 +124,17 @@ return "";
         calculatedOrder.put("-1", o);
         return calculatedOrder;
     }
-    public long count(){
-        return  orderRepository.count();
+    public long count(Map<String,Object>filters,List<OrderStatus>orderStatus,String companyId){
+
+        Criteria criteria = Criteria.where("orderStatus").in(orderStatus)
+                .and("companyId.id").is(companyId);
+        criteria.where("orderStatus").in(orderStatus);
+        filters.forEach((key,val) -> {
+            criteria.and(key).is(val);
+        });
+
+        Query query = new Query(criteria);
+        return mongoTemplate.count(query,Order.class);
     }
 
 }

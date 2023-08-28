@@ -51,17 +51,22 @@ public class OrderController {
            // filters.put("cvc","111");
 
             orders = this.orderService.get(pageNo, pageSize, tokenDto.getCompanyId(), orderStatus,orderBy,filters);
-            long count=orderService.count();
+            //long count=orderService.count();
             org.springframework.http.HttpHeaders responseHeader=new org.springframework.http.HttpHeaders();
-            responseHeader.set("totalCount",String.valueOf(count+1));
+           // responseHeader.set("totalCount",String.valueOf(count));
             return ResponseEntity.ok().headers(responseHeader).body(orders);
         }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
+@GetMapping("/count")
+public long countData(@RequestParam("orderStatus") List<OrderStatus> orderStatus ,@RequestHeader("Authorization") String token)
+{
+    TokenDTO tokenDto=JwtToken.decodeToken(token);
+    Map<String,Object> filters=new HashMap<>();
+return orderService.count(filters,orderStatus,tokenDto.getCompanyId());
+}
 
     @PostMapping
     public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody Order order) {
