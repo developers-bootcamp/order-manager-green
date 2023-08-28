@@ -112,12 +112,7 @@ public class MonthlyProductSalesResult {
                         .andExpression("month(auditData.updateDate)").as("month")
                         .and("orderItemsList.product").as("productId")
                         .and("orderItemsList.quantity").as("quantity"),
-                lookup(
-                        "Product",
-                        "productId.$id",
-                        "_id",
-                        "productData"
-                ),
+                lookup("Product", "productId.$id", "_id", "productData"),
                 unwind("productData"),
                 project()
                         .andExclude("_id")
@@ -137,16 +132,15 @@ public class MonthlyProductSalesResult {
                         Fields.fields("month")
                 ).push(
                         new BasicDBObject("product", "$product")
-                                .append("quantity", "$totalQuantity")
-                ).as("products"),
+                                .append("quantity", "$totalQuantity")).as("products"),
                 project()
                         .and("_id").as("month")
                         .and("products").as("products")
         );
+
         AggregationResults<MonthlyProductSalesResult> results = mongoTemplate.aggregate(
                 aggregation, "Orders", MonthlyProductSalesResult.class
         );
-
         return results.getMappedResults();
     }
 
