@@ -147,7 +147,7 @@ public class MonthlyProductSalesResult {
         return results.getMappedResults();
     }
 
-   public List<DeliverCancelOrdersDTO> getDeliverCancelOrders(String token) {
+   public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
         LocalDate currentDate = LocalDate.now();
         LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
