@@ -18,7 +18,7 @@ import java.util.Map;
 
 @CrossOrigin(MY_URL)
 @RestController
-@RequestMapping("/Graph")
+@RequestMapping("/graph")
 public class GraphController {
 
     @Autowired

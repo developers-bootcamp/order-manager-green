@@ -1,5 +1,6 @@
 package com.sap.ordermanagergreen.service;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Projections;
@@ -57,15 +58,29 @@ public class GraphService {
     @Autowired
     IUserRepository userRepository;
 
+//333
+@Getter
+@Setter
+public class MonthlyProductSalesResult {
+    private int month;
+   private List<ProductData> products;
+
     @Getter
     @Setter
-    public class MonthlyProductSalesResult {
-        private int year;
-        private int month;
-        private Product product;
-        private int totalQuantity;
-
+    public static class ProductData {
+        private String product;
+        private int quantity;
     }
+}
+
+
+
+
+//    public List<Object> getGeneric(String object){
+//        Aggregation aggregation=newAggregation(
+//                match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
+//        )
+//    }
 
     public List<TopEmployeeDTO> getTopEmployee() {
 
@@ -86,33 +101,54 @@ public class GraphService {
     }
 
     public List<MonthlyProductSalesResult> getMonthlyProductSales() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
         Aggregation aggregation = newAggregation(
-                match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
-                match(Criteria.where("orderStatus").is(OrderStatus.DONE)),
+                match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo)),
+                match(Criteria.where("orderStatus").is("DONE")),
                 unwind("orderItemsList"),
                 project()
-                        .andExpression("year(auditData.createDate)").as("year")
-                        .andExpression("month(auditData.createDate)").as("month")
-                        .and("orderItemsList.product").as("product")
+                        .andExpression("month(auditData.updateDate)").as("month")
+                        .and("orderItemsList.product").as("productId")
                         .and("orderItemsList.quantity").as("quantity"),
-                group(fields().and("year").and("month").and("product"))
-                        .sum("quantity").as("totalQuantity"),
-                project("totalQuantity")
-                        .and("year").as("year")
+                lookup(
+                        "Product",
+                        "productId.$id",
+                        "_id",
+                        "productData"
+                ),
+                unwind("productData"),
+                project()
+                        .andExclude("_id")
                         .and("month").as("month")
-                        .and("product").as("product"),
-                sort(Sort.Direction.ASC, "year", "month")
+                        .and("productData.name").as("product")
+                        .and("quantity").as("quantity"),
+                group(
+                        Fields.fields("product","month")
+                ).sum("quantity").as("totalQuantity"),
+                sort(Sort.Direction.DESC, "totalQuantity"),
+                limit(5),
+                project()
+                        .and("_id.$product").as("product")
+                        .and("month").as("month")
+                        .and("totalQuantity").as("totalQuantity"),
+                group(
+                        Fields.fields("month")
+                ).push(
+                        new BasicDBObject("product", "$product")
+                                .append("quantity", "$totalQuantity")
+                ).as("products"),
+                project()
+                        .and("_id").as("month")
+                        .and("products").as("products")
         );
-
         AggregationResults<MonthlyProductSalesResult> results = mongoTemplate.aggregate(
-                aggregation, Order.class, MonthlyProductSalesResult.class
+                aggregation, "Orders", MonthlyProductSalesResult.class
         );
-
 
         return results.getMappedResults();
     }
-
 
    public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
 
