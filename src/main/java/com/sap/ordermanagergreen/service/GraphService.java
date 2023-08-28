@@ -76,7 +76,11 @@ public class MonthlyProductSalesResult {
 
 
 
-
+//    public List<Object> getGeneric(String object){
+//        Aggregation aggregation=newAggregation(
+//                match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
+//        )
+//    }
 
     public List<TopEmployeeDTO> getTopEmployee() {
 

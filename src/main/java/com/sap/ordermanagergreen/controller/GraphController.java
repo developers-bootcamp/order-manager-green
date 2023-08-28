@@ -35,8 +35,13 @@ public class GraphController {
     }
 
     @GetMapping("/topProduct")
-    public List<GraphService.MonthlyProductSalesResult> topProduct() {
-        return graphService.getMonthlyProductSales();
+    public  ResponseEntity<List<GraphService.MonthlyProductSalesResult>> topProduct() {
+        try{
+            return ResponseEntity.ok(graphService.getMonthlyProductSales());
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/getDeliverCancelOrders")
