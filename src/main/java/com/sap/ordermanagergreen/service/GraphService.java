@@ -97,7 +97,36 @@ public class MonthlyProductSalesResult {
         LocalDate currentDate = LocalDate.now();
         LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
-
+        Aggregation aggregationTemp = newAggregation(
+                match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo).and("orderStatus").is("DONE")),
+                unwind("orderItemsList"),
+                project()
+                        .andExpression("month(auditData.updateDate)").as("month")
+                        .and("orderItemsList.product").as("productId")
+                        .and("orderItemsList.quantity").as("quantity"),
+                lookup("Product", "productId.$id", "_id", "productData"),
+                unwind("productData"),
+                project()
+                        .and("productData.name").as("product")
+                        .and("quantity").as("quantity"),
+                group(Fields.fields("product"))
+                        .sum("quantity").as("totalQuantity"),
+                sort(Sort.Direction.DESC, "totalQuantity"),
+                limit(5),
+                project()
+                        .and("_id.product").as("product")
+        );
+        AggregationResults<String> resultsTemp = mongoTemplate.aggregate(
+                aggregationTemp, "Orders", String.class
+        );
+        List<String> mappedResults = resultsTemp.getMappedResults();
+        String arr[]=new String[5];
+        int i=0;
+        for (String result:mappedResults){
+            int end=result.lastIndexOf("}");
+           arr[i]=result.substring(9,end-1);
+           i++;
+            }
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo).and("orderStatus").is("DONE")),
                 unwind("orderItemsList"),
@@ -113,14 +142,15 @@ public class MonthlyProductSalesResult {
                         .and("quantity").as("quantity"),
                 group(Fields.fields("product", "month"))
                         .sum("quantity").as("totalQuantity"),
-                sort(Sort.Direction.DESC, "totalQuantity"),
-                limit(5),
                 project()
                         .and("_id.product").as("product")
                         .and("_id.month").as("month")
                         .and("totalQuantity").as("totalQuantity"),
-               limit(5),
-
+                match(Criteria.where("product").in(arr)),
+                project()
+                        .and("product").as("product")
+                        .and("month").as("month")
+                        .and("totalQuantity").as("totalQuantity"),
                 group("month")
                         .push(new BasicDBObject("product", "$product").append("quantity", "$totalQuantity"))
                         .as("products"),
@@ -132,8 +162,8 @@ public class MonthlyProductSalesResult {
         AggregationResults<MonthlyProductSalesResult> results = mongoTemplate.aggregate(
                 aggregation, "Orders", MonthlyProductSalesResult.class
         );
-return results.getMappedResults();
 
+return results.getMappedResults();
     }
 
    public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
