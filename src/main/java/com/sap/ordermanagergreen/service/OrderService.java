@@ -1,4 +1,5 @@
 package com.sap.ordermanagergreen.service;
+
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.CompanyNotExistException;
 import com.sap.ordermanagergreen.exception.UserDosentExistException;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.*;
+
+
 @Service
 public class OrderService {
     @Autowired
@@ -25,30 +28,36 @@ public class OrderService {
     private ICompanyRepository companyRepository;
     @Autowired
     private IUserRepository userRepository;
-    public List<Order> get(Integer pageNo, Integer pageSize, String companyId,  List<OrderStatus> orderStatus, String sortBy) {
-        Pageable paging;
-        if (sortBy != "") {
-            Sort sort = Sort.by(sortBy).ascending();
-            paging = PageRequest.of(pageNo, pageSize, sort);
-        } else {
-            paging = PageRequest.of(pageNo, pageSize);
-        }
-        return orderRepository.findByOrderStatusInAndCompanyId(paging,orderStatus,companyId);
+@Autowired
+private OrderChargingBL orderChargingBL;
+
+    public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
+        Pageable paging = PageRequest.of(pageNo, pageSize);
+        return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
     }
-    public String add(Order order, TokenDTO token) throws CompanyNotExistException, UserDosentExistException, Exception {
-        if (companyRepository.findById(token.getCompanyId()).get() == null)
-            throw new CompanyNotExistException("company not exist");
+@SneakyThrows
+    public String add(Order order, TokenDTO token) throws JsonProcessingException {
         order.setCompany(companyRepository.findById(token.getCompanyId()).get());
         if (userRepository.findById(token.getUserId()).get() == null)
             throw new UserDosentExistException("employee dosent exist");
         order.setEmployee(userRepository.findById(token.getUserId()).get());
-        Order newOrdr = this.orderRepository.insert(order);
-        return newOrdr.getId();
+        try{
+            Order newOrder = this.orderRepository.insert(order);
+            if(newOrder.getOrderStatus()==OrderStatus.APPROVED)
+                orderChargingBL.chargingStep(newOrder);
+            return newOrder.getId();}
+        catch (Exception e){
+            System.out.println(e);
+            throw  new Exception();
+        }
     }
+
     public void update(String id, Order order) throws ObjectNotExistException {
         if (orderRepository.findById(id).isEmpty())
             throw new ObjectNotExistException("order");
         orderRepository.save(order);
+        if(order.getOrderStatus()==OrderStatus.APPROVED)
+            orderChargingBL.chargingStep(order);
     }
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {
         List<OrderItem> items = new ArrayList<OrderItem>();

@@ -13,10 +13,10 @@ import com.sap.ordermanagergreen.model.Role;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
 import com.sap.ordermanagergreen.repository.IRoleRepository;
 import com.sap.ordermanagergreen.util.JwtToken;
-import com.sap.ordermanagergreen.model.ProductCategory;
-import com.sap.ordermanagergreen.repository.IProductCategoryRepository;
 import org.springframework.stereotype.Service;
+import com.sap.ordermanagergreen.model.ProductCategory;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.sap.ordermanagergreen.repository.IProductCategoryRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +24,6 @@ import java.util.Optional;
 
 @Service
 public class ProductCategoryService {
-
     @Autowired
     private IProductCategoryRepository ProductCategoryRepository;
     @Autowired
@@ -41,11 +40,13 @@ public class ProductCategoryService {
             throw new UnauthorizedException();
         String categoryName = productCategory.getName();
         if (doesCategoryExist(categoryName) == true) {
-            throw new ObjectExistException("Category name");
+            throw new ObjectExistException("Category name already exists");
         }
         productCategory.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
         productCategory.setAuditData(new AuditData());
         ProductCategoryRepository.save(productCategory);
+        ProductCategoryRepository.save(productCategory);
+
     }
 
     public List<ProductCategoryDTO> get(String token) {
@@ -56,13 +57,16 @@ public class ProductCategoryService {
     }
 
     public void delete(String token, String id) throws ObjectNotExistException {
+
         if (!isUnauthorized(token))
             throw new UnauthorizedException();
         if (ProductCategoryRepository.findById(id).isEmpty()) {
-            throw new ObjectNotExistException("Category");
+            throw new ObjectNotExistException("Category not found");
         }
         ProductCategoryRepository.deleteById(id);
+
     }
+
 
     public void update(String id, ProductCategory productCategory, String token) throws ObjectNotExistException,UnauthorizedException,NoPermissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
@@ -85,10 +89,9 @@ public class ProductCategoryService {
 
     public boolean isUnauthorized(String token) {
         String roleId = JwtToken.decodeToken(token).getRoleId();
-        Role role = roleRepository.findById(roleId).orElse(null);
-        if (role.getName().equals(AvailableRole.ADMIN) || role.getName().equals(AvailableRole.EMPLOYEE))
+        if (roleId.equals(AvailableRole.ADMIN) || roleId.equals(AvailableRole.EMPLOYEE))
             return true;
         return false;
     }
-
 }
+
