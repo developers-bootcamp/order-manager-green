@@ -1,5 +1,6 @@
 package com.sap.ordermanagergreen.service;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.SneakyThrows;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+
 @Service
 public class OrderService {
 
@@ -25,23 +27,34 @@ public class OrderService {
     private ICompanyRepository companyRepository;
     @Autowired
     private IUserRepository userRepository;
+@Autowired
+private OrderChargingBL orderChargingBL;
 
     public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
         Pageable paging = PageRequest.of(pageNo, pageSize);
         return orderRepository.findByOrderStatusAndCompany_Id(paging, orderStatus, companyId);
     }
-
-    public String add(Order order, TokenDTO token) {
+@SneakyThrows
+    public String add(Order order, TokenDTO token) throws JsonProcessingException {
         order.setCompany(companyRepository.findById(token.getCompanyId()).get());
         order.setEmployee(userRepository.findById(token.getUserId()).get());
-        Order newOrdr = this.orderRepository.insert(order);
-        return newOrdr.getId();
+        try{
+            Order newOrder = this.orderRepository.insert(order);
+            if(newOrder.getOrderStatus()==OrderStatus.APPROVED)
+                orderChargingBL.chargingStep(newOrder);
+            return newOrder.getId();}
+        catch (Exception e){
+            System.out.println(e);
+            throw  new Exception();
+        }
     }
 
-    public void update(String id, Order order) throws ObjectNotExistException {
+    public void update(String id, Order order) throws ObjectNotExistException, JsonProcessingException {
         if (orderRepository.findById(id).isEmpty())
             throw new ObjectNotExistException("order");
         orderRepository.save(order);
+        if(order.getOrderStatus()==OrderStatus.APPROVED)
+            orderChargingBL.chargingStep(order);
     }
 
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {
