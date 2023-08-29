@@ -112,24 +112,30 @@ public class MonthlyProductSalesResult {
                         .and("quantity").as("quantity"),
                 group(Fields.fields("product", "month"))
                         .sum("quantity").as("totalQuantity"),
-                sort(Sort.Direction.DESC, "totalQuantity"),
-                limit(5),
                 project()
                         .and("_id.product").as("product")
                         .and("_id.month").as("month")
                         .and("totalQuantity").as("totalQuantity"),
+                      //  .and("tempQuantity").as("tempQuantity"),
                 group("month")
                         .push(new BasicDBObject("product", "$product").append("quantity", "$totalQuantity"))
                         .as("products"),
                 project()
                         .and("_id").as("month")
-                        .and("products").as("products")
+                        .and("products").as("products").
         );
 
         AggregationResults<MonthlyProductSalesResult> results = mongoTemplate.aggregate(
                 aggregation, "Orders", MonthlyProductSalesResult.class
         );
-        return results.getMappedResults();
+
+        List<MonthlyProductSalesResult> processedResults=results.getMappedResults();
+        for (MonthlyProductSalesResult result:processedResults){
+            if (result.getProducts() != null && result.getProducts().size() > 5) {
+                result.setProducts(result.getProducts().subList(0, 5));
+            }}
+        //return results.getMappedResults();
+        return processedResults;
     }
 
    public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
