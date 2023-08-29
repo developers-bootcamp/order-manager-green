@@ -122,7 +122,7 @@ public class MonthlyProductSalesResult {
                         .as("products"),
                 project()
                         .and("_id").as("month")
-                        .and("products").as("products").
+                        .and("products").as("products")
         );
 
         AggregationResults<MonthlyProductSalesResult> results = mongoTemplate.aggregate(
