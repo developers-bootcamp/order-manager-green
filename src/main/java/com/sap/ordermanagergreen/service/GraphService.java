@@ -119,14 +119,11 @@ public class MonthlyProductSalesResult {
         AggregationResults<String> resultsTemp = mongoTemplate.aggregate(
                 aggregationTemp, "Orders", String.class
         );
-        List<String> mappedResults = resultsTemp.getMappedResults();
-        String arr[]=new String[5];
-        int i=0;
-        for (String result:mappedResults){
-            int end=result.lastIndexOf("}");
-           arr[i]=result.substring(9,end-1);
-           i++;
-            }
+        List<String> productNames = resultsTemp.getMappedResults()
+                .stream()
+                .map(result -> result.substring(9, result.lastIndexOf("}") - 1))
+                .collect(Collectors.toList());
+
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo).and("orderStatus").is("DONE")),
                 unwind("orderItemsList"),
@@ -146,7 +143,7 @@ public class MonthlyProductSalesResult {
                         .and("_id.product").as("product")
                         .and("_id.month").as("month")
                         .and("totalQuantity").as("totalQuantity"),
-                match(Criteria.where("product").in(arr)),
+                match(Criteria.where("product").in(productNames)),
                 project()
                         .and("product").as("product")
                         .and("month").as("month")
