@@ -97,6 +97,7 @@ public class MonthlyProductSalesResult {
         LocalDate currentDate = LocalDate.now();
         LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
+
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo).and("orderStatus").is("DONE")),
                 unwind("orderItemsList"),
@@ -112,11 +113,14 @@ public class MonthlyProductSalesResult {
                         .and("quantity").as("quantity"),
                 group(Fields.fields("product", "month"))
                         .sum("quantity").as("totalQuantity"),
+                sort(Sort.Direction.DESC, "totalQuantity"),
+                limit(5),
                 project()
                         .and("_id.product").as("product")
                         .and("_id.month").as("month")
                         .and("totalQuantity").as("totalQuantity"),
-                      //  .and("tempQuantity").as("tempQuantity"),
+               limit(5),
+
                 group("month")
                         .push(new BasicDBObject("product", "$product").append("quantity", "$totalQuantity"))
                         .as("products"),
@@ -128,14 +132,8 @@ public class MonthlyProductSalesResult {
         AggregationResults<MonthlyProductSalesResult> results = mongoTemplate.aggregate(
                 aggregation, "Orders", MonthlyProductSalesResult.class
         );
+return results.getMappedResults();
 
-        List<MonthlyProductSalesResult> processedResults=results.getMappedResults();
-        for (MonthlyProductSalesResult result:processedResults){
-            if (result.getProducts() != null && result.getProducts().size() > 5) {
-                result.setProducts(result.getProducts().subList(0, 5));
-            }}
-        //return results.getMappedResults();
-        return processedResults;
     }
 
    public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
