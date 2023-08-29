@@ -1,7 +1,8 @@
 package com.sap.ordermanagergreen.controller;
 
+import com.sap.ordermanagergreen.dto.ProductDTO;
 import com.sap.ordermanagergreen.dto.TokenDTO;
-import com.sap.ordermanagergreen.exception.NoPremissionException;
+import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;

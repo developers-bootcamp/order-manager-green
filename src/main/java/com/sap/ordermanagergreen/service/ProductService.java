@@ -53,12 +53,12 @@ public class ProductService {
         return toReturn;
     }
 
-    public void add(ProductDTO productDto, String token) throws ObjectExistException,NoPremissionException {
+    public void add(ProductDTO productDto, String token) throws ObjectExistException,NoPermissionException {
         if (productRepository.existsByName(productDto.getName()))
             throw new ObjectExistException("product name already exist");
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
-            throw new NoPremissionException("You don't have permission to delete the product");
+            throw new NoPermissionException("You don't have permission to delete the product");
         Product product=productMapper.INSTANCE.dtoToProduct(productDto);
         product.setCategory(productCategoryRepository.findByName(productDto.getProductCategoryName()));
         product.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
@@ -66,13 +66,13 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public void update(String id, ProductDTO productDto, String token)throws ObjectExistException,NoPremissionException {
+    public void update(String id, ProductDTO productDto, String token)throws ObjectExistException,NoPermissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         Product prevProduct = productRepository.findById(id).orElse(null);
         if (productRepository.existsByName(productDto.getName()) && !prevProduct.getName().equals(productDto.getName()))
             throw new ObjectExistException("product name already exist");
         if (!prevProduct.getCompany().getId().equals(tokenDTO.getCompanyId()) || roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
-            throw new NoPremissionException("You don't have permission to delete the product");
+            throw new NoPermissionException("You don't have permission to delete the product");
 
         Product product=productMapper.INSTANCE.dtoToProduct(productDto);
         product.setCategory(productCategoryRepository.findByName(productDto.getProductCategoryName()));

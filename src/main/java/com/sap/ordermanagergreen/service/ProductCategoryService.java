@@ -1,10 +1,13 @@
 package com.sap.ordermanagergreen.service;
 
 import com.sap.ordermanagergreen.dto.ProductCategoryDTO;
+import com.sap.ordermanagergreen.dto.TokenDTO;
+import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.mapper.ProductCategoryMapper;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.exception.ObjectNotExistException;
 import com.sap.ordermanagergreen.exception.UnauthorizedException;
+import com.sap.ordermanagergreen.model.AuditData;
 import com.sap.ordermanagergreen.model.AvailableRole;
 import com.sap.ordermanagergreen.model.Role;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
@@ -15,6 +18,7 @@ import com.sap.ordermanagergreen.repository.IProductCategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,8 +29,14 @@ public class ProductCategoryService {
     private IProductCategoryRepository ProductCategoryRepository;
     @Autowired
     private ProductCategoryMapper productCategoryMapper;
+    @Autowired
+    private ICompanyRepository companyRepository;
+    @Autowired
+    private  IRoleRepository roleRepository;
 
-    public void add(String token, ProductCategory productCategory) throws ObjectExistException {
+
+    public void add(String token, ProductCategory productCategory) throws ObjectExistException,UnauthorizedException {
+        TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (!isUnauthorized(token))
             throw new UnauthorizedException();
         String categoryName = productCategory.getName();
@@ -54,14 +64,19 @@ public class ProductCategoryService {
         ProductCategoryRepository.deleteById(id);
     }
 
-    public void update(String id, ProductCategory productCategory, String token) throws ObjectNotExistException {
+    public void update(String id, ProductCategory productCategory, String token) throws ObjectNotExistException,UnauthorizedException,NoPermissionException {
+        TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (!isUnauthorized(token))
             throw new UnauthorizedException();
-        Optional<ProductCategory> oldProductCategory = ProductCategoryRepository.findById(id);
-        if (oldProductCategory.isEmpty()) {
+        ProductCategory oldProductCategory = ProductCategoryRepository.findById(id).orElse(null);
+        if (oldProductCategory==null) {
             throw new ObjectNotExistException("Category");
         }
-        ProductCategoryRepository.save(productCategory);
+        if (!oldProductCategory.getCompany().getId().equals(tokenDTO.getCompanyId()) || roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
+            throw new NoPermissionException("You don't have permission to delete the product");
+        productCategory.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
+        productCategory.setAuditData(new AuditData(oldProductCategory.getAuditData().getCreateDate(), LocalDateTime.now()));
+            ProductCategoryRepository.save(productCategory);
     }
 
     public boolean doesCategoryExist(String categoryName) {
@@ -70,7 +85,8 @@ public class ProductCategoryService {
 
     public boolean isUnauthorized(String token) {
         String roleId = JwtToken.decodeToken(token).getRoleId();
-        if (roleId.equals(AvailableRole.ADMIN) || roleId.equals(AvailableRole.EMPLOYEE))
+        Role role = roleRepository.findById(roleId).orElse(null);
+        if (role.getName().equals(AvailableRole.ADMIN) || role.getName().equals(AvailableRole.EMPLOYEE))
             return true;
         return false;
     }

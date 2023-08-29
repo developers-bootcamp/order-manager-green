@@ -1,5 +1,7 @@
 package com.sap.ordermanagergreen.dto;
 
+import com.sap.ordermanagergreen.model.Company;
+import com.sap.ordermanagergreen.model.Role;
 import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,9 +14,11 @@ public class UserDTO {
     @Id
     private String id;
     private String fullName;
+    private String password;
     private String email;
     private String address;
     private String telephone;
-    private String roleId;
+    private Role role;
+    private Company company;
 
 }

@@ -27,7 +27,6 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 @CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/user")
-@CrossOrigin("http://localhost:3000")
 public class UserController {
 
     @Autowired
@@ -91,7 +90,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @Valid @RequestBody User user) {
+    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @Valid @RequestBody UserDTO user) {
         try {
             userService.add(token, user);
         } catch (ObjectExistException ex) {
@@ -103,7 +102,7 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<String> update(@RequestHeader("Authorization") String token, @RequestBody User user) {
+    public ResponseEntity<String> update(@RequestHeader("Authorization") String token, @RequestBody UserDTO user) {
         try {
             userService.update(token, user);
         } catch (ResponseStatusException ex) {
