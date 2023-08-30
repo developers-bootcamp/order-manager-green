@@ -21,14 +21,12 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
-import java.time.Month;
+import java.time.*;
 import java.util.List;
 import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +63,7 @@ public class GraphService {
 @Setter
 public class MonthlyProductSalesResult {
     private int month;
+    private int year;
    private List<ProductData> products;
 
     @Getter
@@ -129,30 +128,35 @@ public class MonthlyProductSalesResult {
                 unwind("orderItemsList"),
                 project()
                         .andExpression("month(auditData.updateDate)").as("month")
+                        .andExpression("year(auditData.updateDate)").as("year")
                         .and("orderItemsList.product").as("productId")
                         .and("orderItemsList.quantity").as("quantity"),
                 lookup("Product", "productId.$id", "_id", "productData"),
                 unwind("productData"),
                 project()
+                        .and("year").as("year")
                         .and("month").as("month")
                         .and("productData.name").as("product")
                         .and("quantity").as("quantity"),
-                group(Fields.fields("product", "month"))
+                group(Fields.fields("product", "month","year"))
                         .sum("quantity").as("totalQuantity"),
                 project()
                         .and("_id.product").as("product")
                         .and("_id.month").as("month")
+                        .and("year").as("year")
                         .and("totalQuantity").as("totalQuantity"),
                 match(Criteria.where("product").in(productNames)),
                 project()
                         .and("product").as("product")
                         .and("month").as("month")
+                        .and("year").as("year")
                         .and("totalQuantity").as("totalQuantity"),
-                group("month")
+                group("month","year")
                         .push(new BasicDBObject("product", "$product").append("quantity", "$totalQuantity"))
                         .as("products"),
                 project()
-                        .and("_id").as("month")
+                        .and("_id.month").as("month")
+                        .and("_id.year").as("year")
                         .and("products").as("products")
         );
 
@@ -171,13 +175,15 @@ return results.getMappedResults();
                    match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo)),
                    project()
                            .andExpression("month(auditData.updateDate)").as("month")
+                           .andExpression("year(auditData.updateDate)").as("year")
                            .and("orderStatus").as("orderStatus"),
-                   group("month")
+                   group("month","year")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").notEqualToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("delivered")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("cancelledPayment")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PROCESS_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
                    project()
-                           .and("_id").as("month")
+                           .and("_id.month").as("month")
+                           .and("_id.year").as("year")
                            .and("cancelledProcess").plus("cancelledPayment").as("cancelled")
                            .and("delivered").minus("cancelledProcess").as("delivered")
            );
@@ -187,11 +193,13 @@ return results.getMappedResults();
         List<DeliverCancelOrdersDTO> resultsDTO = new ArrayList<>();
         for (Document mappedResult : mappedResults) {
             Month month = Month.of(mappedResult.getInteger("month"));
+            Year year=Year.of(mappedResult.getInteger("year"));
             int cancelled = mappedResult.getInteger("cancelled", 0);
             int delivered = mappedResult.getInteger("delivered", 0);
 
             DeliverCancelOrdersDTO resultDTO = new DeliverCancelOrdersDTO();
             resultDTO.setMonth(month);
+            resultDTO.setYear(year);
             resultDTO.setCancelled(cancelled);
             resultDTO.setDelivered(delivered);
 
