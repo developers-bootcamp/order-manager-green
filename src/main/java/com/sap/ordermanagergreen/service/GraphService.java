@@ -27,14 +27,10 @@ import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.time.Month;
 import java.util.ArrayList;
-import java.util.List;
-
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
-import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
+
 
 
 @Service
@@ -88,7 +84,6 @@ public class MonthlyProductSalesResult {
         AggregationResults<TopEmployeeDTO> result = mongoTemplate.aggregate(
                 aggregation, Order.class, TopEmployeeDTO.class
         );
-
         return result.getMappedResults();
     }
 
@@ -164,8 +159,8 @@ public class MonthlyProductSalesResult {
                 aggregation, "Orders", MonthlyProductSalesResult.class
         );
 
-return results.getMappedResults();
-    }
+        return results.getMappedResults();
+       }
 
    public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
         LocalDate currentDate = LocalDate.now();
@@ -187,29 +182,11 @@ return results.getMappedResults();
                            .and("cancelledProcess").plus("cancelledPayment").as("cancelled")
                            .and("delivered").minus("cancelledProcess").as("delivered")
            );
-        AggregationResults<org.bson.Document> results = mongoTemplate.aggregate(aggregation, "Orders", org.bson.Document.class);
-        List<org.bson.Document> mappedResults = results.getMappedResults();
+        AggregationResults<DeliverCancelOrdersDTO> results = mongoTemplate.aggregate(aggregation, "Orders", DeliverCancelOrdersDTO.class);
+        List<DeliverCancelOrdersDTO> mappedResults = results.getMappedResults();
 
-        List<DeliverCancelOrdersDTO> resultsDTO = new ArrayList<>();
-        for (Document mappedResult : mappedResults) {
-            Month month = Month.of(mappedResult.getInteger("month"));
-            Year year=Year.of(mappedResult.getInteger("year"));
-            int cancelled = mappedResult.getInteger("cancelled", 0);
-            int delivered = mappedResult.getInteger("delivered", 0);
-
-            DeliverCancelOrdersDTO resultDTO = new DeliverCancelOrdersDTO();
-            resultDTO.setMonth(month);
-            resultDTO.setYear(year);
-            resultDTO.setCancelled(cancelled);
-            resultDTO.setDelivered(delivered);
-
-            resultsDTO.add(resultDTO);
+        return results.getMappedResults();
         }
-
-        return resultsDTO;
-    }
-
-  
 
     public void fill() {
             List<Company> companies = new ArrayList<Company>();
