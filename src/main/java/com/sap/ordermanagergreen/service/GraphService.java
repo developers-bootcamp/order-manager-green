@@ -63,6 +63,13 @@ public class GraphService {
         private int totalQuantity;
 
     }
+    @Getter
+    @Setter
+    public class DynamicGraphResult{
+        private Object field;
+        private int count;
+    }
+
 
     public List<TopEmployeeDTO> getTopEmployee(String companyId) {
 
@@ -151,7 +158,24 @@ public class GraphService {
         return resultsDTO;
     }
 
-  
+    public List<DynamicGraphResult> dynamicGraph(String object,String field){
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("auditData.updateDate").gte(LocalDate.now().minusMonths(3))),
+                Aggregation.project()
+                        .and(field).as(field)
+                        .andExpression("auditData.updateDate").substring(0,7).as("monthYear"),
+                Aggregation.group(field).count().as("count"),
+                Aggregation.project("count")
+                        .and("_id").as("field")
+                        .and("count").as("count")
+        );
+
+        AggregationResults<DynamicGraphResult> results=mongoTemplate.aggregate(
+                aggregation,object,DynamicGraphResult.class
+        );
+        return results.getMappedResults();
+    }
 
     @Autowired
     ICompanyRepository companyRepository;
