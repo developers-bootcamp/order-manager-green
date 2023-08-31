@@ -31,8 +31,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith({MockitoExtension.class,UserResolver.class, UserDtoResolver.class})
 @SpringBootTest
 public class UserServiceTest {
-
-        // Mock the UserRepository and UserMapper dependencies
         @Mock
         private IUserRepository userRepository;
 
@@ -47,7 +45,6 @@ public class UserServiceTest {
 
         @Test
         public void getAll_ReturnsListOfUserDto(User demoUser,UserDto demoUserDto) {
-            // Mocking the userRepository.findByCompanyIdOrderByRoleIdAscAuditData_UpdateDateDesc() method
             String companyId = "234";
             int page = 0;
             int pageSize = 3;
@@ -58,51 +55,32 @@ public class UserServiceTest {
         Mockito.doReturn(new PageImpl<>(testUsers, pageRequest, testUsers.size()))
                     .when(userRepository)
                     .findByCompany_IdOrderByRoleAscAuditData_UpdateDateDesc(eq(companyId), any(PageRequest.class));
-            // Mocking the userMapper.UserToUserDTO() method
-            // Assuming you have a UserMapper class that maps User objects to UserDto objects
-//            for(int i = 0; i < testUsers.size();i++) {
-//                Mockito.when(userMapper.UserToUserDTO(testUsers.get(i))).thenReturn(testUsersDto.get(i));;
-//            }
-
             when(userMapper.UserToUserDTO(any(User.class))).thenAnswer(invocation -> {
                 User user = invocation.getArgument(0);
                 UserDto userDto = new UserDto(user.getId(),user.getFullName(),user.getAddress().getEmail(),user.getAddress().getAddressName(),user.getAddress().getTelephone(), user.getRole().getId());
                 return userDto;
             });
-
-            // Calling the getAll method of the userService
             List<UserDto> result = userService.get(companyId, page, pageSize);
 
-            // Assertions
             Assertions.assertNotNull(result);
             Assertions.assertEquals(testUsersDto.size(), result.size());
             Assertions.assertEquals(testUsersDto, result);
         }
 @Test
 public void testGetNamesWithValidPrefixName() {
-    // Mock data
     String prefixName = "unit";
     String companyId = "123";
     Role mockRole = Role.builder().id("1").build();
     List<User> mockUsers = getListOfUser();
     List<User> resultUsers=new ArrayList<>();
     resultUsers.add(mockUsers.get(0));
-
-    // Mock roleRepository.getByName
     Mockito.when(roleRepository.getByName(AvailableRole.CUSTOMER)).thenReturn(mockRole);
-
-    // Mock userRepository.findByFullNameStartingWithAndRole_IdAndCompany_Id
-//    Mockito.when(userRepository.findByFullNameStartingWithAndRole_IdAndCompany_Id(
-//            eq(prefixName), eq(mockRole.getId()), eq(companyId)))
-//            .thenReturn(resultUser);
     Mockito.doReturn(resultUsers)
             .when(userRepository)
             .findByFullNameStartingWithAndRole_IdAndCompany_Id(eq(prefixName), eq(mockRole.getId()), eq(companyId));
 
-    // Call the method under test
     Map<String, String> result = userService.getNames(prefixName, companyId);
 
-    // Assertions
     Assertions.assertNotNull(result);
     Assertions.assertEquals(resultUsers.size(), result.size());
     Assertions.assertNotEquals(resultUsers.size(),mockUsers.size());
@@ -110,7 +88,6 @@ public void testGetNamesWithValidPrefixName() {
         Assertions.assertTrue(result.containsKey(user.getId()));
         Assertions.assertEquals(user.getFullName(), result.get(user.getId()));
     }
-    // Verify mock interactions
     Mockito.verify(roleRepository, times(1)).getByName(AvailableRole.CUSTOMER);
     Mockito.verify(userRepository, times(1)).findByFullNameStartingWithAndRole_IdAndCompany_Id(
             eq(prefixName), eq(mockRole.getId()), eq(companyId));
@@ -118,17 +95,14 @@ public void testGetNamesWithValidPrefixName() {
 
     @Test
     public void testGetNamesWithNullPrefixName() {
-        // Call the method under test with null prefixName
         String companyId = "123";
         IllegalArgumentException exception = Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> userService.getNames(null, companyId)
         );
 
-        // Verify the exception message
         Assertions.assertEquals("invalid prefixName", exception.getMessage());
     }
-
 
     public List<User> getListOfUser(){
         List<User> users=new ArrayList<>();
