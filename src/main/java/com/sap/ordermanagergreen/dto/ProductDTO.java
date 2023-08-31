@@ -17,5 +17,4 @@ public class ProductDTO {
     private String categoryId;
     private String inventory;
     private double price;
-
 }

@@ -4,16 +4,16 @@ import com.sap.ordermanagergreen.dto.ProductCategoryDTO;
 import com.sap.ordermanagergreen.model.ProductCategory;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Component
 @Mapper(componentModel = "spring")
 public interface ProductCategoryMapper {
 
     ProductCategoryDTO toDto(ProductCategory productCategory);
-
+  
     ProductCategory fromDto(ProductCategoryDTO productCategoryDTO);
 
     default List<ProductCategory> fromDtoList(List<ProductCategoryDTO> productCategoryDTOs) {
@@ -27,5 +27,5 @@ public interface ProductCategoryMapper {
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
-
 }
+

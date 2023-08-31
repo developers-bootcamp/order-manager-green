@@ -5,6 +5,9 @@ import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.exception.ObjectNotExistException;
 import com.sap.ordermanagergreen.exception.UnauthorizedException;
 import com.sap.ordermanagergreen.mapper.ProductCategoryMapper;
+//import com.sap.ordermanagergreen.exception.ObjectAlreadyExistsExeption;
+//import com.sap.ordermanagergreen.exception.ObjectNotFoundExeption;
+//import com.sap.ordermanagergreen.exception.UnauthorizedException;
 import com.sap.ordermanagergreen.model.ProductCategory;
 import com.sap.ordermanagergreen.service.ProductCategoryService;
 import org.springframework.http.HttpStatus;
@@ -36,16 +39,19 @@ public class ProductCategoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
     @PostMapping
-    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody ProductCategory productCategory) throws ObjectNotExistException {
+    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody ProductCategory productCategory){
         try {
             ProductCategoryService.add(token, productCategory);
-        } catch (ObjectExistException objectExistException) {
-            return new ResponseEntity<>(objectExistException.getMessage(), HttpStatus.CONFLICT);
-        } catch (UnauthorizedException unauthorizedException) {
+        }catch (ObjectExistException objectAlreadyExistsExeption){
+            return new ResponseEntity<>(objectAlreadyExistsExeption.getMessage(), HttpStatus.CONFLICT);
+        }
+//        catch (ObjectNotExistException objectNotExistException){
+//            return new ResponseEntity<>(objectNotExistException.getMessage(),HttpStatus.NOT_FOUND);
+//        }
+        catch (UnauthorizedException unauthorizedExeption) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (Exception e) {
+        }catch (Exception e) {
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok("success: true");
@@ -53,7 +59,7 @@ public class ProductCategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@RequestHeader("Authorization") String token, @PathVariable("id") String id) {
+    public ResponseEntity<String> delete(@RequestHeader("Authorization") String token ,@PathVariable("id") String id) {
         try {
             ProductCategoryService.delete(token, id);
         } catch (ObjectNotExistException objectNotExistException) {
@@ -63,17 +69,55 @@ public class ProductCategoryController {
         }
         return new ResponseEntity<>("{\"success\": true}", HttpStatus.OK);
     }
-
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable("id") String id, @RequestBody ProductCategory productCategory, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> update(@PathVariable("id") String id, @RequestBody ProductCategory productCategory,@RequestHeader("Authorization") String token){
         try {
-            ProductCategoryService.update(id, productCategory, token);
-        } catch (ObjectNotExistException objectNotExistException) {
-            return new ResponseEntity<>(objectNotExistException.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
+            ProductCategoryService.update(id,productCategory,token);
+        }catch (ObjectNotExistException objectNotExistException){
+            return new ResponseEntity<>(objectNotExistException.getMessage(),HttpStatus.NOT_FOUND);
+        } catch(Exception e){
             return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok("success: true");
     }
-
+//    @PostMapping
+//    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody ProductCategory productCategory){
+//        try {
+//            ProductCategoryService.add(token, productCategory);
+//        }catch (ObjectAlreadyExistsExeption objectAlreadyExistsExeption){
+//            return new ResponseEntity<>(objectAlreadyExistsExeption.getMessage(), HttpStatus.CONFLICT);
+//        }catch (ObjectNotFoundExeption objectNotFoundExeption){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(objectNotFoundExeption.getMessage());
+//        }catch (UnauthorizedExeption unauthorizedExeption) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }catch (Exception e) {
+//            return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return ResponseEntity.ok("success: true");
+//
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<String> delete(@RequestHeader("Authorization") String token ,@PathVariable("id") String id) {
+//        try {
+//            ProductCategoryService.delete(token, id);
+//        } catch (ObjectNotFoundExeption objectNotFoundExeption) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(objectNotFoundExeption.getMessage());
+//        } catch (Exception e) {
+//            return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return new ResponseEntity<>("{\"success\": true}", HttpStatus.OK);
+//    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity<String> update(@PathVariable("id") String id, @RequestBody ProductCategory productCategory,@RequestHeader("Authorization") String token){
+//        try {
+//            ProductCategoryService.update(id,productCategory,token);
+//        }catch (ObjectNotFoundExeption objectNotFoundExeption){
+//            return new ResponseEntity<>(objectNotFoundExeption.getMessage(),HttpStatus.NOT_FOUND);
+//        } catch(Exception e){
+//            return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return ResponseEntity.ok("success: true");
+//    }
 }
+
