@@ -1,16 +1,14 @@
 package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.*;
-import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
-import com.sap.ordermanagergreen.exception.NoPremissionException;
+import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.model.User;
 import com.sap.ordermanagergreen.service.UserService;
 import com.sap.ordermanagergreen.util.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,22 +18,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin("http://localhost:3000")
+import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
+
+@CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
     @Autowired
-    private  UserService userService;
+    private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
-        List<UserDto> l = null;
+        List<UserDTO> l = null;
         try {
             l = userService.get(tokenDTO.getCompanyId(), page, pageSize);
         } catch (Exception e) {
@@ -90,7 +90,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody User user) {
+    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @Valid @RequestBody User user) {
         try {
             userService.add(token, user);
         } catch (ObjectExistException ex) {
@@ -108,7 +108,7 @@ public class UserController {
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
         } catch (NoPermissionException ex) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -121,7 +121,7 @@ public class UserController {
             userService.delete(token, userId);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
-        } catch (NoPremissionException ex) {
+        } catch (NoPermissionException ex) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

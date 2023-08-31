@@ -7,13 +7,16 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
 
+import java.util.List;
+import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
+
+@CrossOrigin(MY_URL)
 @RestController
 @RequestMapping("/currency")
-@CrossOrigin("http://localhost:3000")
-@AllArgsConstructor
 public class CurrencyController {
+
+    @Autowired
 
     private CurrencyService currencyService;
 
@@ -21,4 +24,5 @@ public class CurrencyController {
     public List<String> get() {
         return currencyService.get();
     }
+
 }

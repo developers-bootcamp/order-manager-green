@@ -21,5 +21,5 @@ public class OrderPayment {
     private PaymentType paymentType;
 
     private AuditData auditData;
-    
+
 }

@@ -36,4 +36,5 @@ public class Order {
     private Boolean notificationFlag;
 
     private AuditData auditData;
+
 }
