@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 import com.sap.ordermanagergreen.model.ProductCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.sap.ordermanagergreen.repository.IProductCategoryRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
