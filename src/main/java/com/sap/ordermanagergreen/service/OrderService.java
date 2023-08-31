@@ -1,6 +1,8 @@
 package com.sap.ordermanagergreen.service;
 
 import ch.qos.logback.core.spi.AbstractComponentTracker;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.SneakyThrows;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.CompanyNotExistException;
 import com.sap.ordermanagergreen.exception.UserDosentExistException;
@@ -18,6 +20,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import java.net.http.HttpHeaders;
 import java.util.*;
+
 
 @Service
 public class OrderService {
@@ -66,33 +69,30 @@ query.with(paging);
         //return orderRepository.findByOrderStatusInAndCompanyId(paging,orderStatus,companyId);//,query
 
     }
-
-
-
-
-    public String add(Order order, TokenDTO token) throws CompanyNotExistException, UserDosentExistException, Exception {
-
-        if (companyRepository.findById(token.getCompanyId()).get() == null)
-            throw new CompanyNotExistException("company not exist");
+@SneakyThrows
+    public String add(Order order, TokenDTO token) throws JsonProcessingException {
         order.setCompany(companyRepository.findById(token.getCompanyId()).get());
 
         if (userRepository.findById(token.getUserId()).get() == null)
             throw new UserDosentExistException("employee dosent exist");
         order.setEmployee(userRepository.findById(token.getUserId()).get());
-        try {
-            Order newOrdr = this.orderRepository.insert(order);
-            return newOrdr.getId();
-        } catch (Exception e) {
-            System.out.println("");
+        try{
+            Order newOrder = this.orderRepository.insert(order);
+            if(newOrder.getOrderStatus()==OrderStatus.APPROVED)
+                orderChargingBL.chargingStep(newOrder);
+            return newOrder.getId();}
+        catch (Exception e){
+            System.out.println(e);
+            throw  new Exception();
         }
-return "";
-
     }
 
-    public void update(String id, Order order) throws ObjectNotExistException {
+    public void update(String id, Order order) throws ObjectNotExistException, JsonProcessingException {
         if (orderRepository.findById(id).isEmpty())
             throw new ObjectNotExistException("order");
         orderRepository.save(order);
+        if(order.getOrderStatus()==OrderStatus.APPROVED)
+            orderChargingBL.chargingStep(order);
     }
 
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {
@@ -118,6 +118,7 @@ return "";
             }
             calculatedOrder.put(p.getId(), o);
             totalAmount += amount;
+            //
         }
         HashMap<Double, Integer> o = new HashMap<Double, Integer>();
         o.put(totalAmount, -1);

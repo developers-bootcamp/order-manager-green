@@ -1,23 +1,24 @@
 package com.sap.ordermanagergreen.dto;
 
-import com.sap.ordermanagergreen.model.Order;
 import com.sap.ordermanagergreen.model.OrderStatus;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
+import org.springframework.data.annotation.Id;
+import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class OrderDTO {
-    private String orderId;
-    private String customerId;
-    private double paymentAmount;
-    private OrderStatus status;
-    private boolean isCredit;
-    private String creditCardNumber;
-    private Date expiryDate;
-    private String ccv;
+ public class OrderDTO implements Serializable {
+
+        @Id
+        private String id;
+        @Id
+        private String customerId;
+        private double paymentAmount;
+        private OrderStatus orderStatus;
+        private Boolean notificationFlag;
+        private String creditCardNumber;
+        private String expiryOn;
+        private String cvc;
+
 }

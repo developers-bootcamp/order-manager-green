@@ -70,10 +70,9 @@ return orderService.count(filters,orderStatus,tokenDto.getCompanyId());
 
     @PostMapping
     public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody Order order) {
-        TokenDTO tokenDto;
+        TokenDTO tokenDto=new TokenDTO();
         try {
             tokenDto = JwtToken.decodeToken(token);
-            ;
 //            if (!tokenDto.getCompanyId().equals(order.getCompany().getId()))
 //                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
