@@ -2,6 +2,7 @@ package com.sap.ordermanagergreen.service;
 
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.model.*;
+import com.sap.ordermanagergreen.model.Currency;
 import com.sap.ordermanagergreen.repository.ICompanyRepository;
 import com.sap.ordermanagergreen.repository.IOrderRepository;
 import com.sap.ordermanagergreen.repository.IProductRepository;
@@ -25,6 +26,8 @@ public class OrderService {
     private ICompanyRepository companyRepository;
     @Autowired
     private IUserRepository userRepository;
+    @Autowired
+    private CurrencyExchangeService currencyExchangeService;
 
     public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
         Pageable paging = PageRequest.of(pageNo, pageSize);
@@ -46,11 +49,15 @@ public class OrderService {
 
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {
         List<OrderItem> items = new ArrayList<OrderItem>();
+        String gate;
         order.getOrderItemsList().forEach(e -> {
             Product p = productRepository.findById(e.getProduct().getId()).get();
             items.add(OrderItem.builder().product(p).quantity(e.getQuantity()).build());
         });
         order.setOrderItemsList(items);
+        //מוצר והכמות שלו
+        gate=currencyExchangeService.getGate(order.getCompany().getCurrency(),order.getCurrency());
+        //חישוב הcurrency
         HashMap<String, HashMap<Double, Integer>> calculatedOrder = new HashMap<String, HashMap<Double, Integer>>();
         double totalAmount = 0;
         for (int i = 0; i < order.getOrderItemsList().stream().count(); i++) {
