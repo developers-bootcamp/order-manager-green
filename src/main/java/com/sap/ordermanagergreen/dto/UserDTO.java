@@ -19,7 +19,7 @@ public class UserDTO {
     private String fullName;
     private String password;
     private String email;
-    private String addressName;
+    private String address;
     private String telephone;
     private AvailableRole roleName;
     private Company company;
