@@ -136,7 +136,6 @@ public void testGetNamesWithValidPrefixName() {
                 .fullName("unit testing3 is important").address("michina").email("shlomo@rtt").telephone("0556964229").roleName(AvailableRole.CUSTOMER).build());
         return usersDto;
     }
-
 }
 
 
