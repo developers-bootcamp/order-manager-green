@@ -20,11 +20,13 @@ public interface UserMapper {
     @Mapping(source = "address.telephone", target = "telephone")
     @Mapping(source = "address.address", target = "address")
     @Mapping(source = "address.email", target = "email")
+    @Mapping(source = "role.name", target = "roleName")
     UserDTO UserToUserDTO(User user);
 
     @Mapping(source = "telephone", target = "address.telephone")
     @Mapping(source = "address", target = "address.address")
     @Mapping(source = "email", target = "address.email")
+    @Mapping(source = "roleName", target = "role.name")
     User UserDTOToUser(UserDTO user);
     List<User> dtoToUser(List<UserDTO> list);
     List<UserDTO> userToDto(List<User> list);

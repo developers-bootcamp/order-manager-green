@@ -34,10 +34,10 @@ public class ProductCategoryService {
     private  IRoleRepository roleRepository;
 
 
-    public void add(String token, ProductCategory productCategory) throws ObjectExistException,UnauthorizedException {
+    public void add(String token, ProductCategory productCategory) throws ObjectExistException,NoPermissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
-        if (!isUnauthorized(token))
-            throw new UnauthorizedException();
+        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
+            throw new NoPermissionException("You don't have permission to delete the product");
         String categoryName = productCategory.getName();
         if (doesCategoryExist(categoryName) == true) {
             throw new ObjectExistException("Category name already exists");
@@ -56,10 +56,10 @@ public class ProductCategoryService {
         return productCategoryDTOs;
     }
 
-    public void delete(String token, String id) throws ObjectNotExistException {
-
-        if (!isUnauthorized(token))
-            throw new UnauthorizedException();
+    public void delete(String token, String id) throws ObjectNotExistException,NoPermissionException {
+        TokenDTO tokenDTO = JwtToken.decodeToken(token);
+        if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
+            throw new NoPermissionException("You don't have permission to delete the product");
         if (ProductCategoryRepository.findById(id).isEmpty()) {
             throw new ObjectNotExistException("Category not found");
         }
@@ -70,9 +70,10 @@ public class ProductCategoryService {
 
     public void update(String id, ProductCategory productCategory, String token) throws ObjectNotExistException,UnauthorizedException,NoPermissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
-        if (!isUnauthorized(token))
-            throw new UnauthorizedException();
         ProductCategory oldProductCategory = ProductCategoryRepository.findById(id).orElse(null);
+
+        if (!oldProductCategory.getCompany().getId().equals(tokenDTO.getCompanyId()) || roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
+            throw new NoPermissionException("You don't have permission to delete the product");
         if (oldProductCategory==null) {
             throw new ObjectNotExistException("Category");
         }

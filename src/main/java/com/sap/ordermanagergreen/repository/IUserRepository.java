@@ -1,5 +1,6 @@
 package com.sap.ordermanagergreen.repository;
 
+import com.sap.ordermanagergreen.model.Role;
 import com.sap.ordermanagergreen.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ public interface IUserRepository extends MongoRepository<User, String> {
     boolean existsByAddress_Email(String email);
 
     boolean existsByFullName(String fullName);
+
 
     //@Query(fields = "{'id': 1, 'fullName': 1,'password':1,'address':1}")
     Page<User> findAllByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(String id, Pageable pageable);

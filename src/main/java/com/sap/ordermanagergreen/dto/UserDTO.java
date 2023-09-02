@@ -1,5 +1,6 @@
 package com.sap.ordermanagergreen.dto;
 
+import com.sap.ordermanagergreen.model.AvailableRole;
 import com.sap.ordermanagergreen.model.Company;
 import com.sap.ordermanagergreen.model.Role;
 import org.springframework.data.annotation.Id;
@@ -18,7 +19,7 @@ public class UserDTO {
     private String email;
     private String address;
     private String telephone;
-    private Role role;
+    private AvailableRole roleName;
     private Company company;
 
 }
