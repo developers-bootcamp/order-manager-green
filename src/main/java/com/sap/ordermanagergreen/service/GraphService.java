@@ -1,8 +1,5 @@
 package com.sap.ordermanagergreen.service;
 
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Projections;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.model.*;
@@ -22,18 +19,12 @@ import java.time.Month;
 import java.util.List;
 import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
-import java.util.*;
-import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
-import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 
 
 @Service
@@ -41,10 +32,10 @@ public class GraphService {
 
     @Autowired
     public MongoTemplate mongoTemplate;
-  
+
     @Autowired
     private IProductRepository productRepository;
-  
+
     @Autowired
     private IProductCategoryRepository productCategoryRepository;
 
@@ -69,7 +60,7 @@ public class GraphService {
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
                 match(Criteria.where("orderStatus").is(OrderStatus.DONE)),
-                match(Criteria.where("company.id").is(companyId)),
+                match(Criteria.where("company.$id").is(companyId)),
                 group("employee").count().as("countOfDeliveredOrders"),
                 project("countOfDeliveredOrders").and("_id").as("user"),
                 sort(Sort.Direction.DESC, "countOfDeliveredOrders"),
@@ -149,9 +140,8 @@ public class GraphService {
         }
 
         return resultsDTO;
+        ////////////////////////////////// Temporary, for data generation only ////////////////////////////////////
     }
-
-  
 
     @Autowired
     ICompanyRepository companyRepository;

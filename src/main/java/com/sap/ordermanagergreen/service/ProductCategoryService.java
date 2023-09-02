@@ -24,6 +24,7 @@ import java.util.Optional;
 
 @Service
 public class ProductCategoryService {
+
     @Autowired
     private IProductCategoryRepository ProductCategoryRepository;
     @Autowired
@@ -64,9 +65,7 @@ public class ProductCategoryService {
             throw new ObjectNotExistException("Category not found");
         }
         ProductCategoryRepository.deleteById(id);
-
     }
-
 
     public void update(String id, ProductCategory productCategory, String token) throws ObjectNotExistException,UnauthorizedException,NoPermissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
@@ -94,5 +93,5 @@ public class ProductCategoryService {
             return true;
         return false;
     }
-}
 
+}

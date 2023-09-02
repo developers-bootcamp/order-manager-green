@@ -5,6 +5,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Email;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,7 +13,7 @@ import javax.validation.constraints.Email;
 public class Address {
 
     private String telephone;
-    private String address;
+    private String addressName;
     @Email(message = "Please provide a valid email address")
     private String email;
 

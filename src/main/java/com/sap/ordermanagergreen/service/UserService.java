@@ -112,7 +112,7 @@ public class UserService {
         }
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER)
- || (companyRepository.findById(tokenDTO.getCompanyId()).isEmpty()))
+                || (companyRepository.findById(tokenDTO.getCompanyId()).isEmpty()))
             throw new NoPermissionException("You don't have permission to delete the user");
         User user=userMapper.INSTANCE.UserDTOToUser(userDto);
         if (userRepository.findById(id).isEmpty()) {
