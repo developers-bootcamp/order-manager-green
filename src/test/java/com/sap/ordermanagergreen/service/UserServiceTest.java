@@ -129,11 +129,11 @@ public void testGetNamesWithValidPrefixName() {
     public List<UserDTO> getListOfUserDTO(){
         List<UserDTO> usersDto=new ArrayList<>();
         usersDto.add(UserDTO.builder().id("5")
-                .fullName("unit testing1 is important").addressName("gilo").email("erty@rtt").telephone("0556677889").roleId("1").build());
+                .fullName("unit testing1 is important").address("gilo").email("erty@rtt").telephone("0556677889").roleName(AvailableRole.ADMIN).build());
         usersDto.add(UserDTO.builder().id("6")
-                .fullName("unit testing2 is important").addressName("mila").email("popo@rtt").telephone("0556697559").roleId("2").build());
+                .fullName("unit testing2 is important").address("mila").email("popo@rtt").telephone("0556697559").roleName(AvailableRole.EMPLOYEE).build());
         usersDto.add(UserDTO.builder().id("7")
-                .fullName("unit testing3 is important").addressName("michina").email("shlomo@rtt").telephone("0556964229").roleId("3").build());
+                .fullName("unit testing3 is important").address("michina").email("shlomo@rtt").telephone("0556964229").roleName(AvailableRole.CUSTOMER).build());
         return usersDto;
     }
 
