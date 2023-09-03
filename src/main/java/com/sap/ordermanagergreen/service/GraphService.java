@@ -1,17 +1,11 @@
 package com.sap.ordermanagergreen.service;
 
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Projections;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.model.*;
-import com.sap.ordermanagergreen.repository.IOrderRepository;
-import com.sap.ordermanagergreen.repository.IProductCategoryRepository;
-import com.sap.ordermanagergreen.repository.IProductRepository;
+import com.sap.ordermanagergreen.repository.*;
 import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.model.User;
-import com.sap.ordermanagergreen.repository.IUserRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
@@ -25,18 +19,12 @@ import java.time.Month;
 import java.util.List;
 import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
-import java.util.*;
-import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
-import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 
 
 @Service
@@ -44,10 +32,10 @@ public class GraphService {
 
     @Autowired
     public MongoTemplate mongoTemplate;
-  
+
     @Autowired
     private IProductRepository productRepository;
-  
+
     @Autowired
     private IProductCategoryRepository productCategoryRepository;
 
@@ -67,11 +55,12 @@ public class GraphService {
 
     }
 
-    public List<TopEmployeeDTO> getTopEmployee() {
+    public List<TopEmployeeDTO> getTopEmployee(String companyId) {
 
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
                 match(Criteria.where("orderStatus").is(OrderStatus.DONE)),
+                match(Criteria.where("company.$id").is(companyId)),
                 group("employee").count().as("countOfDeliveredOrders"),
                 project("countOfDeliveredOrders").and("_id").as("user"),
                 sort(Sort.Direction.DESC, "countOfDeliveredOrders"),
@@ -127,8 +116,8 @@ public class GraphService {
                    group("month")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").notEqualToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("delivered")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("cancelledPayment")
-                          // sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.process_CANCELED).then(1).otherwise(0)).as("cancelledProcess")
-                   ,project()
+                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.process_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
+                   project()
                            .and("_id").as("month")
                            .and("cancelledProcess").plus("cancelledPayment").as("cancelled")
                            .and("delivered").minus("cancelledProcess").as("delivered")
@@ -151,9 +140,11 @@ public class GraphService {
         }
 
         return resultsDTO;
+        ////////////////////////////////// Temporary, for data generation only ////////////////////////////////////
     }
 
-  
+    @Autowired
+    ICompanyRepository companyRepository;
 
     public void fill() {
             List<Company> companies = new ArrayList<Company>();
@@ -172,6 +163,9 @@ public class GraphService {
             companies.add(company1);
             companies.add(company2);
             companies.add(company3);
+
+            companies.forEach(c-> companyRepository.save(c));
+
             Role role1 = new Role("101", AvailableRole.ADMIN, "bos", d3);
             Role role2 = new Role("102", AvailableRole.EMPLOYEE, "GOOD EMPLOYEE", d2);
             Role role3 = new Role("103", AvailableRole.CUSTOMER, "CUSTOMER", d1);

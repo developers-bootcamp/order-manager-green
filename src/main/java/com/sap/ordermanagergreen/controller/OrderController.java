@@ -71,9 +71,10 @@ return orderService.count(filters,orderStatus,tokenDto.getCompanyId());
 @SneakyThrows
     @PostMapping
     public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody Order order) {
-        TokenDTO tokenDto=new TokenDTO();
+        TokenDTO tokenDto;
         try {
             tokenDto = JwtToken.decodeToken(token);
+            ;
 //            if (!tokenDto.getCompanyId().equals(order.getCompany().getId()))
 //                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
@@ -85,7 +86,6 @@ return orderService.count(filters,orderStatus,tokenDto.getCompanyId());
         catch (CompanyNotExistException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
         catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
