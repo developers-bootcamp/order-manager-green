@@ -1,4 +1,4 @@
-package com.sap.ordermanagergreen.resolver.service;//package com.sap.ordermanagergreen.resolver.service;
+package com.sap.ordermanagergreen.service;
 
 
 import com.sap.ordermanagergreen.controller.ProductCategoryController;
