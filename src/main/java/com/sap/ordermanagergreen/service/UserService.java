@@ -56,6 +56,8 @@ public class UserService {
 
     public User logIn(String userEmail, String userPassword) {
         User user = isEmailExists(userEmail);
+        if(user.getRole().getName()==AvailableRole.CUSTOMER)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Costumer in not able to login");
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found. Please sign up");
         } else {

@@ -81,7 +81,8 @@ public class UserController {
             User user = userService.logIn(email, password);
             System.out.println(user);
             String token = JwtToken.generateToken(user);
-            return ResponseEntity.ok(token);
+            String availableRole=user.getRole().getName().toString();
+            return ResponseEntity.ok(token+":"+availableRole);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>(ex.getMessage(), ex.getStatusCode());
         } catch (Exception ex) {
