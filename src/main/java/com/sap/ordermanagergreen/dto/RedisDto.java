@@ -24,11 +24,7 @@ public class RedisDto implements Serializable {
     public RedisDto(Currency companyCurrency, Currency orderCurrency) {
         this.companyCurrency = companyCurrency;
         this.orderCurrency = orderCurrency;
-        //this.uniqueIdentity=generateUniqueIdentity(userCurrency,productCurrency);
     }
-//    private String generateUniqueIdentity(Currency userCurrency, Currency productCurrency) {
-//        return userCurrency + "-" + productCurrency;
-//    }
     public RedisDto(){
         day=LocalDate.now();
     }
