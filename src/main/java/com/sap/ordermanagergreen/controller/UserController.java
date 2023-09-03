@@ -34,11 +34,11 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "9") Integer pageSize, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<UserDTO>> get( @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         List<UserDTO> l = null;
         try {
-            l = userService.get(tokenDTO.getCompanyId(), page, pageSize,AvailableRole.ADMIN);
+            l = userService.get(tokenDTO.getCompanyId());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
