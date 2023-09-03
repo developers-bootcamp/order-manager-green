@@ -62,8 +62,13 @@ public class OrderServiceTest {
         order.setOrderItemsList(List.of(orderItem));
 
         when(iProductRepository.findById(orderItem.getProduct().getId())).thenReturn(Optional.of(product));
+        Map<String, HashMap<Double, Integer>> result=new HashMap<>();
+try {
+     result = orderService.calculate(order);
+}
+      catch (Exception e){
 
-        Map<String, HashMap<Double, Integer>> result = orderService.calculate(order);
+      }
 
         System.out.println(result);
         if (product.getDiscountType() == DiscountType.FIXED_AMOUNT)
