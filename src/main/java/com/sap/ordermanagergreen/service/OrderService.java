@@ -28,6 +28,8 @@ public class OrderService {
     @Autowired
     private IUserRepository userRepository;
     @Autowired
+    private CurrencyExchangeService currencyExchangeService;
+    @Autowired
     private OrderChargingBL orderChargingBL;
 
     public List<Order> get(Integer pageNo, Integer pageSize, String companyId, int employeeId, OrderStatus orderStatus) {
@@ -57,7 +59,7 @@ public class OrderService {
             orderChargingBL.chargingStep(order);
     }
 
-    public Map<String, HashMap<Double, Integer>> calculate(Order order) {
+    public Map<String, HashMap<Double, Integer>> calculate(Order order) throws Exception {
         List<OrderItem> items = new ArrayList<OrderItem>();
         String gate;
         order.getOrderItemsList().forEach(e -> {
@@ -65,10 +67,13 @@ public class OrderService {
             items.add(OrderItem.builder().product(p).quantity(e.getQuantity()).build());
         });
         order.setOrderItemsList(items);
-        //מוצר והכמות שלו
-        gate=currencyExchangeService.getGate(order.getCompany().getCurrency(),order.getCurrency());
-        //חישוב הcurrency
+        try {
+            gate = currencyExchangeService.getGate(order.getCompany().getCurrency(), order.getCurrency());
+        }catch (Exception e){
+            throw new Exception("Error connecting to Redis: " + e.getMessage());
+        }
         HashMap<String, HashMap<Double, Integer>> calculatedOrder = new HashMap<String, HashMap<Double, Integer>>();
+
         double totalAmount = 0;
         for (int i = 0; i < order.getOrderItemsList().stream().count(); i++) {
             OrderItem oi = order.getOrderItemsList().get(i);
@@ -76,10 +81,10 @@ public class OrderService {
             HashMap<Double, Integer> o = new HashMap<Double, Integer>();
             double amount = 0;
             if (p.getDiscountType() == DiscountType.FIXED_AMOUNT) {
-                amount = (p.getPrice() - p.getDiscount()) * order.getOrderItemsList().get(i).getQuantity();
+                amount = (p.getPrice() - p.getDiscount()) * order.getOrderItemsList().get(i).getQuantity()*Double.parseDouble(gate);
                 o.put(amount, p.getDiscount());
             } else {
-                amount = (p.getPrice() / 100 * (100 - p.getDiscount()) * order.getOrderItemsList().get(i).getQuantity());
+                amount = (p.getPrice() / 100 * (100 - p.getDiscount()) * order.getOrderItemsList().get(i).getQuantity())*Double.parseDouble(gate);
                 o.put(amount, p.getDiscount());
             }
             calculatedOrder.put(p.getId(), o);

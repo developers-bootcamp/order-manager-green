@@ -12,21 +12,22 @@ import java.time.LocalDate;
 public class RedisService {
     @Autowired
     private  RedisTemplate<String, String> redisTemplate;
-    //זמני
-//    @Autowired
-//    private
 
     public void addExchange(RedisDto key, String value) {
+
         redisTemplate.opsForValue().set(key.toKey(), value);
     }
 
-    public String findIfExist(Currency company,Currency order) {
-        RedisDto ExchangeObject=RedisDto.builder().companyCurrency(company).orderCurrency(order).day(LocalDate.now()).build();
-        if(redisTemplate.hasKey(ExchangeObject.toKey())){
-            return redisTemplate.opsForValue().get(ExchangeObject.toKey());
+    public String findIfExist(Currency company,Currency order) throws Exception {
+        RedisDto ExchangeObject = RedisDto.builder().companyCurrency(company).orderCurrency(order).day(LocalDate.now()).build();
+        try {
+            if (redisTemplate.hasKey(ExchangeObject.toKey())) {
+                return redisTemplate.opsForValue().get(ExchangeObject.toKey());
+            }
+            return "not found";
         }
-        return "not found";
-    }
 
-    // Add more methods for other Redis operations
+    catch(Exception e){
+        throw new Exception("Error connecting to Redis: " + e.getMessage());
+    }}
 }
