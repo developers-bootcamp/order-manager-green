@@ -1,5 +1,4 @@
 package com.sap.ordermanagergreen.util;
-
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.model.User;
@@ -29,7 +28,9 @@ public class JwtToken {
         return accessToken;
     }
 
-    public static TokenDTO decodeToken(String token) {
+    public static TokenDTO decodeToken(String token)  {
+
+
         Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET.getBytes());
         DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
         TokenDTO decodedToken = new TokenDTO();
@@ -38,6 +39,7 @@ public class JwtToken {
         decodedToken.setRoleId(jwt.getClaim("roleId").asString());
         decodedToken.setExpirationDate(jwt.getExpiresAt());
         return decodedToken;
-    }
 
+    }
 }
+

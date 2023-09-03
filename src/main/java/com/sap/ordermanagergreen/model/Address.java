@@ -13,7 +13,7 @@ import javax.validation.constraints.Email;
 public class Address {
 
     private String telephone;
-    private String addressName;
+    private String address;
     @Email(message = "Please provide a valid email address")
     private String email;
 

@@ -20,5 +20,4 @@ import java.io.Serializable;
         private String creditCardNumber;
         private String expiryOn;
         private String cvc;
-
 }
