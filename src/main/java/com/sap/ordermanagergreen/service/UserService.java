@@ -44,7 +44,6 @@ public class UserService {
         users.forEach(e -> toReturn.add(userMapper.UserToUserDTO(e)));
         return toReturn;
     }
-
     @SneakyThrows
     public Map<String, String> getNames(String prefixName, String companyId) {
         if (prefixName == null) {
