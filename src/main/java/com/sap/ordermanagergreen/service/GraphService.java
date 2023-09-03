@@ -127,14 +127,14 @@ public class GraphService {
                    group("month")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").notEqualToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("delivered")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("cancelledPayment")
-                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PROCESS_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
-                   project()
+                          // sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.process_CANCELED).then(1).otherwise(0)).as("cancelledProcess")
+                   ,project()
                            .and("_id").as("month")
                            .and("cancelledProcess").plus("cancelledPayment").as("cancelled")
                            .and("delivered").minus("cancelledProcess").as("delivered")
            );
-        AggregationResults<org.bson.Document> results = mongoTemplate.aggregate(aggregation, "Orders", org.bson.Document.class);
-        List<org.bson.Document> mappedResults = results.getMappedResults();
+        AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, "Orders", Document.class);
+        List<Document> mappedResults = results.getMappedResults();
 
         List<DeliverCancelOrdersDTO> resultsDTO = new ArrayList<>();
         for (Document mappedResult : mappedResults) {

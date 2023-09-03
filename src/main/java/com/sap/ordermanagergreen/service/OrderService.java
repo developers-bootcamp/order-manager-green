@@ -36,10 +36,11 @@ public class OrderService {
     @Autowired
     private IUserRepository userRepository;
     @Autowired
-    private OrderChargingService orderChargingService;
+    private OrderChargingBL orderChargingBL;
     @Autowired
     private MongoTemplate mongoTemplate;
-    public List<Order> get(Integer pageNo, Integer pageSize, String companyId,  List<OrderStatus> orderStatus, String sortBy,Map<String,Object>filters) throws Exception {//,
+
+    public List<Order> get(Integer pageNo, Integer pageSize, String companyId,  List<OrderStatus> orderStatus, String sortBy,List<Filter>filters) throws Exception {//,
         Pageable paging;
         if (sortBy != "") {
             Sort sort = Sort.by(sortBy).ascending();
@@ -50,8 +51,8 @@ public class OrderService {
         Criteria criteria = Criteria.where("orderStatus").in(orderStatus)
                 .and("companyId.id").is(companyId);
         criteria.where("orderStatus").in(orderStatus);
-        filters.forEach((key,val) -> {
-            criteria.and(key).is(val);
+        filters.forEach( e -> {
+            criteria.and(e.getFieldName()).is(e.getFilterValue());
     });
 
         Query query = new Query(criteria);
@@ -70,7 +71,7 @@ query.with(paging);
 
     }
 @SneakyThrows
-    public String add(Order order, TokenDTO token) throws JsonProcessingException {
+    public String add(Order order, TokenDTO token) throws JsonProcessingException,UserDosentExistException,CompanyNotExistException {
         order.setCompany(companyRepository.findById(token.getCompanyId()).get());
 
         if (userRepository.findById(token.getUserId()).get() == null)

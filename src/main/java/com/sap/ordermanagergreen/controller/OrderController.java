@@ -2,6 +2,7 @@ package com.sap.ordermanagergreen.controller;
 
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.*;
+import com.sap.ordermanagergreen.model.Filter;
 import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.model.Order;
 import com.sap.ordermanagergreen.service.OrderService;
@@ -35,7 +36,7 @@ public class OrderController {
     public ResponseEntity<List<Order>> get(@RequestParam(defaultValue = "0") Integer pageNo,
                                            @RequestParam(defaultValue = "3") Integer pageSize,
                                            @RequestParam("orderStatus") List<OrderStatus> orderStatus,
-                                           @RequestParam String orderBy//,@RequestParam("filters") Map<String,Object> filters
+                                           @RequestParam String orderBy,@RequestBody List<Filter> filters
             ,@RequestHeader("Authorization") String token) {
 
         TokenDTO tokenDto=null;
@@ -47,7 +48,7 @@ public class OrderController {
         }
         List<Order> orders = null;
         try{
-            Map<String,Object> filters=new HashMap<>();
+          //  Map<String,Object> filters=new HashMap<>();
            // filters.put("cvc","111");
 
             orders = this.orderService.get(pageNo, pageSize, tokenDto.getCompanyId(), orderStatus,orderBy,filters);
@@ -67,7 +68,7 @@ public long countData(@RequestParam("orderStatus") List<OrderStatus> orderStatus
     Map<String,Object> filters=new HashMap<>();
 return orderService.count(filters,orderStatus,tokenDto.getCompanyId());
 }
-
+@SneakyThrows
     @PostMapping
     public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @RequestBody Order order) {
         TokenDTO tokenDto=new TokenDTO();
@@ -84,9 +85,7 @@ return orderService.count(filters,orderStatus,tokenDto.getCompanyId());
         catch (CompanyNotExistException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        catch (UserDosentExistException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+
         catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
