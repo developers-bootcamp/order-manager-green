@@ -2,7 +2,6 @@ package com.sap.ordermanagergreen.service;
 
 import com.sap.ordermanagergreen.dto.UserDTO;
 import com.sap.ordermanagergreen.exception.NoPermissionException;
-import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.mapper.UserMapper;
@@ -37,9 +36,7 @@ public class UserService {
     @Autowired
     ICompanyRepository companyRepository;
 
-    public List<UserDTO> get(String companyId, int page, int pageSize,AvailableRole roleName) {
-        PageRequest pageRequest = PageRequest.of(page, pageSize);
-//        AvailableRole role =roleRepository.findById()
+    public List<UserDTO> get(String companyId) {
         List<User> users = userRepository.findAllByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(companyId);
         List<UserDTO> toReturn = new ArrayList<>();
         users.forEach(e -> toReturn.add(userMapper.UserToUserDTO(e)));
@@ -101,8 +98,6 @@ public class UserService {
         user.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
         userRepository.save(user);
     }
-@SneakyThrows
-    public void update(String token, User user) throws NoPremissionException {
 
     public void update(String token, UserDTO userDto,String id) throws NoPermissionException,NotValidException {
         if (userDto.getPassword().contains(" ")) {
@@ -127,11 +122,8 @@ public class UserService {
         user.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
         userRepository.save(user);
     }
-@SneakyThrows
-    public void delete(String token, String userId) throws NoPremissionException {
 
-
-
+    public void delete(String token, String userId) throws NoPermissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(new Role()).getName() ==
                 AvailableRole.CUSTOMER || !(companyRepository.findById(tokenDTO.getCompanyId()).
@@ -163,4 +155,4 @@ public class UserService {
 
     }
 
-    }
+}

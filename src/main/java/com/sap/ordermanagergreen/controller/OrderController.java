@@ -82,11 +82,7 @@ return orderService.count(filters,orderStatus,tokenDto.getCompanyId());
         }
         try {
             return ResponseEntity.ok(this.orderService.add(order,tokenDto));
-        }
-        catch (CompanyNotExistException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

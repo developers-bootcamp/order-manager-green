@@ -31,15 +31,13 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 public class UserController {
 
     @Autowired
-    private  UserService userService;
-
-
+    private UserService userService;
     @GetMapping
-    public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "9") Integer pageSize, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<UserDTO>> get( @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         List<UserDTO> l = null;
         try {
-            l = userService.get(tokenDTO.getCompanyId(), page, pageSize,AvailableRole.ADMIN);
+            l = userService.get(tokenDTO.getCompanyId());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -130,6 +128,8 @@ public class UserController {
             userService.delete(token, userId);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
+        } catch (NoPermissionException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
