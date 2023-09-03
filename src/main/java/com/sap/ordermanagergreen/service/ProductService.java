@@ -5,6 +5,7 @@ import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
+import com.sap.ordermanagergreen.mapper.ProductMapper;
 import com.sap.ordermanagergreen.model.*;
 import com.sap.ordermanagergreen.repository.*;
 import com.sap.ordermanagergreen.util.JwtToken;
@@ -21,7 +22,6 @@ import java.util.Map;
 
 @Service
 public class ProductService {
-
     @Autowired
     private IProductRepository productRepository;
     @Autowired
@@ -34,13 +34,14 @@ public class ProductService {
     private IUserRepository userRepository;
     @Autowired
     private IProductCategoryRepository productCategoryRepository;
+    @Autowired
+    private ProductMapper productMapper;
 
-    public List<Product> get(String token) {
+    public List<ProductDTO> get(String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
-        List<Product> products = productRepository.findAllByCompany_Id(tokenDTO.getCompanyId());
-        Type listType = new TypeToken<List<ProductDTO>>() {
-        }.getType();
-        return modelMapper.map(products, listType);
+        List<Product> products= productRepository.findAllByCompany_Id(tokenDTO.getCompanyId());
+        List<ProductDTO>productDTO=productMapper.INSTANCE.productToDto(products);
+        return productDTO;
     }
 
 
@@ -56,29 +57,29 @@ public class ProductService {
         return toReturn;
     }
 
-
-    public void add(Product product, String token) throws NoPermissionException, ObjectExistException {
-
-    
-        if (productRepository.existsByName(product.getName()))
+    public void add(ProductDTO productDto, String token) throws ObjectExistException,NoPermissionException {
+        if (productRepository.existsByName(productDto.getName()))
             throw new ObjectExistException("product name already exist");
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
-            throw new NoPermissionException("");
+            throw new NoPermissionException("You don't have permission to delete the product");
+        Product product=productMapper.INSTANCE.dtoToProduct(productDto);
+        product.setCategory(productCategoryRepository.findByName(productDto.getProductCategoryName()));
         product.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
         product.setAuditData(new AuditData());
         productRepository.save(product);
     }
 
-    public void update(String id, Product product, String token) throws ObjectExistException, NoPremissionException, NoPermissionException {
-
- 
+    public void update(String id, ProductDTO productDto, String token)throws ObjectExistException,NoPermissionException {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         Product prevProduct = productRepository.findById(id).orElse(null);
-        if (productRepository.existsByName(product.getName()) && !prevProduct.getName().equals(product.getName()))
+        if (productRepository.existsByName(productDto.getName()) && !prevProduct.getName().equals(productDto.getName()))
             throw new ObjectExistException("product name already exist");
         if (!prevProduct.getCompany().getId().equals(tokenDTO.getCompanyId()) || roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
             throw new NoPermissionException("You don't have permission to delete the product");
+
+        Product product=productMapper.INSTANCE.dtoToProduct(productDto);
+        product.setCategory(productCategoryRepository.findByName(productDto.getProductCategoryName()));
         product.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
         product.setAuditData(new AuditData(prevProduct.getAuditData().getCreateDate(), LocalDateTime.now()));
         productRepository.save(product);

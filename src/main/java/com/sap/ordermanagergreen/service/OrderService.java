@@ -21,13 +21,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import java.net.http.HttpHeaders;
 import java.util.*;
 
-
 @Service
 public class OrderService {
 
     @Autowired
     private IOrderRepository orderRepository;
 //    @Autowired
+    //    @Autowired
 //    private OrderRepository orderRepository2;
     @Autowired
     private IProductRepository productRepository;
@@ -86,14 +86,55 @@ query.with(paging);
             System.out.println(e);
             throw  new Exception();
         }
+        Criteria criteria = Criteria.where("orderStatus").in(orderStatus)
+                .and("companyId.id").is(companyId);
+        criteria.where("orderStatus").in(orderStatus);
+        filters.forEach((key,val) -> {
+            criteria.and(key).is(val);
+        });
+
+        Query query = new Query(criteria);
+        query.with(paging);
+//        List<Order>aa= mongoTemplate.find(query, Order.class);
+//        Page<Order> resultPage = new PageImpl<Order>(aa , paging,7);
+//        resultPage.getTotalPages();
+//return resultPage;
+        List<Order>ans= mongoTemplate.find(query, Order.class);
+
+        return ans;
+
+
+
+        //return orderRepository.findByOrderStatusInAndCompanyId(paging,orderStatus,companyId);//,query
+
     }
 
-    public void update(String id, Order order) throws ObjectNotExistException, JsonProcessingException {
+
+
+
+    public String add(Order order, TokenDTO token) throws CompanyNotExistException, UserDosentExistException, Exception {
+
+        if (companyRepository.findById(token.getCompanyId()).get() == null)
+            throw new CompanyNotExistException("company not exist");
+        order.setCompany(companyRepository.findById(token.getCompanyId()).get());
+
+        if (userRepository.findById(token.getUserId()).get() == null)
+            throw new UserDosentExistException("employee dosent exist");
+        order.setEmployee(userRepository.findById(token.getUserId()).get());
+        try {
+            Order newOrdr = this.orderRepository.insert(order);
+            return newOrdr.getId();
+        } catch (Exception e) {
+            System.out.println("");
+        }
+        return "";
+
+    }
+
+    public void update(String id, Order order) throws ObjectNotExistException {
         if (orderRepository.findById(id).isEmpty())
             throw new ObjectNotExistException("order");
         orderRepository.save(order);
-        if(order.getOrderStatus()==OrderStatus.APPROVED)
-            orderChargingBL.chargingStep(order);
     }
 
     public Map<String, HashMap<Double, Integer>> calculate(Order order) {

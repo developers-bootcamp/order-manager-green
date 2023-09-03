@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Document(collection = "Roles")
+@Document(collection = "Role")
 public class Role {
 
     @Id
