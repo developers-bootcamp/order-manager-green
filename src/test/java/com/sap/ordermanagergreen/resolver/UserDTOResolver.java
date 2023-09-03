@@ -1,6 +1,7 @@
 package com.sap.ordermanagergreen.resolver;
 
 import com.sap.ordermanagergreen.dto.UserDTO;
+import com.sap.ordermanagergreen.model.AvailableRole;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -15,7 +16,7 @@ public class UserDTOResolver implements ParameterResolver {
     @Override
     public UserDTO resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         return UserDTO.builder().id("5")
-                .fullName("unit testing1 is important").addressName("gilo").email("erty@rtt").telephone("0556677889").roleId("1").build();
+                .fullName("unit testing1 is important").address("gilo").email("erty@rtt").telephone("0556677889").roleName(AvailableRole.ADMIN).build();
 
     }
 }

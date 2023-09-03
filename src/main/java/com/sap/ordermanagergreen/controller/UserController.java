@@ -4,6 +4,7 @@ import com.sap.ordermanagergreen.dto.*;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.exception.NoPermissionException;
+import com.sap.ordermanagergreen.model.AvailableRole;
 import com.sap.ordermanagergreen.model.User;
 import com.sap.ordermanagergreen.service.UserService;
 import com.sap.ordermanagergreen.util.JwtToken;
@@ -33,11 +34,11 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer pageSize, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "9") Integer pageSize, @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         List<UserDTO> l = null;
         try {
-            l = userService.get(tokenDTO.getCompanyId(), page, pageSize);
+            l = userService.get(tokenDTO.getCompanyId(), page, pageSize,AvailableRole.ADMIN);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -78,7 +79,7 @@ public class UserController {
     @GetMapping("/{email}/{password}")
     public ResponseEntity<String> logIn(@PathVariable("email") String email, @PathVariable("password") String password) {
         try {
-            User user = userService.getUserByEmailAndPassword(email, password);
+            User user = userService.logIn(email, password);
             System.out.println(user);
             String token = JwtToken.generateToken(user);
             return ResponseEntity.ok(token);
@@ -90,25 +91,32 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @Valid @RequestBody User user) {
+    public ResponseEntity<String> add(@RequestHeader("Authorization") String token, @Valid @RequestBody UserDTO user) {
         try {
             userService.add(token, user);
         } catch (ObjectExistException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
-        } catch (Exception ex) {
+        } catch (NotValidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping
-    public ResponseEntity<String> update(@RequestHeader("Authorization") String token, @RequestBody User user) {
+    @PutMapping("/{id}")
+    public ResponseEntity<String> update(@PathVariable String id,@RequestHeader("Authorization") String token, @RequestBody UserDTO user) {
         try {
-            userService.update(token, user);
+            userService.update(token, user,id);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
         } catch (NoPermissionException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (NotValidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
