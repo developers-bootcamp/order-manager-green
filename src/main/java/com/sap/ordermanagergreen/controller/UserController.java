@@ -33,12 +33,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/{roleName}")
-    public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "9") Integer pageSize, @RequestHeader("Authorization") String token,@PathVariable AvailableRole roleName) {
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "9") Integer pageSize, @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         List<UserDTO> l = null;
         try {
-            l = userService.get(tokenDTO.getCompanyId(), page, pageSize,roleName);
+            l = userService.get(tokenDTO.getCompanyId(), page, pageSize,AvailableRole.ADMIN);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

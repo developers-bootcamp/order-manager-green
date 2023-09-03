@@ -1,5 +1,6 @@
 package com.sap.ordermanagergreen.repository;
 
+import com.sap.ordermanagergreen.model.AvailableRole;
 import com.sap.ordermanagergreen.model.Role;
 import com.sap.ordermanagergreen.model.User;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,7 @@ public interface IUserRepository extends MongoRepository<User, String> {
 
 
     //@Query(fields = "{'id': 1, 'fullName': 1,'password':1,'address':1}")
-    Page<User> findAllByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(String id, Pageable pageable);
+    List<User> findAllByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc( String id);
 
     @Query(fields = "{'id': 1, 'fullName': 1}")
     List<User> findByFullNameStartingWithAndRole_IdAndCompany_Id(String prefixName, String role, String company);

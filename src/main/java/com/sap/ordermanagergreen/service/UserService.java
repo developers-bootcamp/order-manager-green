@@ -38,8 +38,8 @@ public class UserService {
 
     public List<UserDTO> get(String companyId, int page, int pageSize,AvailableRole roleName) {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
-        Page<User> y = userRepository.findAllByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(companyId, pageRequest);
-        List<User> users = y.getContent();
+//        AvailableRole role =roleRepository.findById()
+        List<User> users = userRepository.findAllByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(companyId);
         List<UserDTO> toReturn = new ArrayList<>();
         users.forEach(e -> toReturn.add(userMapper.UserToUserDTO(e)));
         return toReturn;
