@@ -3,6 +3,7 @@ package com.sap.ordermanagergreen.service;
 import com.sap.ordermanagergreen.dto.ProductDTO;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.NoPermissionException;
+import com.sap.ordermanagergreen.exception.NoPremissionException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.mapper.ProductMapper;
 import com.sap.ordermanagergreen.model.*;
@@ -43,7 +44,11 @@ public class ProductService {
         return productDTO;
     }
 
-    public Map<String, String> getNames(String token, String prefix) {
+
+    public Map<String,String> getNames(String token, String prefix) {
+
+
+
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         System.out.println(tokenDTO.getCompanyId());
         List<Product> products = productRepository.findProductsByNameStartingWithAndCompany_IdEqual(prefix, tokenDTO.getCompanyId());
@@ -80,10 +85,14 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public void delete(String id, String token) throws NoPermissionException {
+
+    public void delete(String id, String token) throws NoPremissionException, NoPermissionException {
+
+
+
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER) || !tokenDTO.getCompanyId().equals(productRepository.findById(id).orElse(null).getCompany().getId()))
-            throw new NoPermissionException("You don't have permission to delete the product");
+            throw new NoPermissionException("mm");
         productRepository.deleteById(id);
     }
 

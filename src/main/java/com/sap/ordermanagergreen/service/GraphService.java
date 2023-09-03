@@ -122,8 +122,8 @@ public class GraphService {
                            .and("cancelledProcess").plus("cancelledPayment").as("cancelled")
                            .and("delivered").minus("cancelledProcess").as("delivered")
            );
-        AggregationResults<org.bson.Document> results = mongoTemplate.aggregate(aggregation, "Orders", org.bson.Document.class);
-        List<org.bson.Document> mappedResults = results.getMappedResults();
+        AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, "Orders", Document.class);
+        List<Document> mappedResults = results.getMappedResults();
 
         List<DeliverCancelOrdersDTO> resultsDTO = new ArrayList<>();
         for (Document mappedResult : mappedResults) {

@@ -1,6 +1,8 @@
 package com.sap.ordermanagergreen.service;
 
 import ch.qos.logback.core.spi.AbstractComponentTracker;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.SneakyThrows;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.CompanyNotExistException;
 import com.sap.ordermanagergreen.exception.UserDosentExistException;
@@ -24,6 +26,7 @@ public class OrderService {
 
     @Autowired
     private IOrderRepository orderRepository;
+//    @Autowired
     //    @Autowired
 //    private OrderRepository orderRepository2;
     @Autowired
@@ -32,11 +35,12 @@ public class OrderService {
     private ICompanyRepository companyRepository;
     @Autowired
     private IUserRepository userRepository;
-//    @Autowired
-//    private OrderChargingService orderChargingService;
+    @Autowired
+    private OrderChargingBL orderChargingBL;
     @Autowired
     private MongoTemplate mongoTemplate;
-    public List<Order> get(Integer pageNo, Integer pageSize, String companyId,  List<OrderStatus> orderStatus, String sortBy,Map<String,Object>filters) throws Exception {//,
+
+    public List<Order> get(Integer pageNo, Integer pageSize, String companyId,  List<OrderStatus> orderStatus, String sortBy,List<Filter>filters) throws Exception {//,
         Pageable paging;
         if (sortBy != "") {
             Sort sort = Sort.by(sortBy).ascending();
@@ -47,30 +51,68 @@ public class OrderService {
         Criteria criteria = Criteria.where("orderStatus").in(orderStatus)
                 .and("companyId.id").is(companyId);
         criteria.where("orderStatus").in(orderStatus);
-        filters.forEach((key,val) -> {
-            criteria.and(key).is(val);
-        });
+        filters.forEach( e -> {
+            criteria.and(e.getFieldName()).is(e.getFilterValue());
+    });
 
         Query query = new Query(criteria);
-        query.with(paging);
+query.with(paging);
 //        List<Order>aa= mongoTemplate.find(query, Order.class);
 //        Page<Order> resultPage = new PageImpl<Order>(aa , paging,7);
 //        resultPage.getTotalPages();
 //return resultPage;
         List<Order>ans= mongoTemplate.find(query, Order.class);
 
-        return ans;
+       return ans;
 
 
 
         //return orderRepository.findByOrderStatusInAndCompanyId(paging,orderStatus,companyId);//,query
 
     }
+//@SneakyThrows
+//    public String add(Order order, TokenDTO token) throws JsonProcessingException,UserDosentExistException,CompanyNotExistException {
+//        order.setCompany(companyRepository.findById(token.getCompanyId()).get());
+//
+//        if (userRepository.findById(token.getUserId()).get() == null)
+//            throw new UserDosentExistException("employee dosent exist");
+//        order.setEmployee(userRepository.findById(token.getUserId()).get());
+//        try{
+//            Order newOrder = this.orderRepository.insert(order);
+//            if(newOrder.getOrderStatus()==OrderStatus.APPROVED)
+//                orderChargingBL.chargingStep(newOrder);
+//            return newOrder.getId();}
+//        catch (Exception e){
+//            System.out.println(e);
+//            throw  new Exception();
+//        }
+//        Criteria criteria = Criteria.where("orderStatus").in(orderStatus)
+//                .and("companyId.id").is(companyId);
+//        criteria.where("orderStatus").in(orderStatus);
+//        filters.forEach((key,val) -> {
+//            criteria.and(key).is(val);
+//        });
+//
+//        Query query = new Query(criteria);
+//        query.with(paging);
+////        List<Order>aa= mongoTemplate.find(query, Order.class);
+////        Page<Order> resultPage = new PageImpl<Order>(aa , paging,7);
+////        resultPage.getTotalPages();
+////return resultPage;
+//        List<Order>ans= mongoTemplate.find(query, Order.class);
+//
+//        return ans;
+//
+//
+//
+//        //return orderRepository.findByOrderStatusInAndCompanyId(paging,orderStatus,companyId);//,query
+//
+//    }
 
 
 
-
-    public String add(Order order, TokenDTO token) throws CompanyNotExistException, UserDosentExistException, Exception {
+@SneakyThrows
+    public String add(Order order, TokenDTO token) {
 
         if (companyRepository.findById(token.getCompanyId()).get() == null)
             throw new CompanyNotExistException("company not exist");
@@ -118,6 +160,7 @@ public class OrderService {
             }
             calculatedOrder.put(p.getId(), o);
             totalAmount += amount;
+            //
         }
         HashMap<Double, Integer> o = new HashMap<Double, Integer>();
         o.put(totalAmount, -1);
@@ -138,12 +181,3 @@ public class OrderService {
     }
 
 }
-
-
-
-
-
-
-
-
-
