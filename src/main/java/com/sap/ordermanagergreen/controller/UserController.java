@@ -32,7 +32,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
     @GetMapping
     public ResponseEntity<List<UserDTO>> get( @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
