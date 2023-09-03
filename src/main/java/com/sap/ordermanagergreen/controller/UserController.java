@@ -4,6 +4,7 @@ import com.sap.ordermanagergreen.dto.*;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.exception.NoPermissionException;
+import com.sap.ordermanagergreen.model.AvailableRole;
 import com.sap.ordermanagergreen.model.User;
 import com.sap.ordermanagergreen.service.UserService;
 import com.sap.ordermanagergreen.util.JwtToken;
@@ -32,12 +33,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "9") Integer pageSize, @RequestHeader("Authorization") String token) {
+    @GetMapping("/{roleName}")
+    public ResponseEntity<List<UserDTO>> get(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "9") Integer pageSize, @RequestHeader("Authorization") String token,@PathVariable AvailableRole roleName) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         List<UserDTO> l = null;
         try {
-            l = userService.get(tokenDTO.getCompanyId(), page, pageSize);
+            l = userService.get(tokenDTO.getCompanyId(), page, pageSize,roleName);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
