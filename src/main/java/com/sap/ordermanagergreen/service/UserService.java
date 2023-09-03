@@ -36,9 +36,7 @@ public class UserService {
     @Autowired
     ICompanyRepository companyRepository;
 
-    public List<UserDTO> get(String companyId, int page, int pageSize,AvailableRole roleName) {
-        PageRequest pageRequest = PageRequest.of(page, pageSize);
-//        AvailableRole role =roleRepository.findById()
+    public List<UserDTO> get(String companyId) {
         List<User> users = userRepository.findAllByCompany_IdOrderByRoleIdAscAuditData_UpdateDateDesc(companyId);
         List<UserDTO> toReturn = new ArrayList<>();
         users.forEach(e -> toReturn.add(userMapper.UserToUserDTO(e)));
