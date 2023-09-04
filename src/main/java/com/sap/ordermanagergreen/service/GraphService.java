@@ -1,11 +1,18 @@
 package com.sap.ordermanagergreen.service;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Projections;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
+import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.model.*;
+import com.sap.ordermanagergreen.model.Currency;
 import com.sap.ordermanagergreen.repository.*;
 import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.model.User;
+import com.sap.ordermanagergreen.util.JwtToken;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
@@ -15,10 +22,15 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
-import java.time.Month;
+import java.time.*;
 import java.util.List;
 import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,15 +57,23 @@ public class GraphService {
     @Autowired
     IUserRepository userRepository;
 
+    @Autowired
+    ICompanyRepository companyRepository;
+
+@Getter
+@Setter
+public class MonthlyProductSalesResult {
+    private int month;
+    private int year;
+   private List<ProductData> products;
+
     @Getter
     @Setter
-    public class MonthlyProductSalesResult {
-        private int year;
-        private int month;
-        private Product product;
-        private int totalQuantity;
-
+    public static class ProductData {
+        private String product;
+        private int quantity;
     }
+}
     @Getter
     @Setter
     public class DynamicGraphResult{
@@ -82,36 +102,81 @@ public class GraphService {
     }
 
     public List<MonthlyProductSalesResult> getMonthlyProductSales() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
-        Aggregation aggregation = newAggregation(
-                match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
-                match(Criteria.where("orderStatus").is(OrderStatus.DONE)),
+        Aggregation aggregationTemp = newAggregation(
+                match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo).and("orderStatus").is("DONE")),
                 unwind("orderItemsList"),
                 project()
-                        .andExpression("year(auditData.createDate)").as("year")
-                        .andExpression("month(auditData.createDate)").as("month")
-                        .and("orderItemsList.product").as("product")
+                        .andExpression("month(auditData.updateDate)").as("month")
+                        .and("orderItemsList.product").as("productId")
                         .and("orderItemsList.quantity").as("quantity"),
-                group(fields().and("year").and("month").and("product"))
+                lookup("Product", "productId.$id", "_id", "productData"),
+                unwind("productData"),
+                project()
+                        .and("productData.name").as("product")
+                        .and("quantity").as("quantity"),
+                group(Fields.fields("product"))
                         .sum("quantity").as("totalQuantity"),
-                project("totalQuantity")
+                sort(Sort.Direction.DESC, "totalQuantity"),
+                limit(5),
+                project()
+                        .and("_id.product").as("product")
+        );
+        AggregationResults<String> resultsTemp = mongoTemplate.aggregate(
+                aggregationTemp, "Orders", String.class
+        );
+        List<String> productNames = resultsTemp.getMappedResults()
+                .stream()
+                .map(result -> result.substring(9, result.lastIndexOf("}") - 1))
+                .collect(Collectors.toList());
+
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo).and("orderStatus").is("DONE")),
+                unwind("orderItemsList"),
+                project()
+                        .andExpression("month(auditData.updateDate)").as("month")
+                        .andExpression("year(auditData.updateDate)").as("year")
+                        .and("orderItemsList.product").as("productId")
+                        .and("orderItemsList.quantity").as("quantity"),
+                lookup("Product", "productId.$id", "_id", "productData"),
+                unwind("productData"),
+                project()
                         .and("year").as("year")
                         .and("month").as("month")
-                        .and("product").as("product"),
-                sort(Sort.Direction.ASC, "year", "month")
+                        .and("productData.name").as("product")
+                        .and("quantity").as("quantity"),
+                group(Fields.fields("product", "month","year"))
+                        .sum("quantity").as("totalQuantity"),
+                project()
+                        .and("_id.product").as("product")
+                        .and("_id.month").as("month")
+                        .and("year").as("year")
+                        .and("totalQuantity").as("totalQuantity"),
+                match(Criteria.where("product").in(productNames)),
+                project()
+                        .and("product").as("product")
+                        .and("month").as("month")
+                        .and("year").as("year")
+                        .and("totalQuantity").as("totalQuantity"),
+                group("month","year")
+                        .push(new BasicDBObject("product", "$product").append("quantity", "$totalQuantity"))
+                        .as("products"),
+                project()
+                        .and("_id.month").as("month")
+                        .and("_id.year").as("year")
+                        .and("products").as("products")
         );
 
         AggregationResults<MonthlyProductSalesResult> results = mongoTemplate.aggregate(
-                aggregation, Order.class, MonthlyProductSalesResult.class
+                aggregation, "Orders", MonthlyProductSalesResult.class
         );
 
-
         return results.getMappedResults();
-    }
-
+       }
 
    public List<DeliverCancelOrdersDTO> getDeliverCancelOrders() {
-
         LocalDate currentDate = LocalDate.now();
         LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
@@ -119,35 +184,24 @@ public class GraphService {
                    match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo)),
                    project()
                            .andExpression("month(auditData.updateDate)").as("month")
+                           .andExpression("year(auditData.updateDate)").as("year")
                            .and("orderStatus").as("orderStatus"),
-                   group("month")
+                   group("month","year")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").notEqualToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("delivered")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("cancelledPayment")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.process_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
                    project()
-                           .and("_id").as("month")
+                           .and("_id.month").as("month")
+                           .and("_id.year").as("year")
                            .and("cancelledProcess").plus("cancelledPayment").as("cancelled")
                            .and("delivered").minus("cancelledProcess").as("delivered")
            );
-        AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, "Orders", Document.class);
-        List<Document> mappedResults = results.getMappedResults();
+        AggregationResults<DeliverCancelOrdersDTO> results = mongoTemplate.aggregate(aggregation, "Orders", DeliverCancelOrdersDTO.class);
+        List<DeliverCancelOrdersDTO> mappedResults = results.getMappedResults();
 
-        List<DeliverCancelOrdersDTO> resultsDTO = new ArrayList<>();
-        for (Document mappedResult : mappedResults) {
-            Month month = Month.of(mappedResult.getInteger("month"));
-            int cancelled = mappedResult.getInteger("cancelled", 0);
-            int delivered = mappedResult.getInteger("delivered", 0);
-
-            DeliverCancelOrdersDTO resultDTO = new DeliverCancelOrdersDTO();
-            resultDTO.setMonth(month);
-            resultDTO.setCancelled(cancelled);
-            resultDTO.setDelivered(delivered);
-
-            resultsDTO.add(resultDTO);
+        return results.getMappedResults();
         }
-
-        return resultsDTO;
-    }
+        
 
     public List<DynamicGraphResult> dynamicGraph(String object,String field){
 
@@ -168,8 +222,7 @@ public class GraphService {
         return results.getMappedResults();
     }
 
-    @Autowired
-    ICompanyRepository companyRepository;
+
 
     public void fill() {
             List<Company> companies = new ArrayList<Company>();
@@ -188,9 +241,6 @@ public class GraphService {
             companies.add(company1);
             companies.add(company2);
             companies.add(company3);
-
-            companies.forEach(c-> companyRepository.save(c));
-
             Role role1 = new Role("101", AvailableRole.ADMIN, "bos", d3);
             Role role2 = new Role("102", AvailableRole.EMPLOYEE, "GOOD EMPLOYEE", d2);
             Role role3 = new Role("103", AvailableRole.CUSTOMER, "CUSTOMER", d1);
@@ -224,7 +274,7 @@ public class GraphService {
 
             orders.add(new Order("A", user2, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(200).build()),
-                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true, d1));
+                    OrderStatus.DONE, company1, Currency.DOLLAR, "143", null, "2", true, d1));
             orders.add(new Order("C", user6, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("2").get()).quantity(3).build()),
                     OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true, d1));
