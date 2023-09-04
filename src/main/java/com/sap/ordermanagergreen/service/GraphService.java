@@ -8,6 +8,7 @@ import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.model.*;
+import com.sap.ordermanagergreen.model.Currency;
 import com.sap.ordermanagergreen.repository.*;
 import com.sap.ordermanagergreen.model.OrderStatus;
 import com.sap.ordermanagergreen.model.User;
@@ -81,7 +82,7 @@ public class MonthlyProductSalesResult {
     }
 
 
-    public List<TopEmployeeDTO> getTopEmployee() {
+    public List<TopEmployeeDTO> getTopEmployee(String companyId) {
 
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
@@ -96,6 +97,7 @@ public class MonthlyProductSalesResult {
         AggregationResults<TopEmployeeDTO> result = mongoTemplate.aggregate(
                 aggregation, Order.class, TopEmployeeDTO.class
         );
+
         return result.getMappedResults();
     }
 
@@ -196,20 +198,10 @@ public class MonthlyProductSalesResult {
            );
         AggregationResults<DeliverCancelOrdersDTO> results = mongoTemplate.aggregate(aggregation, "Orders", DeliverCancelOrdersDTO.class);
         List<DeliverCancelOrdersDTO> mappedResults = results.getMappedResults();
-        AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, "Orders", Document.class);
-        List<Document> mappedResults = results.getMappedResults();
-
-        List<DeliverCancelOrdersDTO> resultsDTO = new ArrayList<>();
-        for (Document mappedResult : mappedResults) {
-            Month month = Month.of(mappedResult.getInteger("month"));
-            int cancelled = mappedResult.getInteger("cancelled", 0);
-            int delivered = mappedResult.getInteger("delivered", 0);
 
         return results.getMappedResults();
         }
-
-        return resultsDTO;
-    }
+        
 
     public List<DynamicGraphResult> dynamicGraph(String object,String field){
 
@@ -230,8 +222,7 @@ public class MonthlyProductSalesResult {
         return results.getMappedResults();
     }
 
-    @Autowired
-    ICompanyRepository companyRepository;
+
 
     public void fill() {
             List<Company> companies = new ArrayList<Company>();
@@ -283,7 +274,7 @@ public class MonthlyProductSalesResult {
 
             orders.add(new Order("A", user2, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(200).build()),
-                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true, d1));
+                    OrderStatus.DONE, company1, Currency.DOLLAR, "143", null, "2", true, d1));
             orders.add(new Order("C", user6, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("2").get()).quantity(3).build()),
                     OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true, d1));

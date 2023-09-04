@@ -1,8 +1,10 @@
 package com.sap.ordermanagergreen.controller;
 
+import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.dto.TopEmployeeDTO;
 import com.sap.ordermanagergreen.dto.DeliverCancelOrdersDTO;
 import com.sap.ordermanagergreen.service.GraphService;
+import com.sap.ordermanagergreen.util.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,10 @@ public class GraphController {
     private  GraphService graphService;
 
     @GetMapping("/topEmployee")
-    public ResponseEntity<List<TopEmployeeDTO>> getTopEmployee() {
+    public ResponseEntity<List<TopEmployeeDTO>> getTopEmployee(@RequestHeader("Authorization") String token) {
+        TokenDTO tokenDto = JwtToken.decodeToken(token);
         try{
-            return ResponseEntity.ok(graphService.getTopEmployee());
+            return ResponseEntity.ok(graphService.getTopEmployee(tokenDto.getCompanyId()));
         }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
