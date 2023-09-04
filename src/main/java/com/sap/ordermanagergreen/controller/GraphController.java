@@ -53,7 +53,16 @@ public class GraphController {
         }
     }
 
-    @GetMapping("/fill")
+    @GetMapping("/dynamicGraph/{object}/{field}")
+    public ResponseEntity<List<GraphService.DynamicGraphResult>> dynamicGraph( @PathVariable("object") String object,@PathVariable("field") String field) {
+        try {
+            return ResponseEntity.ok(graphService.dynamicGraph(object,field));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+        @GetMapping("/fill")
     public void fill(){
         graphService.fill();
     }
