@@ -199,21 +199,20 @@ public class GraphService {
 
             orders.add(new Order("A", user2, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(200).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true, d1));
-
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true, d1));
             orders.add(new Order("C", user6, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("2").get()).quantity(3).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true, d1));
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true, d1));
 
             orders.add(new Order("B", user6, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(3).build(),
                             OrderItem.builder().product(productRepository.findById("2").get()).quantity(1).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
 
             orders.add(new Order("D", user6, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(3).build(),
                             OrderItem.builder().product(productRepository.findById("2").get()).quantity(1).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
 
             orders.forEach(o -> orderRepository.save(o));
         }

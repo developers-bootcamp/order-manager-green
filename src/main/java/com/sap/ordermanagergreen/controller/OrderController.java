@@ -103,12 +103,15 @@ return orderService.count(filters,orderStatus,tokenDto.getCompanyId());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping("/calculate")
+    @GetMapping("/calculate")
     public ResponseEntity<Map<String, HashMap<Double, Integer>>> calculate(@RequestBody Order order) {
         try {
+            orderService.calculate(order);
             return ResponseEntity.ok(this.orderService.calculate(order));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            Map<String, HashMap<Double, Integer>> t=new HashMap<>();
+            t.put(e.getMessage(),new HashMap<>());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(t);
         }
     }
 }

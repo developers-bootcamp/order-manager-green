@@ -27,6 +27,7 @@ public class Order {
     private OrderStatus orderStatus;
     @DBRef
     private Company company;
+    private Currency currency;
     private String creditCardNumber;
 
     private String expiryOn;
@@ -36,5 +37,4 @@ public class Order {
     private Boolean notificationFlag;
 
     private AuditData auditData;
-
 }
