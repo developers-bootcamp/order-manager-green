@@ -30,7 +30,12 @@ import java.util.stream.Collectors;
 import java.util.ArrayList;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 
 @Service
@@ -38,10 +43,10 @@ public class GraphService {
 
     @Autowired
     public MongoTemplate mongoTemplate;
-  
+
     @Autowired
     private IProductRepository productRepository;
-  
+
     @Autowired
     private IProductCategoryRepository productCategoryRepository;
 
@@ -54,7 +59,6 @@ public class GraphService {
     @Autowired
     ICompanyRepository companyRepository;
 
-//333
 @Getter
 @Setter
 public class MonthlyProductSalesResult {
@@ -75,6 +79,7 @@ public class MonthlyProductSalesResult {
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
                 match(Criteria.where("orderStatus").is(OrderStatus.DONE)),
+                match(Criteria.where("company.$id").is(companyId)),
                 group("employee").count().as("countOfDeliveredOrders"),
                 project("countOfDeliveredOrders").and("_id").as("user"),
                 sort(Sort.Direction.DESC, "countOfDeliveredOrders"),
@@ -175,7 +180,7 @@ public class MonthlyProductSalesResult {
                    group("month","year")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").notEqualToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("delivered")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("cancelledPayment")
-                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PROCESS_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
+                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.process_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
                    project()
                            .and("_id.month").as("month")
                            .and("_id.year").as("year")
@@ -184,9 +189,23 @@ public class MonthlyProductSalesResult {
            );
         AggregationResults<DeliverCancelOrdersDTO> results = mongoTemplate.aggregate(aggregation, "Orders", DeliverCancelOrdersDTO.class);
         List<DeliverCancelOrdersDTO> mappedResults = results.getMappedResults();
+        AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, "Orders", Document.class);
+        List<Document> mappedResults = results.getMappedResults();
+
+        List<DeliverCancelOrdersDTO> resultsDTO = new ArrayList<>();
+        for (Document mappedResult : mappedResults) {
+            Month month = Month.of(mappedResult.getInteger("month"));
+            int cancelled = mappedResult.getInteger("cancelled", 0);
+            int delivered = mappedResult.getInteger("delivered", 0);
 
         return results.getMappedResults();
         }
+
+        return resultsDTO;
+    }
+
+    @Autowired
+    ICompanyRepository companyRepository;
 
     public void fill() {
             List<Company> companies = new ArrayList<Company>();
@@ -238,21 +257,20 @@ public class MonthlyProductSalesResult {
 
             orders.add(new Order("A", user2, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(200).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true, d1));
-
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true, d1));
             orders.add(new Order("C", user6, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("2").get()).quantity(3).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true, d1));
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true, d1));
 
             orders.add(new Order("B", user6, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(3).build(),
                             OrderItem.builder().product(productRepository.findById("2").get()).quantity(1).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
 
             orders.add(new Order("D", user6, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(3).build(),
                             OrderItem.builder().product(productRepository.findById("2").get()).quantity(1).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
 
             orders.forEach(o -> orderRepository.save(o));
         }

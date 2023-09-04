@@ -1,5 +1,7 @@
 package com.sap.ordermanagergreen.controller;
 
+import com.sap.ordermanagergreen.dto.ProductDTO;
+import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.NoPermissionException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.model.Product;
@@ -17,6 +19,7 @@ import static com.sap.ordermanagergreen.OrderManagerGreenApplication.MY_URL;
 @RestController
 @RequestMapping("/product")
 public class ProductController {
+
 
     @Autowired
     private ProductService productService;
@@ -40,7 +43,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity add(@RequestHeader("Authorization") String token, @RequestBody Product product) {
+    public ResponseEntity add(@RequestHeader("Authorization") String token, @RequestBody ProductDTO product) {
         try {
             productService.add(product, token);
         } catch (ObjectExistException ex) {
@@ -54,7 +57,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity update(@RequestHeader("Authorization") String token, @PathVariable String id, @RequestBody Product product) {
+    public ResponseEntity update(@RequestHeader("Authorization") String token, @PathVariable String id, @RequestBody ProductDTO product) {
         try {
             productService.update(id, product, token);
         } catch (ObjectExistException ex) {
