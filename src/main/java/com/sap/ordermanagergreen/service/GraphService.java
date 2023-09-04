@@ -54,6 +54,13 @@ public class GraphService {
         private int totalQuantity;
 
     }
+    @Getter
+    @Setter
+    public class DynamicGraphResult{
+        private Object field;
+        private int count;
+    }
+
 
     public List<TopEmployeeDTO> getTopEmployee(String companyId) {
 
@@ -116,14 +123,14 @@ public class GraphService {
                    group("month")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").notEqualToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("delivered")
                            .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PAYMENT_CANCELED)).then(1).otherwise(0)).as("cancelledPayment")
-                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.PROCESS_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
+                           .sum(ConditionalOperators.when(ComparisonOperators.valueOf("orderStatus").equalToValue(OrderStatus.process_CANCELED)).then(1).otherwise(0)).as("cancelledProcess"),
                    project()
                            .and("_id").as("month")
                            .and("cancelledProcess").plus("cancelledPayment").as("cancelled")
                            .and("delivered").minus("cancelledProcess").as("delivered")
            );
-        AggregationResults<org.bson.Document> results = mongoTemplate.aggregate(aggregation, "Orders", org.bson.Document.class);
-        List<org.bson.Document> mappedResults = results.getMappedResults();
+        AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, "Orders", Document.class);
+        List<Document> mappedResults = results.getMappedResults();
 
         List<DeliverCancelOrdersDTO> resultsDTO = new ArrayList<>();
         for (Document mappedResult : mappedResults) {
@@ -140,7 +147,25 @@ public class GraphService {
         }
 
         return resultsDTO;
-        ////////////////////////////////// Temporary, for data generation only ////////////////////////////////////
+    }
+
+    public List<DynamicGraphResult> dynamicGraph(String object,String field){
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("auditData.updateDate").gte(LocalDate.now().minusMonths(3))),
+                Aggregation.project()
+                        .and(field).as(field)
+                        .andExpression("auditData.updateDate").substring(0,7).as("monthYear"),
+                Aggregation.group(field).count().as("count"),
+                Aggregation.project("count")
+                        .and("_id").as("field")
+                        .and("count").as("count")
+        );
+
+        AggregationResults<DynamicGraphResult> results=mongoTemplate.aggregate(
+                aggregation,object,DynamicGraphResult.class
+        );
+        return results.getMappedResults();
     }
 
     @Autowired
@@ -199,21 +224,20 @@ public class GraphService {
 
             orders.add(new Order("A", user2, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(200).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true, d1));
-
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true, d1));
             orders.add(new Order("C", user6, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("2").get()).quantity(3).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true, d1));
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true, d1));
 
             orders.add(new Order("B", user6, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(3).build(),
                             OrderItem.builder().product(productRepository.findById("2").get()).quantity(1).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
 
             orders.add(new Order("D", user6, user3, 100,
                     List.of(OrderItem.builder().product(productRepository.findById("1").get()).quantity(3).build(),
                             OrderItem.builder().product(productRepository.findById("2").get()).quantity(1).build()),
-                    OrderStatus.DONE, company1, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
+                    OrderStatus.DONE, company1,Currency.DOLLAR, "143", null, "2", true,  new AuditData(LocalDateTime.now().minusMonths(1), LocalDateTime.now().minusDays(3))));
 
             orders.forEach(o -> orderRepository.save(o));
         }
