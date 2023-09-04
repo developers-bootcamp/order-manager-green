@@ -9,8 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 @Document(collection = "Users")
+@SuperBuilder
 public class User {
 
     @Id
@@ -23,5 +23,4 @@ public class User {
     @DBRef
     private Company company;
     private AuditData auditData;
-
 }

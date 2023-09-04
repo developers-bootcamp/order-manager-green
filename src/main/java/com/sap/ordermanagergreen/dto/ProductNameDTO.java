@@ -13,5 +13,4 @@ public class ProductNameDTO {
     @Id
     private String id;
     private String name;
-
 }
