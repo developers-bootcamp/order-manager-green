@@ -6,5 +6,4 @@ public class MonthlyProductSalesResult {
     private Month month;
     private int totalQuantity;
 
-    // Getters and setters
 }

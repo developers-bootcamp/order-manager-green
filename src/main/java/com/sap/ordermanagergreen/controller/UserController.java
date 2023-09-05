@@ -62,7 +62,7 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<String> signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName, @RequestParam("email") String email, @RequestParam("password") String password, @RequestParam("currency") String currency) {
+    public ResponseEntity signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName, @RequestParam("email") String email, @RequestParam("password") String password, @RequestParam("currency") String currency) {
         try {
             User user = userService.signUp(fullName, companyName, email, password, currency);
             return logIn(email, password);
@@ -76,13 +76,10 @@ public class UserController {
     }
 
     @GetMapping("/{email}/{password}")
-    public ResponseEntity<String> logIn(@PathVariable("email") String email, @PathVariable("password") String password) {
+    public ResponseEntity logIn(@PathVariable("email") String email, @PathVariable("password") String password) {
         try {
-            User user = userService.logIn(email, password);
-            System.out.println(user);
-            String token = JwtToken.generateToken(user);
-            String availableRole=user.getRole().getName().toString();
-            return ResponseEntity.ok(token+":"+availableRole);
+            Map<String,Object> map = userService.logIn(email, password);
+            return ResponseEntity.ok(map);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>(ex.getMessage(), ex.getStatusCode());
         } catch (Exception ex) {
