@@ -4,8 +4,11 @@ import com.sap.ordermanagergreen.dto.*;
 import com.sap.ordermanagergreen.exception.NotValidException;
 import com.sap.ordermanagergreen.exception.ObjectExistException;
 import com.sap.ordermanagergreen.exception.NoPermissionException;
+import com.sap.ordermanagergreen.model.AuditData;
 import com.sap.ordermanagergreen.model.AvailableRole;
+import com.sap.ordermanagergreen.model.Role;
 import com.sap.ordermanagergreen.model.User;
+import com.sap.ordermanagergreen.repository.IRoleRepository;
 import com.sap.ordermanagergreen.service.UserService;
 import com.sap.ordermanagergreen.util.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +36,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @GetMapping
+
     public ResponseEntity<List<UserDTO>> get( @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         List<UserDTO> l = null;
@@ -62,7 +66,7 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<String> signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName, @RequestParam("email") String email, @RequestParam("password") String password, @RequestParam("currency") String currency) {
+    public ResponseEntity signUp(@RequestParam("fullName") String fullName, @RequestParam("companyName") String companyName, @RequestParam("email") String email, @RequestParam("password") String password, @RequestParam("currency") String currency) {
         try {
             User user = userService.signUp(fullName, companyName, email, password, currency);
             return logIn(email, password);
@@ -76,12 +80,10 @@ public class UserController {
     }
 
     @GetMapping("/{email}/{password}")
-    public ResponseEntity<String> logIn(@PathVariable("email") String email, @PathVariable("password") String password) {
+    public ResponseEntity logIn(@PathVariable("email") String email, @PathVariable("password") String password) {
         try {
-            User user = userService.logIn(email, password);
-            System.out.println(user);
-            String token = JwtToken.generateToken(user);
-            return ResponseEntity.ok(token);
+            Map<String,Object> map = userService.logIn(email, password);
+            return ResponseEntity.ok(map);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>(ex.getMessage(), ex.getStatusCode());
         } catch (Exception ex) {

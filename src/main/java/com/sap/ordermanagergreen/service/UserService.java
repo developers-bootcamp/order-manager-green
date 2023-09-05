@@ -54,14 +54,22 @@ public class UserService {
         return toReturn;
     }
 
-    public User logIn(String userEmail, String userPassword) {
+    public Map<String,Object> logIn(String userEmail, String userPassword) {
         User user = isEmailExists(userEmail);
-        if (user == null) {
+        if (user == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found. Please sign up");
-        } else {
+        if(user.getRole().getName()==AvailableRole.CUSTOMER)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Costumer in not able to login");
+        else {
             if (!user.getPassword().equals(userPassword))
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
-            return user;
+            Map<String,Object> map=new HashMap<>();
+            String token = JwtToken.generateToken(user);
+            String availableRole=user.getRole().getName().toString();
+            map.put("token",token);
+            map.put("role",availableRole);
+            map.put("companyId",user.getCompany().getId());
+            return map;
         }
     }
 
@@ -79,10 +87,11 @@ public class UserService {
         Company company = Company.builder().name(companyName).currency(Currency.valueOf(currency)).auditData(new AuditData()).build();
         companyRepository.save(company);
         User user = User.builder().fullName(fullName).company(company).address(Address.builder().email(email).build()).password(password).role(roleRepository.getByName(AvailableRole.ADMIN)).auditData(new AuditData()).build();
+        Role role=roleRepository.getByName(AvailableRole.ADMIN);
+        user.setRole(role);
         userRepository.save(user);
         return user;
     }
-
 
     public void add(String token, UserDTO userDto) throws ObjectExistException, NoPermissionException, NotValidException {
         if (userRepository.existsByFullName(userDto.getFullName())) {

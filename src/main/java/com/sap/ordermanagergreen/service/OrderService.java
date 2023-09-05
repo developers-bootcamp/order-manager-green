@@ -12,6 +12,7 @@ import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -32,6 +33,8 @@ public class OrderService {
     private ICompanyRepository companyRepository;
     @Autowired
     private IUserRepository userRepository;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 //    @Autowired
 //    private OrderChargingService orderChargingService;
     @Autowired
@@ -81,6 +84,8 @@ public class OrderService {
         order.setEmployee(userRepository.findById(token.getUserId()).get());
         try {
             Order newOrdr = this.orderRepository.insert(order);
+            simpMessagingTemplate.convertAndSendToUser(order.getCompany().getId(),"/private",order);
+
             return newOrdr.getId();
         } catch (Exception e) {
             System.out.println("");
