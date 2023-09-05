@@ -56,11 +56,11 @@ public class UserService {
 
     public User logIn(String userEmail, String userPassword) {
         User user = isEmailExists(userEmail);
-        if(user.getRole().getName()==AvailableRole.CUSTOMER)
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Costumer in not able to login");
-        if (user == null) {
+        if (user == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found. Please sign up");
-        } else {
+        if(user.getRole().getName()==AvailableRole.CUSTOMER)
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Costumer in not able to login");
+         else {
             if (!user.getPassword().equals(userPassword))
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
             return user;
@@ -81,6 +81,8 @@ public class UserService {
         Company company = Company.builder().name(companyName).currency(Currency.valueOf(currency)).auditData(new AuditData()).build();
         companyRepository.save(company);
         User user = User.builder().fullName(fullName).company(company).address(Address.builder().email(email).build()).password(password).role(roleRepository.getByName(AvailableRole.ADMIN)).auditData(new AuditData()).build();
+        Role role=roleRepository.getByName(AvailableRole.ADMIN);
+        user.setRole(role);
         userRepository.save(user);
         return user;
     }
