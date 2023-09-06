@@ -85,7 +85,7 @@ public class MonthlyProductSalesResult {
     public List<TopEmployeeDTO> getTopEmployee(String companyId) {
 
         Aggregation aggregation = newAggregation(
-                match(Criteria.where("auditData.createDate").gte(LocalDate.now().minusMonths(3))),
+                match(Criteria.where("auditData.updateDate").gte(LocalDate.now().minusMonths(3))),
                 match(Criteria.where("orderStatus").is(OrderStatus.DONE)),
                 match(Criteria.where("company.$id").is(companyId)),
                 group("employee").count().as("countOfDeliveredOrders"),
