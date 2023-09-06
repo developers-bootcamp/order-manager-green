@@ -54,7 +54,7 @@ public class UserService {
         return toReturn;
     }
 
-    public User logIn(String userEmail, String userPassword) {
+    public Map<String,Object> logIn(String userEmail, String userPassword) {
         User user = isEmailExists(userEmail);
         if (user == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found. Please sign up");
@@ -63,7 +63,12 @@ public class UserService {
          else {
             if (!user.getPassword().equals(userPassword))
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
-            return user;
+            Map<String,Object> map=new HashMap<>();
+            String token = JwtToken.generateToken(user);
+            String availableRole=user.getRole().getName().toString();
+            map.put("token",token);
+            map.put("role",availableRole);
+            return map;
         }
     }
 
