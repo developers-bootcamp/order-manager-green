@@ -97,6 +97,7 @@ public class OrderService {
     public void update(String id, Order order) throws ObjectNotExistException {
         if (orderRepository.findById(id).isEmpty())
             throw new ObjectNotExistException("order");
+        simpMessagingTemplate.convertAndSendToUser(order.getCompany().getId(),"/private",order);
         orderRepository.save(order);
     }
 

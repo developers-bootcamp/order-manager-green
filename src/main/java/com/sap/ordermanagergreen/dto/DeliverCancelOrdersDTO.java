@@ -9,7 +9,8 @@ import java.time.Month;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeliverCancelOrdersDTO {
-    private Month month;
+    private int month;
+    private int year;
     private int cancelled;
     private int delivered;
 }

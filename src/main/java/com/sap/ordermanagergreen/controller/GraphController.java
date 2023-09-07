@@ -20,7 +20,7 @@ import java.util.Map;
 
 @CrossOrigin(MY_URL)
 @RestController
-@RequestMapping("/Graph")
+@RequestMapping("/graph")
 public class GraphController {
 
     @Autowired
@@ -38,8 +38,13 @@ public class GraphController {
     }
 
     @GetMapping("/topProduct")
-    public List<GraphService.MonthlyProductSalesResult> topProduct() {
-        return graphService.getMonthlyProductSales();
+    public  ResponseEntity<List<GraphService.MonthlyProductSalesResult>> topProduct() {
+        try{
+            return ResponseEntity.ok(graphService.getMonthlyProductSales());
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/getDeliverCancelOrders")
@@ -51,8 +56,12 @@ public class GraphController {
         }
     }
 
-    @GetMapping("/fill")
-    public void fill(){
-        graphService.fill();
+    @GetMapping("/dynamicGraph/{object}/{field}")
+    public ResponseEntity<List<GraphService.DynamicGraphResult>> dynamicGraph( @PathVariable("object") String object,@PathVariable("field") String field) {
+        try {
+            return ResponseEntity.ok(graphService.dynamicGraph(object,field));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

@@ -36,7 +36,10 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+@Autowired
+private  IRoleRepository roleRepository;
 
+    @GetMapping
     public ResponseEntity<List<UserDTO>> get( @RequestHeader("Authorization") String token) {
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         List<UserDTO> l = null;
@@ -81,6 +84,7 @@ public class UserController {
 
     @GetMapping("/{email}/{password}")
     public ResponseEntity logIn(@PathVariable("email") String email, @PathVariable("password") String password) {
+
         try {
             Map<String,Object> map = userService.logIn(email, password);
             return ResponseEntity.ok(map);
