@@ -147,7 +147,9 @@ public class GraphService {
                 project()
                         .and("_id.month").as("month")
                         .and("_id.year").as("year")
-                        .and("products").as("products")
+                        .and("products").as("products"),
+                sort(Sort.Direction.ASC, "year"),
+                sort(Sort.Direction.ASC,"month")
         );
         AggregationResults<MonthlyProductSalesResult> results = mongoTemplate.aggregate(
                 aggregation, "Orders", MonthlyProductSalesResult.class
@@ -160,6 +162,7 @@ public class GraphService {
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("auditData.updateDate").gte(threeMonthsAgo)),
                 project()
+
                         .andExpression("month(auditData.updateDate)").as("month")
                         .andExpression("year(auditData.updateDate)").as("year")
                         .and("orderStatus").as("orderStatus"),
@@ -171,7 +174,9 @@ public class GraphService {
                         .and("_id.month").as("month")
                         .and("_id.year").as("year")
                         .and("cancelledProcess").plus("cancelledPayment").as("cancelled")
-                        .and("delivered").minus("cancelledProcess").as("delivered")
+                        .and("delivered").minus("cancelledProcess").as("delivered"),
+                sort(Sort.Direction.ASC, "year"),
+                sort(Sort.Direction.ASC,"month")
         );
         AggregationResults<DeliverCancelOrdersDTO> results = mongoTemplate.aggregate(aggregation, "Orders", DeliverCancelOrdersDTO.class);
         List<DeliverCancelOrdersDTO> mappedResults = results.getMappedResults();
@@ -186,7 +191,8 @@ public class GraphService {
                 Aggregation.group(field).count().as("count"),
                 Aggregation.project("count")
                         .and("_id").as("field")
-                        .and("count").as("count")
+                        .and("count").as("count"),
+                sort(Sort.Direction.ASC, "field")
         );
         AggregationResults<DynamicGraphResult> results=mongoTemplate.aggregate(
                 aggregation,object,DynamicGraphResult.class
