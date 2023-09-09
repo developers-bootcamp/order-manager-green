@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface IProductRepository extends MongoRepository<Product, String> {
 
-    boolean existsByName(String Name);
+    boolean existsByNameAndCompanyId(String Name,String companyId);
 
     List<Product> findAllByCompany_Id(String id);
 
