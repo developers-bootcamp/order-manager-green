@@ -46,8 +46,6 @@ public class ProductCategoryService {
         productCategory.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
         productCategory.setAuditData(new AuditData());
         ProductCategoryRepository.save(productCategory);
-        ProductCategoryRepository.save(productCategory);
-
     }
 
     public List<ProductCategoryDTO> get(String token) {

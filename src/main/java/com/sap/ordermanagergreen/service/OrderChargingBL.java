@@ -28,10 +28,11 @@ public class OrderChargingBL {
         public void chargingStep(Order order) throws JsonProcessingException {
                 if (order.getOrderStatus() == OrderStatus.APPROVED) {
                         order.setOrderStatus(OrderStatus.CHARGING);
+                        orderRepository.save(order);
                         for (OrderItem item : order.getOrderItemsList()) {
                                 Product p = productRepository.findById(item.getProduct().getId()).get();
                                 if (p.getInventory() < item.getQuantity()) {
-                                        order.setOrderStatus(OrderStatus.PAYMENT_CANCELED);
+                                        order.setOrderStatus(OrderStatus.PROSSES_FAILED);
                                         return;
                                 } else {
                                         p.setInventory((int) (p.getInventory() - item.getQuantity()));
@@ -43,12 +44,12 @@ public class OrderChargingBL {
         }}
         public void postChargingStep(OrderDTO orderDTO){
             Order order =orderRepository.findById(orderDTO.getId()).orElse(null);
-            if(order.getOrderStatus()==OrderStatus.APPROVED)
+            if(order.getOrderStatus()==OrderStatus.CHARGING)
             {
                 order.setOrderStatus(OrderStatus.PACKING);
             }
             else{
-                order.setOrderStatus(OrderStatus.PAYMENT_CANCELED);
+                order.setOrderStatus(OrderStatus.PROSSES_FAILED);
                 for (OrderItem item : order.getOrderItemsList()) {
                     Product p = productRepository.findById(item.getProduct().getId()).get();
                     p.setInventory((int) (p.getInventory() + item.getQuantity()));

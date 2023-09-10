@@ -1,6 +1,7 @@
 package com.sap.ordermanagergreen.service;
 
 import ch.qos.logback.core.spi.AbstractComponentTracker;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sap.ordermanagergreen.dto.TokenDTO;
 import com.sap.ordermanagergreen.exception.CompanyNotExistException;
 import com.sap.ordermanagergreen.exception.UserDosentExistException;
@@ -34,6 +35,8 @@ public class OrderService {
     @Autowired
     private IUserRepository userRepository;
     @Autowired
+    private OrderChargingBL orderChargingBL;
+    @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 //    @Autowired
 //    private OrderChargingService orderChargingService;
@@ -63,15 +66,8 @@ public class OrderService {
         List<Order>ans= mongoTemplate.find(query, Order.class);
 
         return ans;
-
-
-
         //return orderRepository.findByOrderStatusInAndCompanyId(paging,orderStatus,companyId);//,query
-
     }
-
-
-
 
     public String add(Order order, TokenDTO token) throws CompanyNotExistException, UserDosentExistException, Exception {
 
@@ -83,20 +79,23 @@ public class OrderService {
             throw new UserDosentExistException("employee dosent exist");
         order.setEmployee(userRepository.findById(token.getUserId()).get());
         try {
-            Order newOrdr = this.orderRepository.insert(order);
+            Order newOrder = this.orderRepository.insert(order);
+            if(newOrder.getOrderStatus()==OrderStatus.CREATED){
+                order.setOrderStatus(OrderStatus.APPROVED);
+                orderChargingBL.chargingStep(newOrder);
+            }
             simpMessagingTemplate.convertAndSendToUser(order.getCompany().getId(),"/private",order);
-
-            return newOrdr.getId();
+            return newOrder.getId();
         } catch (Exception e) {
             System.out.println("");
         }
         return "";
-
     }
-
-    public void update(String id, Order order) throws ObjectNotExistException {
+    public void update(String id, Order order) throws ObjectNotExistException, JsonProcessingException {
         if (orderRepository.findById(id).isEmpty())
             throw new ObjectNotExistException("order");
+        if(order.getOrderStatus()==OrderStatus.APPROVED)
+            orderChargingBL.chargingStep(order);
         simpMessagingTemplate.convertAndSendToUser(order.getCompany().getId(),"/private",order);
         orderRepository.save(order);
     }

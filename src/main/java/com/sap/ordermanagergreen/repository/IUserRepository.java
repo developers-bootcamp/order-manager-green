@@ -1,6 +1,5 @@
 package com.sap.ordermanagergreen.repository;
 
-import com.sap.ordermanagergreen.model.AvailableRole;
 import com.sap.ordermanagergreen.model.Role;
 import com.sap.ordermanagergreen.model.User;
 import org.springframework.data.domain.Page;

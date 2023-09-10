@@ -15,8 +15,3 @@ public enum AvailableRole {
     }
 
 }
-
-
-
-
-
