@@ -110,11 +110,25 @@ public class OrderController {
     }
 
     @PostMapping("/calculate")
-    public ResponseEntity<Map<String, HashMap<Double, Integer>>> calculate(@RequestBody Order order) {
+    public ResponseEntity<Map<String, HashMap<Double, Integer>>> calculate(@RequestHeader("Authorization") String token,@RequestBody Order order) {
+        TokenDTO tokenDto;
         try {
-            return ResponseEntity.ok(this.orderService.calculate(order));
+            tokenDto = JwtToken.decodeToken(token);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
+        try {
+            return ResponseEntity.ok(
+                    this.orderService.calculate(order,tokenDto)
+            );
+        } catch (CompanyNotExistException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        catch (Exception e) {
+        Map<String, HashMap<Double, Integer>> t=new HashMap<>();
+        t.put(e.getMessage(),new HashMap<>());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(t);
+    }
     }
 }
