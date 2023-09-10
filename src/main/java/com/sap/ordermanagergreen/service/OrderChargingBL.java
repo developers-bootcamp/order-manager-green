@@ -26,7 +26,7 @@ public class OrderChargingBL {
 
 
         public void chargingStep(Order order) throws JsonProcessingException {
-                if (order.getOrderStatus() == OrderStatus.APPROVED) {
+                if (order.getOrderStatus() == OrderStatus.CREATED) {
                         order.setOrderStatus(OrderStatus.CHARGING);
                         for (OrderItem item : order.getOrderItemsList()) {
                                 Product p = productRepository.findById(item.getProduct().getId()).get();

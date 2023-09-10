@@ -117,7 +117,10 @@ private  IRoleRepository roleRepository;
             userService.update(token, user,id);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
-        } catch (NoPermissionException ex) {
+        }
+        catch (ObjectExistException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+        }catch (NoPermissionException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
         } catch (NotValidException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

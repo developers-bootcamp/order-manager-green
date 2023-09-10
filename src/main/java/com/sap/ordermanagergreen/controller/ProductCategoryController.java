@@ -46,9 +46,6 @@ public class ProductCategoryController {
         }catch (ObjectExistException objectAlreadyExistsExeption){
             return new ResponseEntity<>(objectAlreadyExistsExeption.getMessage(), HttpStatus.CONFLICT);
         }
-//        catch (ObjectNotExistException objectNotExistException){
-//            return new ResponseEntity<>(objectNotExistException.getMessage(),HttpStatus.NOT_FOUND);
-//        }
         catch (UnauthorizedException unauthorizedExeption) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }catch (Exception e) {
@@ -73,6 +70,9 @@ public class ProductCategoryController {
     public ResponseEntity<String> update(@PathVariable("id") String id, @RequestBody ProductCategory productCategory,@RequestHeader("Authorization") String token){
         try {
             ProductCategoryService.update(id,productCategory,token);
+        }
+        catch (ObjectExistException objectAlreadyExistsExeption){
+            return new ResponseEntity<>(objectAlreadyExistsExeption.getMessage(), HttpStatus.CONFLICT);
         }catch (ObjectNotExistException objectNotExistException){
             return new ResponseEntity<>(objectNotExistException.getMessage(),HttpStatus.NOT_FOUND);
         } catch(Exception e){

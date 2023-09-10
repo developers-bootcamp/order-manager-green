@@ -95,11 +95,12 @@ public class UserService {
 
 
     public void add(String token, UserDTO userDto) throws ObjectExistException, NoPermissionException, NotValidException {
-        if (userRepository.existsByFullName(userDto.getFullName())) {
-            throw new ObjectExistException("user name ");
-        }
+
         validation(userDto.getPassword(),userDto.getEmail());
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
+        if (userRepository.existsByFullNameAndCompany_Id(userDto.getFullName(),tokenDTO.getCompanyId())) {
+            throw new ObjectExistException("user name ");
+        }
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
             throw new NoPermissionException("role");
         User user=userMapper.INSTANCE.UserDTOToUser(userDto);
@@ -109,7 +110,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void update(String token, UserDTO userDto,String id) throws NoPermissionException,NotValidException {
+    public void update(String token, UserDTO userDto,String id) throws NoPermissionException,NotValidException,ObjectExistException {
         if (userDto.getPassword().contains(" ")) {
             throw new NotValidException("password");
         }
@@ -118,6 +119,7 @@ public class UserService {
             throw new NotValidException("email");
         }
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
+        User prevUser = userRepository.findById(id).orElse(null);
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER)
                 || (companyRepository.findById(tokenDTO.getCompanyId()).isEmpty()))
             throw new NoPermissionException("You don't have permission to delete the user");
@@ -125,7 +127,9 @@ public class UserService {
         if (userRepository.findById(id).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
         }
-        User prevUser = userRepository.findById(id).orElse(null);
+        if (userRepository.existsByFullNameAndCompany_Id(userDto.getFullName(),tokenDTO.getCompanyId())&&!prevUser.getFullName().equals(user.getFullName())){
+            throw new ObjectExistException("user name ");
+        }
 
         user.setRole(roleRepository.getByName(user.getRole().getName()));
         user.setAuditData(new AuditData(prevUser.getAuditData().getCreateDate(), LocalDateTime.now()));
@@ -161,6 +165,9 @@ public class UserService {
         }
         if (userRepository.existsByAddress_Email(email)) {
             throw new ObjectExistException("email");
+        }
+        if (userRepository.existsByPassword(password)) {
+            throw new ObjectExistException("password");
         }
 
     }

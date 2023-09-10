@@ -18,7 +18,10 @@ public interface IUserRepository extends MongoRepository<User, String> {
 
     boolean existsByAddress_Email(String email);
 
+    boolean existsByFullNameAndCompany_Id(String fullName,String companyId);
     boolean existsByFullName(String fullName);
+
+    boolean existsByPassword(String password);
 
 
     //@Query(fields = "{'id': 1, 'fullName': 1,'password':1,'address':1}")

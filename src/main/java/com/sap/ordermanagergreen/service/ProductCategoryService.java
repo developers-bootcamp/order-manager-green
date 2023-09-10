@@ -40,7 +40,7 @@ public class ProductCategoryService {
         if (roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
             throw new NoPermissionException("You don't have permission to delete the product");
         String categoryName = productCategory.getName();
-        if (doesCategoryExist(categoryName) == true) {
+        if (doesCategoryExist(categoryName,tokenDTO.getCompanyId()) == true) {
             throw new ObjectExistException("Category name already exists");
         }
         productCategory.setCompany(companyRepository.findById(tokenDTO.getCompanyId()).orElse(null));
@@ -67,12 +67,15 @@ public class ProductCategoryService {
         ProductCategoryRepository.deleteById(id);
     }
 
-    public void update(String id, ProductCategory productCategory, String token) throws ObjectNotExistException,UnauthorizedException,NoPermissionException {
+    public void update(String id, ProductCategory productCategory, String token) throws ObjectNotExistException,UnauthorizedException,NoPermissionException ,ObjectExistException{
         TokenDTO tokenDTO = JwtToken.decodeToken(token);
         ProductCategory oldProductCategory = ProductCategoryRepository.findById(id).orElse(null);
 
         if (!oldProductCategory.getCompany().getId().equals(tokenDTO.getCompanyId()) || roleRepository.findById(tokenDTO.getRoleId()).orElse(null).getName().equals(AvailableRole.CUSTOMER))
-            throw new NoPermissionException("You don't have permission to delete the product");
+            throw new NoPermissionException("You don't have permission to update the product");
+        if (!productCategory.getName().equals(oldProductCategory.getName())&&doesCategoryExist(productCategory.getName(),tokenDTO.getCompanyId()) == true) {
+            throw new ObjectExistException("Category name already exists");
+        }
         if (oldProductCategory==null) {
             throw new ObjectNotExistException("Category");
         }
@@ -83,8 +86,8 @@ public class ProductCategoryService {
             ProductCategoryRepository.save(productCategory);
     }
 
-    public boolean doesCategoryExist(String categoryName) {
-        return ProductCategoryRepository.existsByName(categoryName);
+    public boolean doesCategoryExist(String categoryName,String companyId) {
+        return ProductCategoryRepository.existsByNameAndCompany_Id(categoryName,companyId);
     }
 
     public boolean isUnauthorized(String token) {
