@@ -66,7 +66,6 @@ public class OrderService {
         List<Order>ans= mongoTemplate.find(query, Order.class);
 
         return ans;
-        //return orderRepository.findByOrderStatusInAndCompanyId(paging,orderStatus,companyId);//,query
     }
 
     public String add(Order order, TokenDTO token) throws CompanyNotExistException, UserDosentExistException, Exception {
